@@ -639,11 +639,13 @@ m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:[,\s]+(\d{1,2}):(\d{2}))?/);
 if(m){const y=+m[3]<100?2000+ +m[3]:+m[3];return new Date(y,+m[1]-1,+m[2],+(m[4]||12),+(m[5]||0))}
 const d=new Date(s);return isNaN(d)?null:d}
 function normEx(s){return String(s||'').toLowerCase().replace(/\(.*?\)/g,'').replace(/[^a-z0-9]/g,'').replace(/s$/,'')}
+const EX_ALIAS={landmineshoulderpres:'landminepres'};
 function matchEx(name){
-const n=normEx(name);if(!n)return null;
+let n=normEx(name);if(!n)return null;
+if(EX_ALIAS[n])n=EX_ALIAS[n];
 let hit=DB.library.find(e=>normEx(e.name)===n);
 if(hit)return hit;
-return DB.library.find(e=>{const m=normEx(e.name);return m.length>4&&n.length>4&&(m.includes(n)||n.includes(m))})||null}
+return DB.library.find(e=>{const m=normEx(e.name);return m.length>4&&n.length>4&&((m.includes(n)&&m.length-n.length>=3)||(n.includes(m)&&n.length-m.length>=3))})||null}
 function handleCsv(file){
 const r=new FileReader();
 r.onload=()=>{try{buildCsvPreview(String(r.result))}catch(e){toast('Couldn’t read workouts from that file')}};
@@ -654,20 +656,23 @@ const hdr=rows[0].map(c=>c.trim().toLowerCase());
 const fc=re=>hdr.findIndex(c=>re.test(c));
 const cEx=fc(/exercise/);
 let cDate=fc(/^date$/);if(cDate<0)cDate=fc(/start/);if(cDate<0)cDate=fc(/date|time/);
-const cWk=hdr.findIndex((c,i)=>i!==cEx&&/workout|routine|session|^title$|^name$/.test(c));
-const cW=fc(/weight|load/);
+const cWk=hdr.findIndex((c,i)=>i!==cEx&&i!==cDate&&/workout|routine|session|^title$|^name$/.test(c));
+const cW=hdr.findIndex(c=>/weight|load/.test(c)&&!/unit/.test(c));
+const cU=fc(/unit/);
 const cR=fc(/rep/);
-const cTy=fc(/set.?type|^type$/);
+const cTy=fc(/set.?type|^type$|tag/);
 if(cEx<0||cDate<0||cR<0)throw 0;
-const u=cW>=0&&/kg|kilo/.test(hdr[cW])?'kg':'lb';
-const list=[];
+const uHdr=cW>=0&&/kg|kilo/.test(hdr[cW])?'kg':'lb';
+const list=[],uSeen={};
 for(let i=1;i<rows.length;i++){const c=rows[i];
 const d=csvDate(c[cDate]);if(!d)continue;
 const exn=(c[cEx]||'').trim();if(!exn)continue;
 const reps=Math.round(parseFloat(c[cR]));if(!reps||reps<1)continue;
 const w=cW>=0?parseFloat(String(c[cW]||'').replace(/[^\d.\-]/g,'')):0;
-list.push({d,key:String(c[cDate]).trim()+'|'+(cWk>=0?(c[cWk]||'').trim():''),wk:cWk>=0?(c[cWk]||'').trim():'',exn,w:isNaN(w)||w<0?0:w,reps,wu:cTy>=0&&/warm/i.test(c[cTy]||''),ord:i})}
+const ru=cU>=0?(/k/i.test(c[cU]||'')?'kg':'lb'):uHdr;uSeen[ru]=1;
+list.push({d,key:String(c[cDate]).trim()+'|'+(cWk>=0?(c[cWk]||'').trim():''),wk:cWk>=0?(c[cWk]||'').trim():'',exn,w:isNaN(w)||w<0?0:w,u:ru,reps,wu:cTy>=0&&/warm/i.test(c[cTy]||''),ord:i})}
 if(!list.length)throw 0;
+const u=Object.keys(uSeen).join(' + ');
 const groups={},order=[];
 list.forEach(r=>{if(!groups[r.key]){groups[r.key]=[];order.push(r.key)}groups[r.key].push(r)});
 const exNames={};list.forEach(r=>{const e=exNames[r.exn]=exNames[r.exn]||{n:0,allBw:true};e.n++;if(r.w>0)e.allBw=false});
@@ -679,7 +684,7 @@ order.forEach(k=>{const rs=groups[k];rs.sort((a,b)=>a.ord-b.ord);
 const t0=rs[0].d.getTime(),dk=tk(rs[0].d),name=rs[0].wk||'Imported workout';
 const cnt={};
 const sets=rs.map((r,j)=>{cnt[r.exn]=(cnt[r.exn]||0)+1;
- return{exn:r.exn,n:cnt[r.exn],w:{v:r.w>0?r.w:0,u},reps:r.reps,warmup:r.wu||undefined,ts:t0+j*45000}});
+ return{exn:r.exn,n:cnt[r.exn],w:{v:r.w>0?r.w:0,u:r.u},reps:r.reps,warmup:r.wu||undefined,ts:t0+j*45000}});
 if(seen[dk+'|'+name+'|'+sets.length]){dup++;return}
 sessions.push({date:dk,dow:dowOf(dk),name,startedAt:t0,finishedAt:t0+Math.min(5400000,(sets.length+1)*180000),sets})});
 IMPCSV={sessions,setsN:sessions.reduce((a,s)=>a+s.sets.length,0),exNames};
