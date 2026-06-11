@@ -264,6 +264,50 @@ a{color:var(--ember);text-decoration:none}
 .toast.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(-4px)}
 .toast .tb2{color:var(--ember);font-weight:700;font-size:14.5px}
 
+/* ── editors ── */
+.tin{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:11px;color:var(--text);font-family:var(--f);font-size:16px;font-weight:600;padding:11px 13px;-webkit-appearance:none}
+.tin:focus{outline:none;border-color:var(--border-h)}
+.tin::placeholder{color:var(--muted);font-weight:500}
+.tin.fx{flex:1;width:auto;min-width:0}
+.tarea{width:100%;min-height:110px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:var(--f);font-size:15px;line-height:1.6;padding:12px 13px;resize:vertical;-webkit-appearance:none}
+.tarea:focus{outline:none;border-color:var(--border-h)}
+.flab{font-size:10.5px;font-weight:700;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin:14px 0 5px}
+.erow{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:10px 12px;margin-bottom:7px;min-height:56px}
+.erow:active{background:var(--surface2)}
+.erow .em2{flex:1;min-width:0}
+.erow .en2,.en2{font-size:15.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.erow .es2,.es2{font-size:12.5px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.erow.offed .en2{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border-h)}
+.mvc{display:flex;flex-direction:column;gap:3px;flex-shrink:0}
+.mvb{width:36px;height:25px;display:flex;align-items:center;justify-content:center;border-radius:7px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);font-size:10px}
+.mvb:active{color:var(--text);background:var(--border)}
+.addb{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:50px;border-radius:13px;border:1.5px dashed var(--border-h);color:var(--dim);font-size:15px;font-weight:600;margin:2px 0 10px}
+.addb:active{background:var(--surface2)}
+.car2{color:var(--muted);flex-shrink:0;font-size:18px;padding:0 2px}
+
+/* ── trends ── */
+.calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.calnav .cm{font-size:15.5px;font-weight:700}
+.calnav button{min-width:44px;min-height:36px;border-radius:9px;color:var(--dim);background:var(--surface2);border:1px solid var(--border);font-size:16px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.calh{font-size:9.5px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-align:center;text-transform:uppercase;padding:2px 0 4px}
+.calc{aspect-ratio:1;border-radius:8px;background:var(--surface2);border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.calc.out{visibility:hidden}
+.calc.tod{border-color:var(--border-h)}
+.calc.miss{border-color:rgba(224,96,79,.4)}
+.leg{display:flex;align-items:center;gap:5px;margin-top:10px;justify-content:flex-end;font-size:10.5px;color:var(--muted)}
+.leg i{width:11px;height:11px;border-radius:3px;background:var(--surface2);display:inline-block}
+.prw{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--border)}
+.prw:last-child{border-bottom:none}
+.prw .pri{width:30px;height:30px;border-radius:8px;background:var(--ember-soft);color:var(--ember);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.prw .prm{flex:1;min-width:0}
+.prw .prn{font-size:14.5px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prw .prs{font-size:12.5px;color:var(--muted)}
+.prw .prd{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
+.chartw svg{display:block;width:100%;height:auto}
+.dpill.pr{border-color:var(--ember-line);color:var(--ember-hot)}
+.chip.sg{color:var(--sage);background:var(--sage-bg)}
+
 .fl{text-align:center;margin-top:34px;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3d424b}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -273,6 +317,7 @@ a{color:var(--ember);text-decoration:none}
 <div id="ov"></div>
 <div id="toast" class="toast"></div>
 <input type="file" id="impf" accept=".json,application/json" hidden>
+<input type="file" id="impcsv" accept=".csv,text/csv,text/plain" hidden>
 <script>
 /* ═══════════ SEED — Return to Training program, ported verbatim ═══════════ */
 function seedDB(){
@@ -432,9 +477,9 @@ dayOverrides:{},
 
 /* ═══════════ STATE & PERSISTENCE ═══════════ */
 let DB=null;
-let S={tab:'today',view:'tabs',sel:null,sid:null,amend:false,det:null,mobFrom:'today',editKey:null};
+let S={tab:'today',view:'tabs',sel:null,sid:null,amend:false,det:null,mobFrom:'today',editKey:null,edT:null,edE:0,edX:null,edRef:0,trEx:null,calM:0,e1:false,pick:null,histAll:false};
 let PV={},CV=null,CE={spr:false,aer:false},EXTRA={};
-let T=null,TINT=null,EINT=null,WL=null,AC=null,UPD=null,IMPORTED=null;
+let T=null,TINT=null,EINT=null,WL=null,AC=null,UPD=null,IMPORTED=null,PRC=null,IMPCSV=null,RSC=null;
 const DY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const DAB=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -443,7 +488,7 @@ const KG=0.45359237;
 
 function ld(){try{DB=JSON.parse(localStorage.getItem('blocks_v1')||'null')}catch(e){DB=null}
 if(!DB||DB.schemaVersion!==1){DB=seedDB();sv()}}
-function sv(){try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Could not save')}}
+function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Could not save')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function tk(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function fmtDk(dk){const[y,m,d]=dk.split('-').map(Number);return MN[m-1]+' '+d}
@@ -464,6 +509,20 @@ function sessionsFor(dk){return DB.sessions.filter(s=>s.date===dk)}
 function activeSession(){return DB.sessions.find(s=>!s.finishedAt)||null}
 function sessById(sid){return DB.sessions.find(s=>s.id===sid)||null}
 function workingSets(sess,exId){return sess.sets.filter(s=>s.exId===exId)}
+function rD(){return DB.settings.restDefault||90}
+function restFor(entry,ex){return(entry&&entry.rest)||ex.rest||rD()}
+function toLb(w){if(!w||!w.v)return 0;return w.u==='lb'?w.v:w.v/KG}
+function autoScheme(e){return(e.warmups?e.warmups+' wu + ':'')+e.sets+' × '+(e.amrap?'max':e.defReps)}
+function schemeOf(e){return e.scheme||autoScheme(e)}
+function fmtMon(dk){return MN[+dk.slice(5,7)-1]+' '+dk.slice(0,4)}
+function entriesOf(sess){
+const t=tpl(sess.templateId);
+let ent=t?t.entries.filter(e=>e.enabled||workingSets(sess,e.exId).length):[];
+const known={};ent.forEach(e=>known[e.exId]=1);
+sess.sets.forEach(st=>{if(!known[st.exId]){known[st.exId]=1;
+ ent=ent.concat([{exId:st.exId,warmups:0,sets:0,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false,synth:true}])}});
+return ent}
+function entryFor(sess,exId){return entriesOf(sess).find(e=>e.exId===exId)||null}
 
 /* ═══════════ UNITS ═══════════ */
 function unit(){return DB.settings.unit}
@@ -473,7 +532,7 @@ function rndInc(v,u){const i=u==='kg'?2.5:5;return Math.round(v/i)*i}
 function wInUnit(w){if(!w)return 0;return w.u===unit()?w.v:rndDisp(toU(w.v,w.u,unit()),unit())}
 function wPrefill(w){if(!w)return 0;return w.u===unit()?w.v:Math.max(0,rndInc(toU(w.v,w.u,unit()),unit()))}
 function fmtW(v,bw){if(bw&&(!v||v<=0))return'BW';if(bw)return'+'+(+v.toFixed(1)*1);return''+(+(+v).toFixed(1)*1)}
-function setTxt(st,bw){const v=wInUnit(st.w);return(bw&&(!v||v<=0))?String(st.reps):fmtW(v,bw)+'×'+st.reps}
+function setTxt(st,bw){const v=wInUnit(st.w);return(!v||v<=0)?String(st.reps):fmtW(v,bw)+'×'+st.reps}
 
 /* ═══════════ PREFILL & GHOSTS ═══════════ */
 function lastSessionWith(exId,excludeSid){
@@ -558,6 +617,89 @@ if(le==null)return n>=3?n:0;
 return(Date.now()-le>7*86400000)?n:0}
 function nagLater(){DB.settings.nagDismissed=Date.now();sv();rn()}
 
+/* ═══════════ WORKOUT HISTORY IMPORT (Ironotes / Strong / Hevy CSV) ═══════════ */
+function doImportCsvPick(){document.getElementById('impcsv').click()}
+function csvParse(text){
+const rows=[];let row=[],cell='',q=false;
+for(let i=0;i<text.length;i++){const ch=text[i];
+if(q){if(ch==='"'){if(text[i+1]==='"'){cell+='"';i++}else q=false}else cell+=ch}
+else if(ch==='"')q=true;
+else if(ch===','){row.push(cell);cell=''}
+else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cell);cell='';if(row.some(c=>c.trim()!==''))rows.push(row);row=[]}
+else cell+=ch}
+row.push(cell);if(row.some(c=>c.trim()!==''))rows.push(row);
+return rows}
+function csvDate(s){
+s=String(s||'').trim();if(!s)return null;
+let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T ](\d{1,2}):(\d{2})(?::(\d{2}))?)?\s*(Z|[+-]\d{2}:?\d{2})?/);
+if(m){if(m[7]){const z=m[7]==='Z'?0:parseInt(m[7].slice(0,3),10)*60+(m[7][0]==='-'?-1:1)*parseInt(m[7].slice(-2),10);
+ return new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0))-z*60000)}
+ return new Date(+m[1],+m[2]-1,+m[3],+(m[4]||12),+(m[5]||0),+(m[6]||0))}
+m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:[,\s]+(\d{1,2}):(\d{2}))?/);
+if(m){const y=+m[3]<100?2000+ +m[3]:+m[3];return new Date(y,+m[1]-1,+m[2],+(m[4]||12),+(m[5]||0))}
+const d=new Date(s);return isNaN(d)?null:d}
+function normEx(s){return String(s||'').toLowerCase().replace(/\(.*?\)/g,'').replace(/[^a-z0-9]/g,'').replace(/s$/,'')}
+function matchEx(name){
+const n=normEx(name);if(!n)return null;
+let hit=DB.library.find(e=>normEx(e.name)===n);
+if(hit)return hit;
+return DB.library.find(e=>{const m=normEx(e.name);return m.length>4&&n.length>4&&(m.includes(n)||n.includes(m))})||null}
+function handleCsv(file){
+const r=new FileReader();
+r.onload=()=>{try{buildCsvPreview(String(r.result))}catch(e){toast('Couldn’t read workouts from that file')}};
+r.readAsText(file)}
+function buildCsvPreview(text){
+const rows=csvParse(text);if(rows.length<2)throw 0;
+const hdr=rows[0].map(c=>c.trim().toLowerCase());
+const fc=re=>hdr.findIndex(c=>re.test(c));
+const cEx=fc(/exercise/);
+let cDate=fc(/^date$/);if(cDate<0)cDate=fc(/start/);if(cDate<0)cDate=fc(/date|time/);
+const cWk=hdr.findIndex((c,i)=>i!==cEx&&/workout|routine|session|^title$|^name$/.test(c));
+const cW=fc(/weight|load/);
+const cR=fc(/rep/);
+const cTy=fc(/set.?type|^type$/);
+if(cEx<0||cDate<0||cR<0)throw 0;
+const u=cW>=0&&/kg|kilo/.test(hdr[cW])?'kg':'lb';
+const list=[];
+for(let i=1;i<rows.length;i++){const c=rows[i];
+const d=csvDate(c[cDate]);if(!d)continue;
+const exn=(c[cEx]||'').trim();if(!exn)continue;
+const reps=Math.round(parseFloat(c[cR]));if(!reps||reps<1)continue;
+const w=cW>=0?parseFloat(String(c[cW]||'').replace(/[^\d.\-]/g,'')):0;
+list.push({d,key:String(c[cDate]).trim()+'|'+(cWk>=0?(c[cWk]||'').trim():''),wk:cWk>=0?(c[cWk]||'').trim():'',exn,w:isNaN(w)||w<0?0:w,reps,wu:cTy>=0&&/warm/i.test(c[cTy]||''),ord:i})}
+if(!list.length)throw 0;
+const groups={},order=[];
+list.forEach(r=>{if(!groups[r.key]){groups[r.key]=[];order.push(r.key)}groups[r.key].push(r)});
+const exNames={};list.forEach(r=>{const e=exNames[r.exn]=exNames[r.exn]||{n:0,allBw:true};e.n++;if(r.w>0)e.allBw=false});
+let matched=0,fresh=0;
+Object.keys(exNames).forEach(n=>{matchEx(n)?matched++:fresh++});
+const seen={};DB.sessions.forEach(s=>{if(s.imported)seen[s.date+'|'+s.name+'|'+s.sets.length]=1});
+const sessions=[];let dup=0;
+order.forEach(k=>{const rs=groups[k];rs.sort((a,b)=>a.ord-b.ord);
+const t0=rs[0].d.getTime(),dk=tk(rs[0].d),name=rs[0].wk||'Imported workout';
+const cnt={};
+const sets=rs.map((r,j)=>{cnt[r.exn]=(cnt[r.exn]||0)+1;
+ return{exn:r.exn,n:cnt[r.exn],w:{v:r.w>0?r.w:0,u},reps:r.reps,warmup:r.wu||undefined,ts:t0+j*45000}});
+if(seen[dk+'|'+name+'|'+sets.length]){dup++;return}
+sessions.push({date:dk,dow:dowOf(dk),name,startedAt:t0,finishedAt:t0+Math.min(5400000,(sets.length+1)*180000),sets})});
+IMPCSV={sessions,setsN:sessions.reduce((a,s)=>a+s.sets.length,0),exNames};
+if(!sessions.length){toast(dup?'That file is already in your history':'No workouts found in that CSV');IMPCSV=null;return}
+const d0=sessions.reduce((a,s)=>s.date<a?s.date:a,sessions[0].date),d1=sessions.reduce((a,s)=>s.date>a?s.date:a,sessions[0].date);
+sheet('Import history','<b>'+sessions.length+' workouts · '+IMPCSV.setsN+' sets</b><br>'+fmtMon(d0)+' → '+fmtMon(d1)+' · weights read as <b>'+u+'</b><br>'+matched+' exercise'+(matched===1?'':'s')+' matched your library, '+fresh+' added new'+(dup?' · '+dup+' duplicate workout'+(dup>1?'s':'')+' skipped':''),
+'<div class="shbtns"><button class="btn btn-p" onclick="confirmCsv()">Add to history</button><button class="btn btn-o" onclick="closeOv()">Cancel</button></div>')}
+function confirmCsv(){
+if(!IMPCSV)return;
+const map={};
+Object.keys(IMPCSV.exNames).forEach(n=>{
+const hit=matchEx(n);
+if(hit)map[n]=hit.id;
+else{const e={id:id('x'),name:n,bw:IMPCSV.exNames[n].allBw,rest:rD(),muscles:[],kind:'lift',video:null};DB.library.push(e);map[n]=e.id}});
+IMPCSV.sessions.forEach(s=>{
+DB.sessions.push({id:id('s'),date:s.date,dow:s.dow,viaDow:s.dow,name:s.name,templateId:null,kind:'lift',startedAt:s.startedAt,finishedAt:s.finishedAt,imported:true,
+sets:s.sets.map(x=>({exId:map[x.exn],n:x.n,w:x.w,reps:x.reps,warmup:x.warmup,ts:x.ts}))})});
+const n=IMPCSV.sessions.length;IMPCSV=null;sv();closeOv();S.view='tabs';S.tab='history';S.histAll=false;rn();
+toast(n+' workouts added to history')}
+
 /* ═══════════ RING / PROGRESS ═══════════ */
 function dayProgress(dk){
 const t=tplForDate(dk),checks=dayChecks(dk),sess=sessionsFor(dk);
@@ -571,6 +713,64 @@ if(t&&t.kind==='cardio'){
  (t.checks||[]).filter(c=>c.enabled).forEach(c=>{total++;if(checks.includes(c.id))done++})}
 const di=dailyItems(dk);total+=di.length;di.forEach(d=>{if(checks.includes(d.id))done++});
 return{done,total}}
+
+/* ═══════════ PR ENGINE ═══════════ */
+function prScan(){
+if(PRC)return PRC;
+const feed=[],perEx={},setPR={};
+DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
+const snap={},cand={};
+s.sets.slice().sort((a,b)=>a.ts-b.ts).forEach(st=>{
+if(st.warmup)return;
+const e=perEx[st.exId]=perEx[st.exId]||{maxW:0,maxWReps:0,maxWDate:null,repAt:{},maxReps:0,maxRepsDate:null,maxE1:0,e1Date:null,n:0};
+const sn=snap[st.exId]=snap[st.exId]||{virgin:e.n===0,maxW:e.maxW,repAt:Object.assign({},e.repAt),maxReps:e.maxReps};
+const w=toLb(st.w),wk=String(Math.round(w*2)/2),c=cand[st.exId]=cand[st.exId]||{};
+if(!sn.virgin){
+ if(w>0&&w>sn.maxW){if(!c.w||w>c.w.w||(w===c.w.w&&st.reps>c.w.reps))c.w={w,reps:st.reps,st}}
+ else if(w>0&&sn.repAt[wk]&&st.reps>sn.repAt[wk]){const g=st.reps-sn.repAt[wk];if(!c.r||g>c.r.gain)c.r={w,reps:st.reps,gain:g,st}}
+ else if(w<=0&&st.reps>sn.maxReps){if(!c.b||st.reps>c.b.reps)c.b={w:0,reps:st.reps,st}}}
+if(w>0){
+ if(w>e.maxW){e.maxW=w;e.maxWReps=st.reps;e.maxWDate=s.date}
+ else if(w===e.maxW&&st.reps>e.maxWReps){e.maxWReps=st.reps;e.maxWDate=s.date}
+ if(!e.repAt[wk]||st.reps>e.repAt[wk])e.repAt[wk]=st.reps;
+ const e1=w*(1+st.reps/30);if(e1>e.maxE1){e.maxE1=e1;e.e1Date=s.date}}
+else if(st.reps>e.maxReps){e.maxReps=st.reps;e.maxRepsDate=s.date}
+e.n++});
+Object.keys(cand).forEach(x=>{['w','r','b'].forEach(tp=>{const c=cand[x][tp];if(!c)return;
+feed.push({sid:s.id,date:s.date,ts:c.st.ts,exId:x,type:tp,w:c.w||0,reps:c.reps});
+setPR[s.id+'|'+x+'|'+c.st.n+'|'+c.st.ts]=tp})})});
+feed.sort((a,b)=>b.ts-a.ts);
+PRC={feed,perEx,setPR};return PRC}
+function prLabel(f){
+if(f.type==='b')return'Max reps · '+f.reps;
+const w=rndDisp(toU(f.w,'lb',unit()),unit())+' '+unit();
+return f.type==='w'?'Top weight · '+w+' × '+f.reps:w+' × '+f.reps+' — rep PR'}
+function sessionPRs(sid){return prScan().feed.filter(f=>f.sid===sid)}
+
+/* ═══════════ TREND SERIES ═══════════ */
+function seriesFor(exId){
+const out=[];
+DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
+const rows=s.sets.filter(x=>x.exId===exId&&!x.warmup);if(!rows.length)return;
+let topW=0,topWr=0,mxR=0,e1=0;
+rows.forEach(r=>{const w=toLb(r.w);
+if(w>topW||(w===topW&&r.reps>topWr)){topW=w;topWr=r.reps}
+if(r.reps>mxR)mxR=r.reps;
+const v=w*(1+r.reps/30);if(v>e1)e1=v});
+out.push({date:s.date,t:s.startedAt,topW,topWr,mxR,e1})});
+return out}
+function trendExs(){
+const m={};
+DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
+const per={};
+s.sets.forEach(x=>{if(x.warmup)return;const w=toLb(x.w);
+const p=per[x.exId]=per[x.exId]||{w:0,r:0,mx:0};
+if(w>p.w||(w===p.w&&x.reps>p.r)){p.w=w;p.r=x.reps}
+if(x.reps>p.mx)p.mx=x.reps});
+Object.keys(per).forEach(xid=>{const e=m[xid]=m[xid]||{n:0};e.n++;e.lastDate=s.date;e.top=per[xid]})});
+return Object.keys(m).map(xid=>{const e=m[xid],ex=exOf(xid);
+const lastTxt=e.top.w>0?rndDisp(toU(e.top.w,'lb',unit()),unit())+' '+unit()+' × '+e.top.r:e.top.mx+' reps';
+return{ex,n:e.n,lastDate:e.lastDate,lastTxt}}).sort((a,b)=>a.lastDate<b.lastDate?1:-1)}
 </script>
 <script>
 /* ═══════════ ICONS ═══════════ */
@@ -579,17 +779,20 @@ const I_GEAR='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke
 const I_TODAY='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="2.8" fill="currentColor" stroke="none"/></svg>';
 const I_HIST='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.5V12l3 2.2"/></svg>';
 const I_PROG='<svg width="21" height="21" viewBox="0 0 24 24"><g fill="currentColor"><rect x="8.2" y="4.6" width="7.6" height="4.1" rx="1.3"/><rect x="6" y="10" width="12" height="4.1" rx="1.3"/><rect x="3.8" y="15.4" width="16.4" height="4.1" rx="1.3"/></g></svg>';
+const I_TREND='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 19.5L9 13l4 3.5 7-8.5"/><path d="M15.5 8h4.5v4.5"/></svg>';
 const WM='<svg width="16" height="16" viewBox="0 0 32 32"><g fill="#ff6f2e"><rect x="12.2" y="5.5" width="7.6" height="5" rx="1.5"/><rect x="9.6" y="13.4" width="12.8" height="5" rx="1.5"/><rect x="7" y="21.3" width="18" height="5" rx="1.5"/></g></svg>';
 const I_CAR='<svg class="car" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
 let PREVV='tabs';
 
 /* ═══════════ NAV / SHELL ═══════════ */
-function nav(t){S.tab=t;S.view='tabs';S.sel=null;rn()}
+function nav(t){S.tab=t;S.view='tabs';S.sel=null;S.calM=0;S.histAll=false;rn()}
+function goProg(){S.view='tabs';S.tab='program';rn()}
+function openEd(v){S.view=v;rn()}
 function back(){S.view='tabs';S.tab=S.mobFrom==='program'?'program':'today';rn()}
 function openMobility(from){S.mobFrom=from;S.view='mobility';rn()}
 function hdr(){return'<div class="hd"><div class="hdi"><div class="wm">'+WM+'BLOCKS</div><button class="hbt" onclick="gear()" aria-label="Settings">'+I_GEAR+'</button></div></div>'}
 function tabbar(){const b=(t,ic,l)=>'<button class="tbb '+(S.tab===t?'on':'')+'" onclick="nav(\''+t+'\')">'+ic+l+'</button>';
-return'<div class="tb"><div class="tbi">'+b('today',I_TODAY,'Today')+b('history',I_HIST,'History')+b('program',I_PROG,'Program')+'</div></div>'}
+return'<div class="tb"><div class="tbi">'+b('today',I_TODAY,'Today')+b('history',I_HIST,'History')+b('trends',I_TREND,'Trends')+b('program',I_PROG,'Program')+'</div></div>'}
 function restChip(){return'<div id="restc" class="restc hide"><div class="rcm"><div class="rcl" id="rcL">Rest</div><div class="rct num" id="rcT">0:00</div><div class="rcp"><div class="rcpf" id="rcPf" style="width:100%"></div></div></div><button class="rcb num" onclick="t30()">+30s</button><button class="rcb" onclick="killRest()">✕</button></div>'}
 function rn(){
 const y=window.scrollY,a=document.getElementById('app');
@@ -597,6 +800,18 @@ let h='';
 if(S.view==='session')h=vSession();
 else if(S.view==='mobility')h=vMobility();
 else if(S.view==='detail')h=vDetail();
+else if(S.view==='trend')h=vTrend();
+else if(S.view==='edsched')h=vEdSched();
+else if(S.view==='edtpl')h=vEdTpl();
+else if(S.view==='edentry')h=vEdEntry();
+else if(S.view==='pickex')h=vPickEx();
+else if(S.view==='edlib')h=vEdLib();
+else if(S.view==='edex')h=vEdEx();
+else if(S.view==='eddaily')h=vEdDaily();
+else if(S.view==='edmob')h=vEdMob();
+else if(S.view==='edther')h=vEdTher();
+else if(S.view==='edref')h=vEdRef();
+else if(S.view==='edrefsec')h=vEdRefSec();
 else h=vTabs();
 a.innerHTML=h+restChip();
 const changed=PREVV!==S.view;PREVV=S.view;
@@ -610,6 +825,7 @@ function vTabs(){
 let inner='';
 if(S.tab==='today')inner=vToday();
 else if(S.tab==='history')inner=vHistory();
+else if(S.tab==='trends')inner=vTrends();
 else inner=vProgram();
 return hdr()+'<div class="co">'+inner+'</div>'+tabbar()}
 
@@ -714,7 +930,7 @@ if(t){
 if(t.note)h+='<div class="note">'+esc(t.note)+'</div>';
 h+='<div class="card">';
 if(t.kind==='lift')t.entries.forEach(e=>{const ex=exOf(e.exId);
- h+='<div class="tpe'+(e.enabled?'':' offed')+'"><span class="tpen">'+esc(ex.name)+'</span><span class="tpes num">'+esc(e.scheme)+(e.enabled?'':' · off')+'</span></div>'});
+ h+='<div class="tpe'+(e.enabled?'':' offed')+'"><span class="tpen">'+esc(ex.name)+'</span><span class="tpes num">'+esc(schemeOf(e))+(e.enabled?'':' · off')+'</span></div>'});
 else{h+='<div class="tpe"><span class="tpen">Sprint Run-Throughs</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>'
  +'<div class="tpe"><span class="tpen">Bike / Swim</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>';
  (t.checks||[]).forEach(c=>{h+='<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>'})}
@@ -750,7 +966,11 @@ const mins=Math.max(1,Math.round((Date.now()-s.startedAt)/60000));
 ovConfirm('Finish session?','<b>'+s.sets.length+' sets</b> · '+mins+' min',
 [{label:'Finish session',click:'finishSession()',kind:'p'},{label:'Keep going',click:'closeOv()',kind:'o'},{label:'Discard session',click:'discardAsk()',kind:'d'}])}
 function finishSession(){const s=sessById(S.sid);if(!s)return;
-s.finishedAt=Date.now();sv();killRest();lockOff();closeOv();S.view='tabs';S.tab='today';rn();toast('Session saved')}
+s.finishedAt=Date.now();sv();killRest();lockOff();closeOv();S.view='tabs';S.tab='today';rn();
+const prs=sessionPRs(s.id);
+if(prs.length)sheet('Session saved','<b style="color:var(--sage)">'+s.sets.length+' sets · '+Math.max(1,Math.round((s.finishedAt-s.startedAt)/60000))+' min</b> — and '+prs.length+' PR'+(prs.length>1?'s':'')+' set:',
+'<div style="padding:0 2px 4px">'+prs.map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div></div>').join('')+'</div><div class="shbtns"><button class="btn btn-p" onclick="closeOv()">Done</button></div>');
+else toast('Session saved')}
 function finishQuick(sid){const s=sessById(sid);if(!s)return;
 const last=s.sets.length?Math.max.apply(null,s.sets.map(x=>x.ts)):s.startedAt;
 s.finishedAt=last;sv();rn();toast('Session ended')}
@@ -796,7 +1016,7 @@ return'<div class="sr'+(isWu?' wu':'')+'" style="background:var(--surface2);bord
 function vSession(){
 const sess=sessById(S.sid);
 if(!sess){S.view='tabs';return vTabs()}
-const t=tpl(sess.templateId),entries=t?t.entries.filter(e=>e.enabled||workingSets(sess,e.exId).length):[];
+const entries=entriesOf(sess);
 let body='';
 entries.forEach(entry=>{
 const ex=exOf(entry.exId),logged=workingSets(sess,entry.exId).sort((a,b)=>a.n-b.n);
@@ -812,8 +1032,9 @@ for(let i=0;i<total;i++){const st=byN[i+1];
 body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+esc(ex.name)
 +(ex.video?' <a class="vl" href="'+ex.video+'" target="_blank">▶</a>':'')+'</div>'
 +(entry.amrap?'<span class="chip em">max</span>':'')
++'<button class="chip off num" onclick="restSheet(\''+entry.exId+'\')">'+restFor(entry,ex)+'s</button>'
 +'<span class="tpes num">'+logged.length+'/'+total+'</span></div>'
-+'<div class="exs">'+esc(entry.scheme)+(entry.cue?' · '+esc(entry.cue):'')+'</div>'
++'<div class="exs">'+esc(schemeOf(entry))+(entry.cue?' · '+esc(entry.cue):'')+'</div>'
 +ghostLine(ex,sess)
 +'<div class="cols"><span>Set</span><span>'+(ex.bw?'Load':unit())+'</span><span>Reps</span><span></span></div>'
 +rows
@@ -826,7 +1047,7 @@ return hd+'<div class="co nopad">'+body+'</div>'}
 function clearPV(exId){Object.keys(PV).forEach(k=>{if(k.indexOf(exId+'_')===0)delete PV[k]})}
 function logSet(exId,i){
 const sess=sessById(S.sid);if(!sess)return;
-const t=tpl(sess.templateId),entry=t.entries.find(e=>e.exId===exId);if(!entry)return;
+const entry=entryFor(sess,exId);if(!entry)return;
 const ex=exOf(exId),key=exId+'_'+i;
 if(!PV[key]){const p=prefill(entry,ex,i,sess);PV[key]={w:p.w,r:p.reps}}
 const pv=PV[key];
@@ -834,10 +1055,26 @@ if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
 sess.sets.push({exId,n:i+1,w:{v:+pv.w||0,u:unit()},reps:Math.round(pv.r),warmup:i<entry.warmups||undefined,amrap:entry.amrap||undefined,ts:Date.now()});
 clearPV(exId);sv();
 if(!S.amend){let rem=0;
-t.entries.filter(e=>e.enabled).forEach(e=>{const tot=e.warmups+e.sets+(EXTRA[e.exId]||0);
+entriesOf(sess).filter(e=>e.enabled).forEach(e=>{const tot=e.warmups+e.sets+(EXTRA[e.exId]||0);
  rem+=Math.max(0,tot-workingSets(sess,e.exId).length)});
-if(rem>0)startRest(entry.rest||ex.rest||90,esc(ex.name))}
+if(rem>0)startRest(restFor(entry,ex),esc(ex.name))}
 rn()}
+function restSheet(exId){
+const ex=exOf(exId);RSC={exId};
+sheet('Rest · '+esc(ex.name),'Counts down after each logged set. Saved to your program.',
+'<div class="stp" style="height:56px;margin-bottom:6px"><button class="stb" style="width:56px" data-hold data-fn="rscStep" data-args="[-15]">−</button><div class="stv num" id="rscV" style="font-size:21px">'+rscCur()+'s</div><button class="stb" style="width:56px" data-hold data-fn="rscStep" data-args="[15]">+</button></div>'
++'<div class="shbtns"><button class="btn btn-p" onclick="closeOv();rn()">Done</button></div>')}
+function rscCur(){
+const sess=sessById(S.sid),ex=exOf(RSC.exId);
+const t=sess?tpl(sess.templateId):null,e=t?t.entries.find(x=>x.exId===RSC.exId):null;
+return restFor(e,ex)}
+function rscStep(d){
+if(!RSC)return;
+const sess=sessById(S.sid),ex=exOf(RSC.exId);
+const t=sess?tpl(sess.templateId):null,e=t?t.entries.find(x=>x.exId===RSC.exId):null;
+const v=Math.min(600,Math.max(15,rscCur()+d));
+if(e)e.rest=v;else ex.rest=v;
+sv();const el=document.getElementById('rscV');if(el)el.textContent=v+'s'}
 function editLogged(exId,n){S.editKey=exId+'_'+n;delete PV['e_'+exId+'_'+n];rn()}
 function cancelEdit(){S.editKey=null;rn()}
 function updateSet(exId,n){
@@ -918,8 +1155,9 @@ return h}
 
 /* ═══════════ HISTORY ═══════════ */
 function vHistory(){
-const list=DB.sessions.slice().sort((a,b)=>b.startedAt-a.startedAt);
-if(!list.length)return'<div class="empty"><div class="big">▦</div>No sessions yet.<br>Your history starts with the first logged set.</div>';
+const all=DB.sessions.slice().sort((a,b)=>b.startedAt-a.startedAt);
+if(!all.length)return'<div class="empty"><div class="big">▦</div>No sessions yet.<br>Your history starts with the first logged set.</div>';
+const list=S.histAll?all:all.slice(0,150);
 let h='',lastM='';
 list.forEach(s=>{
 const[y,mo]=s.date.split('-');const mk=MN[+mo-1]+' '+y;
@@ -935,7 +1173,8 @@ const live=!s.finishedAt;
 h+='<div class="hrow" onclick="'+(live?'resumeSession':'openDetail')+'(\''+s.id+'\')">'
 +'<div class="hico '+s.kind+'">'+(s.kind==='cardio'?'CAR':'LFT')+'</div>'
 +'<div class="hm"><div class="ht">'+esc(s.name)+(live?' <span class="chip em">live</span>':'')+'</div><div class="hs num">'+sub+'</div></div>'
-+'<div class="hd2 num">'+DAB[dowOf(s.date)]+'<br>'+fmtDk(s.date)+'</div></div>'});
++'<div class="hd2 num">'+DAB[dowOf(s.date)]+'<br>'+fmtDk(s.date)+(s.date.slice(0,4)!==tk().slice(0,4)?' ’'+s.date.slice(2,4):'')+'</div></div>'});
+if(all.length>list.length)h+='<button class="btn btn-o" style="margin-top:6px" onclick="S.histAll=true;rn()">Show all '+all.length+' sessions</button>';
 return h}
 function openDetail(sid){S.det=sid;S.view='detail';rn()}
 function vDetail(){
@@ -953,9 +1192,11 @@ const t=tpl(s.templateId),order=t?t.entries.map(e=>e.exId):[];
 const exIds=order.filter(x=>s.sets.some(st=>st.exId===x));
 s.sets.forEach(st=>{if(!exIds.includes(st.exId))exIds.push(st.exId)});
 if(!exIds.length)h+='<div class="empty">No sets logged.</div>';
+const prk=prScan().setPR;
 exIds.forEach(exId=>{const ex=exOf(exId),rows=workingSets(s,exId).sort((a,b)=>a.n-b.n);
 h+='<div class="dex"><div class="dexn">'+esc(ex.name)+'</div><div class="dline">'
-+rows.map(r=>'<span class="dpill num'+(r.warmup?' wu':'')+'">'+setTxt(r,ex.bw)+'</span>').join('')+'</div></div>'});
++rows.map(r=>{const pr=prk[s.id+'|'+exId+'|'+r.n+'|'+r.ts];
+ return'<span class="dpill num'+(r.warmup?' wu':'')+(pr?' pr':'')+'">'+(pr?'✦ ':'')+setTxt(r,ex.bw)+'</span>'}).join('')+'</div></div>'});
 h+='<div class="shbtns"><button class="btn btn-o" onclick="amendSession(\''+s.id+'\')">Amend sets</button></div>'}
 h+='<div class="shbtns"><button class="btn btn-d" onclick="delAsk(\''+s.id+'\')">Delete session</button></div>';
 h+='</div>';
@@ -970,33 +1211,409 @@ function det(title,cnt,body,open){
 return'<details class="pdet"'+(open?' open':'')+'><summary>'+I_CAR+'<span>'+title+'</span><span class="cnt2 num">'+(cnt||'')+'</span></summary><div class="pdb">'+body+'</div></details>'}
 function vProgram(){
 const p=prog();
-let h='<header class="hero"><div><div class="eyebrow">Program</div><h1 class="title">'+esc(p.name)+'</h1>'
-+(p.subtitle?'<div class="hsub">'+esc(p.subtitle)+'</div>':'')+'</div></header>';
-h+='<div class="sl first"><span class="lt">Week</span><span class="rule"></span></div>';
+let h='<header class="hero" style="align-items:flex-start"><div style="flex:1;min-width:0"><div class="eyebrow">Program</div><h1 class="title">'+esc(p.name)+'</h1>'
++(p.subtitle?'<div class="hsub">'+esc(p.subtitle)+'</div>':'')+'</div><button class="bbtn" style="margin-top:6px;flex-shrink:0" onclick="progSheet()">Edit</button></header>';
+h+='<div class="sl first"><span class="lt">Week</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="openEd(\'edsched\')">Edit</button></div>';
 h+='<div class="week" style="margin-bottom:18px">'+[1,2,3,4,5,6,0].map(d=>{
 const tid=p.schedule[d],t=tid?tpl(tid):null;
 return'<div class="day '+(t?t.kind:'off')+'" style="cursor:default"><div class="dl">'+DAB[d]+'</div><div class="dw">'+(t?esc(t.name.split(' ')[0]):'Off')+'</div></div>'}).join('')+'</div>';
-h+='<div class="sl"><span class="lt">Templates</span><span class="rule"></span></div>';
+h+='<div class="sl"><span class="lt">Templates</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="newTplSheet()">+ New</button></div>';
 p.templates.forEach(t=>{
 let b='';
 if(t.kind==='lift')b=t.entries.map(e=>{const ex=exOf(e.exId);
- return'<div class="tpe'+(e.enabled?'':' offed')+'"><span class="tpen">'+esc(ex.name)+'</span><span class="tpes num">'+esc(e.scheme)+(e.enabled?'':' · off')+'</span></div>'}).join('');
+ return'<div class="tpe'+(e.enabled?'':' offed')+'"><span class="tpen">'+esc(ex.name)+'</span><span class="tpes num">'+esc(schemeOf(e))+(e.enabled?'':' · off')+'</span></div>'}).join('');
 else{b='<div class="tpe"><span class="tpen">Sprints</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>'
  +'<div class="tpe"><span class="tpen">Bike / Swim</span><span class="tpes num">'+t.aerD.durMin+' min · z'+t.aerD.zone+'</span></div>'
  +(t.checks||[]).map(c=>'<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>').join('')}
 if(t.note)b+='<p style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:10px">'+esc(t.note)+'</p>';
+b+='<button class="lnk" onclick="openEdT(\''+t.id+'\')">Edit template →</button>';
 h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled).length+' moves':''),b)});
 h+='<div class="sl"><span class="lt">Checklists</span><span class="rule"></span></div>';
-h+=det('Daily Block',p.checklists.daily.length+' items',p.checklists.daily.map(d=>'<div class="tpe"><span class="tpen">'+esc(d.name)+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join(''));
-h+=det('Mobility','29 items',p.checklists.mobility.map(g=>'<p style="margin:10px 0 4px"><strong style="color:var(--text);font-size:13px;letter-spacing:.06em;text-transform:uppercase">'+esc(g.group)+'</strong></p>'+g.items.map(i=>'<div class="tpe"><span class="tpen" style="font-weight:500;color:var(--dim)">'+esc(i.name)+'</span></div>').join('')).join('')+'<button class="lnk" onclick="openMobility(\'program\')">Open today\'s checklist →</button>');
-h+=det('Therapist Nerve Flossing','',p.checklists.therapist.map(t=>'<div class="tpe"><span class="tpen">'+esc(t.name)+(t.video?' <a class="vl" href="'+t.video+'" target="_blank">▶</a>':'')+'</span><span class="tpes">'+esc(t.note)+'</span></div>').join(''));
-h+='<div class="sl"><span class="lt">Reference</span><span class="rule"></span></div>';
+h+=det('Daily Block',p.checklists.daily.length+' items',p.checklists.daily.map(d=>'<div class="tpe"><span class="tpen">'+esc(d.name)+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'eddaily\')">Edit →</button>');
+h+=det('Mobility',p.checklists.mobility.reduce((a,g)=>a+g.items.length,0)+' items',p.checklists.mobility.map(g=>'<p style="margin:10px 0 4px"><strong style="color:var(--text);font-size:13px;letter-spacing:.06em;text-transform:uppercase">'+esc(g.group)+'</strong></p>'+g.items.map(i=>'<div class="tpe"><span class="tpen" style="font-weight:500;color:var(--dim)">'+esc(i.name)+'</span></div>').join('')).join('')+'<button class="lnk" onclick="openMobility(\'program\')">Open today\'s checklist →</button> <button class="lnk" onclick="openEd(\'edmob\')">Edit →</button>');
+h+=det('Therapist Nerve Flossing','',p.checklists.therapist.map(t=>'<div class="tpe"><span class="tpen">'+esc(t.name)+(t.video?' <a class="vl" href="'+t.video+'" target="_blank">▶</a>':'')+'</span><span class="tpes">'+esc(t.note)+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'edther\')">Edit →</button>');
+h+='<div class="sl"><span class="lt">Reference</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="openEd(\'edref\')">Edit</button></div>';
 (p.reference||[]).forEach(r=>{h+=det(esc(r.t),'',md(r.b))});
 h+='<div class="sl"><span class="lt">Library</span><span class="rule"></span></div>';
-h+=det('Exercises',DB.library.length+'',DB.library.map(e=>'<div class="tpe"><span class="tpen">'+esc(e.name)+(e.bw?' <span class="chip off">bw</span>':'')+'</span><span class="tpes num">'+(e.rest?e.rest+'s · ':'')+esc((e.muscles||[]).join(', '))+'</span></div>').join(''));
-h+='<div class="note" style="margin-top:18px">Program editing arrives in Stage 2 — this is live data, already yours.</div>';
-h+='<div class="fl">Blocks · Stage 1</div>';
+h+=det('Exercises',DB.library.filter(e=>!e.archived).length+'',DB.library.filter(e=>!e.archived).map(e=>'<div class="tpe"><span class="tpen">'+esc(e.name)+(e.bw?' <span class="chip off">bw</span>':'')+'</span><span class="tpes num">'+(e.rest?e.rest+'s · ':'')+esc((e.muscles||[]).join(', '))+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'edlib\')">Manage library →</button>');
+h+='<div class="fl">Blocks · Stage 3</div>';
 return h}
+
+/* ═══════════ STAGE 2 — PROGRAM MANAGER ═══════════ */
+function edHdr(t,s,fn){return'<div class="shd"><div class="shdi"><button class="bk" onclick="'+fn+'">'+I_BACK+'</button><div class="shm"><div class="sht">'+t+'</div>'+(s?'<div class="shs">'+s+'</div>':'')+'</div></div></div>'}
+function progSheet(){
+const p=prog();
+let b='<div class="flab" style="margin-top:0">Name</div><input class="tin" value="'+esc(p.name)+'" onchange="prog().name=this.value;sv();rn()">'
++'<div class="flab">Subtitle</div><input class="tin" value="'+esc(p.subtitle||'')+'" onchange="prog().subtitle=this.value;sv();rn()">'
++'<div class="shbtns">';
+DB.programs.filter(x=>x.id!==p.id&&!x.archived).forEach(x=>{b+='<button class="btn btn-o" onclick="switchProg(\''+x.id+'\')">Switch to '+esc(x.name)+'</button>'});
+DB.programs.filter(x=>x.archived).forEach(x=>{b+='<button class="btn btn-o" onclick="unarchProg(\''+x.id+'\')">Restore '+esc(x.name)+'</button>'});
+b+='<button class="btn btn-o" onclick="dupProg()">Duplicate program</button>'
++'<button class="btn btn-o" onclick="newProg()">New blank program</button>';
+if(DB.programs.filter(x=>!x.archived).length>1)b+='<button class="btn btn-d" onclick="archProg()">Archive this program</button>';
+b+='<button class="btn btn-p" onclick="closeOv()">Done</button></div>';
+sheet('Program','Edits save instantly.',b)}
+function switchProg(pid){DB.activeProgramId=pid;CV=null;sv();closeOv();rn();toast('Program switched')}
+function unarchProg(pid){const p=DB.programs.find(x=>x.id===pid);if(p)p.archived=false;sv();closeOv();rn();toast('Restored')}
+function dupProg(){
+const src=prog(),c=JSON.parse(JSON.stringify(src));
+c.id=id('p');c.name=src.name+' copy';c.archived=false;
+const map={};
+(c.templates||[]).forEach(t=>{const nid=id('t')+Math.random().toString(36).slice(2,5);map[t.id]=nid;t.id=nid});
+Object.keys(c.schedule||{}).forEach(d=>{const v=c.schedule[d];if(v&&map[v])c.schedule[d]=map[v]});
+DB.programs.push(c);DB.activeProgramId=c.id;sv();closeOv();rn();toast('Duplicated — now active')}
+function newProg(){
+const np={id:id('p'),name:'New Program',subtitle:'',schedule:{0:null,1:null,2:null,3:null,4:null,5:null,6:null},
+templates:[],checklists:{daily:[],dailyNote:'',mobility:[],therapist:[]},reference:[]};
+DB.programs.push(np);DB.activeProgramId=np.id;sv();closeOv();rn();toast('New program — build it from here')}
+function archProg(){
+const p=prog();p.archived=true;
+const nxt=DB.programs.find(x=>!x.archived);
+if(!nxt){p.archived=false;toast('This is your only program');return}
+DB.activeProgramId=nxt.id;sv();closeOv();rn();toast('Archived — switched to '+nxt.name)}
+
+/* ═══════════ STAGE 2 — SCHEDULE EDITOR ═══════════ */
+function vEdSched(){
+const p=prog();
+let h=edHdr('Weekly Schedule',esc(p.name),'goProg()');
+h+='<div class="co">';
+[1,2,3,4,5,6,0].forEach(d=>{
+const tid=p.schedule[d],t=tid?tpl(tid):null;
+h+='<div class="erow" onclick="schedSheet('+d+')"><div class="em2"><div class="en2">'+DY[d]+'</div><div class="es2">'+(t?esc(t.name):'Rest')+'</div></div><span class="chip '+(t?(t.kind==='lift'?'em':'bl'):'off')+'">'+(t?t.kind:'rest')+'</span></div>'});
+h+='<div class="note" style="margin-top:14px">Tap a day to assign a template. One-day swaps from the Today tab never touch this.</div></div>';
+return h}
+function schedSheet(d){
+let b='<div class="shbtns">';
+prog().templates.forEach(t=>{b+='<button class="btn btn-o" onclick="setSched('+d+',\''+t.id+'\')">'+esc(t.name)+'</button>'});
+b+='<button class="btn btn-o" onclick="setSched('+d+',null)">Rest day</button><button class="btn btn-d" onclick="closeOv()">Cancel</button></div>';
+sheet(DY[d],'',b)}
+function setSched(d,tid){prog().schedule[d]=tid;sv();closeOv();rn()}
+
+/* ═══════════ STAGE 2 — TEMPLATE EDITOR ═══════════ */
+function tEd(){return tpl(S.edT)}
+function openEdT(tid){S.edT=tid;S.view='edtpl';rn()}
+function tGet(f){return f.split('.').reduce((o,k)=>o[k],tEd())}
+function tStep(f,d,min,max){
+const p=f.split('.'),k=p.pop(),o=p.reduce((x,y)=>x[y],tEd());
+o[k]=Math.min(max,Math.max(min,(+o[k]||0)+d));sv();
+const el=document.getElementById('tv-'+f.replace('.','-'));if(el)el.textContent=o[k]}
+function tFld(label,f,step,min,max){
+return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="tStep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="tv-'+f.replace('.','-')+'">'+tGet(f)+'</div><button class="stb" data-hold data-fn="tStep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
+function newTplSheet(){sheet('New template','','<div class="shbtns"><button class="btn btn-o" onclick="newTpl(\'lift\')">Lift — sets × reps</button><button class="btn btn-o" onclick="newTpl(\'cardio\')">Cardio — sprints / bike / swim</button><button class="btn btn-d" onclick="closeOv()">Cancel</button></div>')}
+function newTpl(kind){
+const t=kind==='lift'?{id:id('t'),name:'New Lift Day',kind:'lift',note:'',entries:[]}
+:{id:id('t'),name:'New Cardio Day',kind:'cardio',note:'',entries:[],sprD:{reps:3,distM:50,eff:60},aerD:{mode:'bike',durMin:30,zone:'1-2'},sprCue:'',aerCue:'',checks:[]};
+prog().templates.push(t);sv();closeOv();S.edT=t.id;S.view='edtpl';rn()}
+function vEdTpl(){
+const t=tEd();if(!t){S.view='tabs';S.tab='program';return vTabs()}
+let h=edHdr('Edit Template',t.kind==='lift'?'Lift':'Cardio','goProg()');
+h+='<div class="co">';
+h+='<div class="flab" style="margin-top:0">Name</div><input class="tin" value="'+esc(t.name)+'" onchange="tEd().name=this.value;sv()">';
+h+='<div class="flab">Coach note</div><textarea class="tarea" style="min-height:84px" onchange="tEd().note=this.value;sv()">'+esc(t.note||'')+'</textarea>';
+if(t.kind==='lift'){
+h+='<div class="sl"><span class="lt">Exercises</span><span class="rule"></span><span class="cnt num">'+t.entries.length+'</span></div>';
+t.entries.forEach((e,i)=>{const ex=exOf(e.exId);
+h+='<div class="erow'+(e.enabled?'':' offed')+'">'
++'<div class="mvc"><button class="mvb" onclick="mvEntry('+i+',-1)">▲</button><button class="mvb" onclick="mvEntry('+i+',1)">▼</button></div>'
++'<div class="em2" onclick="openEntry('+i+')"><div class="en2">'+esc(ex.name)+'</div><div class="es2 num">'+esc(schemeOf(e))+(e.warmups?' · '+e.warmups+' wu':'')+' · rest '+restFor(e,ex)+'s'+(e.enabled?'':' · off')+'</div></div>'
++'<span class="car2" onclick="openEntry('+i+')">›</span></div>'});
+h+='<button class="addb" onclick="pickExFor(\'add\')">+ Add exercise</button>';
+}else{
+h+='<div class="sl"><span class="lt">Sprint defaults</span><span class="rule"></span></div>';
+h+='<div class="fgrid">'+tFld('Reps','sprD.reps',1,1,20)+tFld('Dist m','sprD.distM',10,10,400)+tFld('Effort %','sprD.eff',5,10,100)+'</div>';
+h+='<div class="flab">Sprint cue</div><input class="tin" value="'+esc(t.sprCue||'')+'" onchange="tEd().sprCue=this.value;sv()">';
+h+='<div class="sl"><span class="lt">Aerobic defaults</span><span class="rule"></span></div>';
+h+='<div class="seg" style="margin-bottom:10px"><button class="sgb'+(t.aerD.mode==='bike'?' on':'')+'" onclick="tEd().aerD.mode=\'bike\';sv();rn()">Bike</button><button class="sgb'+(t.aerD.mode==='swim'?' on':'')+'" onclick="tEd().aerD.mode=\'swim\';sv();rn()">Swim</button></div>';
+h+='<div class="fgrid" style="grid-template-columns:1fr 1.4fr">'+tFld('Min','aerD.durMin',5,5,180)
++'<div class="fld"><div class="fl2">Zone</div><div class="seg" style="height:46px">'+['1','1-2','2'].map(z=>'<button class="sgb'+(t.aerD.zone===z?' on':'')+'" onclick="tEd().aerD.zone=\''+z+'\';sv();rn()">'+z+'</button>').join('')+'</div></div></div>';
+h+='<div class="flab">Aerobic cue</div><input class="tin" value="'+esc(t.aerCue||'')+'" onchange="tEd().aerCue=this.value;sv()">';
+h+='<div class="sl"><span class="lt">Day checks</span><span class="rule"></span></div>';
+(t.checks||[]).forEach((c,i)=>{
+h+='<div class="card" style="padding:12px">'
++'<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center"><input class="tin fx" value="'+esc(c.name)+'" onchange="tEd().checks['+i+'].name=this.value;sv()"><button class="rowx" onclick="rmChk('+i+')">✕</button></div>'
++'<input class="tin" placeholder="Detail" value="'+esc(c.detail||'')+'" onchange="tEd().checks['+i+'].detail=this.value;sv()">'
++'<button class="bbtn'+(c.enabled?'':' q')+'" style="margin-top:9px" onclick="tEd().checks['+i+'].enabled=!tEd().checks['+i+'].enabled;sv();rn()">'+(c.enabled?'enabled':'off — parked')+'</button></div>'});
+h+='<button class="addb" onclick="addChk()">+ Add check</button>'}
+h+='<div class="shbtns" style="margin-top:18px"><button class="btn btn-d" onclick="delTplAsk()">Delete template</button></div>';
+h+='</div>';return h}
+function mvEntry(i,d){const a=tEd().entries,j=i+d;if(j<0||j>=a.length)return;const x=a[i];a[i]=a[j];a[j]=x;sv();rn()}
+function openEntry(i){S.edE=i;S.view='edentry';rn()}
+function addChk(){const t=tEd();(t.checks=t.checks||[]).push({id:id('c'),name:'New check',detail:'',enabled:true});sv();rn()}
+function rmChk(i){tEd().checks.splice(i,1);sv();rn()}
+function delTplAsk(){ovConfirm('Delete “'+esc(tEd().name)+'”?','Scheduled days using it become rest days. Logged history keeps its sets.',
+[{label:'Delete template',click:'delTpl()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+function delTpl(){
+const p=prog();p.templates=p.templates.filter(t=>t.id!==S.edT);
+Object.keys(p.schedule).forEach(d=>{if(p.schedule[d]===S.edT)p.schedule[d]=null});
+sv();closeOv();goProg()}
+
+/* ═══════════ STAGE 2 — ENTRY EDITOR ═══════════ */
+function curEntry(){const t=tEd();return t&&t.entries[S.edE]}
+function eStep(f,d,min,max){const e=curEntry();if(!e)return;
+e[f]=Math.min(max,Math.max(min,(+e[f]||0)+d));sv();
+const el=document.getElementById('ev-'+f);if(el)el.textContent=e[f]}
+function eFld(label,f,step,min,max){const e=curEntry();
+return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="eStep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="ev-'+f+'">'+(+e[f]||0)+'</div><button class="stb" data-hold data-fn="eStep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
+function vEdEntry(){
+const t=tEd(),e=curEntry();if(!t||!e){S.view='edtpl';return vEdTpl()}
+const ex=exOf(e.exId);
+let h=edHdr(esc(ex.name),esc(t.name),"S.view='edtpl';rn()");
+h+='<div class="co">';
+h+='<div class="card" onclick="pickExFor(\'swap\')" style="display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0"><div class="en2">'+esc(ex.name)+'</div><div class="es2">'+esc((ex.muscles||[]).join(', ')||'no muscle tags')+(ex.bw?' · BW':'')+'</div></div><span class="lnk" style="padding:0">Swap</span></div>';
+h+='<div class="fgrid">'+eFld('Warm-ups','warmups',1,0,5)+eFld('Sets','sets',1,0,10)+eFld('Target reps','defReps',1,1,100)+'</div>';
+h+='<div class="strow"><div class="stn">AMRAP<small>log what you got — reps are the signal</small></div>'+seg2([{v:'0',l:'Off'},{v:'1',l:'On'}],e.amrap?'1':'0','setEAmrap')+'</div>';
+h+='<div class="strow"><div class="stn">Enabled<small>off = parked, hidden from sessions</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],e.enabled?'1':'0','setEEnabled')+'</div>';
+h+='<div class="flab">Rest after sets</div>';
+h+='<div class="fgrid" style="grid-template-columns:1.3fr 1fr;margin-top:0">'
++'<div class="fld"><div class="stp"><button class="stb" data-hold data-fn="eRest" data-args="[-15]">−</button><div class="stv num" id="ev-rest">'+(e.rest?e.rest+'s':'Default · '+(ex.rest||rD())+'s')+'</div><button class="stb" data-hold data-fn="eRest" data-args="[15]">+</button></div></div>'
++'<button class="btn btn-o" style="min-height:46px;font-size:14.5px" onclick="eRestDef()">Use default</button></div>';
+h+='<div class="flab">Scheme label — blank shows “'+esc(autoScheme(e))+'”</div><input class="tin num" value="'+esc(e.scheme||'')+'" placeholder="'+esc(autoScheme(e))+'" onchange="curEntry().scheme=this.value.trim();sv()">';
+h+='<div class="flab">Cue</div><input class="tin" value="'+esc(e.cue||'')+'" onchange="curEntry().cue=this.value;sv()">';
+h+='<div class="shbtns" style="margin-top:18px"><button class="btn btn-d" onclick="rmEntryAsk()">Remove from template</button></div>';
+h+='</div>';return h}
+function eRest(d){const e=curEntry();if(!e)return;const ex=exOf(e.exId);
+e.rest=Math.min(600,Math.max(15,(e.rest||ex.rest||rD())+d));sv();
+const el=document.getElementById('ev-rest');if(el)el.textContent=e.rest+'s'}
+function eRestDef(){const e=curEntry();if(!e)return;e.rest=null;sv();rn()}
+function setEAmrap(v){curEntry().amrap=v==='1';sv();rn()}
+function setEEnabled(v){curEntry().enabled=v==='1';sv();rn()}
+function rmEntryAsk(){ovConfirm('Remove '+esc(exOf(curEntry().exId).name)+'?','From this template only — history and library are untouched.',
+[{label:'Remove',click:'rmEntry()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+function rmEntry(){tEd().entries.splice(S.edE,1);sv();closeOv();S.view='edtpl';rn()}
+
+/* ═══════════ STAGE 2 — EXERCISE PICKER ═══════════ */
+function pickExFor(mode){S.pick={mode,q:''};S.view='pickex';rn()}
+function vPickEx(){
+let h=edHdr('Choose Exercise','',S.pick.mode==='add'?"S.view='edtpl';rn()":"S.view='edentry';rn()");
+h+='<div class="co">';
+h+='<input class="tin" placeholder="Search, or type a new name" value="'+esc(S.pick.q||'')+'" oninput="S.pick.q=this.value;filterPick()" style="margin-bottom:12px">';
+h+='<div id="picklist">'+pickList()+'</div>';
+h+='</div>';return h}
+function pickList(){
+const q=(S.pick.q||'').toLowerCase();
+const list=DB.library.filter(e=>!e.archived&&(e.kind||'lift')==='lift'&&(!q||e.name.toLowerCase().includes(q)));
+let h=list.map(e=>'<div class="erow" onclick="pickEx(\''+e.id+'\')"><div class="em2"><div class="en2">'+esc(e.name)+'</div><div class="es2">'+(e.bw?'BW · ':'')+'rest '+(e.rest||rD())+'s'+((e.muscles||[]).length?' · '+esc(e.muscles.join(', ')):'')+'</div></div></div>').join('');
+h+='<button class="addb" onclick="pickNew()">+ New exercise'+(S.pick.q?' “'+esc(S.pick.q)+'”':'')+'</button>';
+return h}
+function filterPick(){const el=document.getElementById('picklist');if(el)el.innerHTML=pickList()}
+function pickEx(exId){
+if(S.pick.mode==='swap'){curEntry().exId=exId;sv();S.view='edentry'}
+else{tEd().entries.push({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false});
+S.edE=tEd().entries.length-1;sv();S.view='edentry'}
+rn()}
+function pickNew(){
+const name=(S.pick.q||'').trim()||'New exercise';
+const e={id:id('x'),name,bw:false,rest:rD(),muscles:[],kind:'lift',video:null};
+DB.library.push(e);sv();pickEx(e.id)}
+
+/* ═══════════ STAGE 2 — LIBRARY MANAGER ═══════════ */
+function vEdLib(){
+let h=edHdr('Exercise Library',DB.library.length+' exercises','goProg()');
+h+='<div class="co">';
+h+='<button class="addb" onclick="newLibEx()">+ New exercise</button>';
+DB.library.slice().sort((a,b)=>(a.archived?1:0)-(b.archived?1:0)||a.name.localeCompare(b.name)).forEach(e=>{
+h+='<div class="erow'+(e.archived?' offed':'')+'" onclick="openEdEx(\''+e.id+'\')"><div class="em2"><div class="en2">'+esc(e.name)+'</div><div class="es2">'+(e.bw?'BW · ':'')+'rest '+(e.rest||rD())+'s'+((e.muscles||[]).length?' · '+esc(e.muscles.join(', ')):'')+(e.archived?' · archived':'')+'</div></div><span class="car2">›</span></div>'});
+h+='</div>';return h}
+function newLibEx(){const e={id:id('x'),name:'New exercise',bw:false,rest:rD(),muscles:[],kind:'lift',video:null};DB.library.push(e);sv();openEdEx(e.id)}
+function openEdEx(xid){S.edX=xid;S.view='edex';rn()}
+function curEx(){return DB.library.find(e=>e.id===S.edX)}
+function xRest(d){const e=curEx();if(!e)return;
+e.rest=Math.min(600,Math.max(15,(e.rest||rD())+d));sv();
+const el=document.getElementById('xv-rest');if(el)el.textContent=e.rest+'s'}
+function setXBw(v){curEx().bw=v==='1';sv()}
+function exUsed(xid){return DB.programs.some(p=>p.templates.some(t=>(t.entries||[]).some(e=>e.exId===xid)))||DB.sessions.some(s=>s.sets.some(x=>x.exId===xid))}
+function vEdEx(){
+const e=curEx();if(!e){S.view='edlib';return vEdLib()}
+let h=edHdr('Edit Exercise','',"S.view='edlib';rn()");
+h+='<div class="co">';
+h+='<div class="flab" style="margin-top:0">Name</div><input class="tin" value="'+esc(e.name)+'" onchange="curEx().name=this.value;sv()">';
+h+='<div class="flab">Muscles — comma separated</div><input class="tin" value="'+esc((e.muscles||[]).join(', '))+'" onchange="curEx().muscles=this.value.split(\',\').map(s=>s.trim()).filter(Boolean);sv()">';
+h+='<div class="flab">Video URL</div><input class="tin" inputmode="url" value="'+esc(e.video||'')+'" onchange="curEx().video=this.value.trim()||null;sv()">';
+h+='<div class="strow"><div class="stn">Bodyweight<small>shows “BW”, logs added load as +lbs</small></div>'+seg2([{v:'0',l:'No'},{v:'1',l:'Yes'}],e.bw?'1':'0','setXBw')+'</div>';
+h+='<div class="flab">Default rest between sets</div>';
+h+='<div class="stp" style="height:50px"><button class="stb" style="width:50px" data-hold data-fn="xRest" data-args="[-15]">−</button><div class="stv num" id="xv-rest">'+(e.rest||rD())+'s</div><button class="stb" style="width:50px" data-hold data-fn="xRest" data-args="[15]">+</button></div>';
+h+='<div class="shbtns" style="margin-top:18px">';
+h+='<button class="btn btn-o" onclick="curEx().archived=!curEx().archived;sv();rn()">'+(e.archived?'Restore to library':'Archive exercise')+'</button>';
+if(!exUsed(e.id))h+='<button class="btn btn-d" onclick="delExAsk()">Delete exercise</button>';
+else h+='<div style="text-align:center;font-size:12.5px;color:var(--muted);line-height:1.5">In use by a template or logged history — archive hides it without breaking records.</div>';
+h+='</div></div>';return h}
+function delExAsk(){ovConfirm('Delete '+esc(curEx().name)+'?','It has no logged history — this just removes it from the library.',
+[{label:'Delete',click:'delEx()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+function delEx(){DB.library=DB.library.filter(e=>e.id!==S.edX);sv();closeOv();S.view='edlib';rn()}
+
+/* ═══════════ STAGE 2 — CHECKLIST EDITORS ═══════════ */
+function dl(){return prog().checklists}
+function vEdDaily(){
+const c=dl();
+let h=edHdr('Daily Block',c.daily.length+' items','goProg()');
+h+='<div class="co">';
+h+='<div class="flab" style="margin-top:0">Note</div><input class="tin" value="'+esc(c.dailyNote||'')+'" onchange="dl().dailyNote=this.value;sv()">';
+h+='<div class="sl"><span class="lt">Items</span><span class="rule"></span></div>';
+c.daily.forEach((it,i)=>{
+h+='<div class="card" style="padding:12px">'
++'<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">'
++'<div class="mvc"><button class="mvb" onclick="mvDaily('+i+',-1)">▲</button><button class="mvb" onclick="mvDaily('+i+',1)">▼</button></div>'
++'<input class="tin fx" value="'+esc(it.name)+'" onchange="dl().daily['+i+'].name=this.value;sv()">'
++'<button class="rowx" onclick="rmDaily('+i+')">✕</button></div>'
++'<input class="tin" style="margin-bottom:8px" placeholder="Detail" value="'+esc(it.detail||'')+'" onchange="dl().daily['+i+'].detail=this.value;sv()">'
++'<div style="display:flex;gap:8px;align-items:center">'
++'<input class="tin fx" placeholder="Video URL" inputmode="url" value="'+esc(it.video||'')+'" onchange="dl().daily['+i+'].video=this.value.trim()||undefined;sv()">'
++'<button class="bbtn'+(it.skipOnTraining?'':' q')+'" style="flex-shrink:0" onclick="dl().daily['+i+'].skipOnTraining=!dl().daily['+i+'].skipOnTraining;sv();rn()">rest days only</button>'
++'</div></div>'});
+h+='<button class="addb" onclick="addDaily()">+ Add item</button>';
+h+='</div>';return h}
+function mvDaily(i,d){const a=dl().daily,j=i+d;if(j<0||j>=a.length)return;const x=a[i];a[i]=a[j];a[j]=x;sv();rn()}
+function rmDaily(i){dl().daily.splice(i,1);sv();rn()}
+function addDaily(){dl().daily.push({id:id('d'),name:'New item',detail:''});sv();rn()}
+function mobG(gi){return dl().mobility[gi]}
+function vEdMob(){
+const m=dl().mobility;
+let h=edHdr('Mobility','','goProg()');
+h+='<div class="co">';
+m.forEach((g,gi)=>{
+h+='<div class="card" style="padding:13px">';
+h+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input class="tin fx" value="'+esc(g.group)+'" onchange="mobG('+gi+').group=this.value;sv()"><button class="bbtn'+(g.optional?'':' q')+'" style="flex-shrink:0" onclick="mobG('+gi+').optional=!mobG('+gi+').optional;sv();rn()">optional</button><button class="rowx" onclick="rmMobGAsk('+gi+')">✕</button></div>';
+g.items.forEach((it,ii)=>{
+h+='<div style="display:flex;gap:7px;align-items:center;margin-bottom:6px">'
++'<div class="mvc"><button class="mvb" onclick="mvMob('+gi+','+ii+',-1)">▲</button><button class="mvb" onclick="mvMob('+gi+','+ii+',1)">▼</button></div>'
++'<input class="tin fx" value="'+esc(it.name)+'" onchange="mobG('+gi+').items['+ii+'].name=this.value;sv()">'
++'<button class="rowx" onclick="rmMob('+gi+','+ii+')">✕</button></div>'});
+h+='<button class="addb" style="margin:4px 0 0;min-height:44px" onclick="addMob('+gi+')">+ Add item</button>';
+h+='</div>'});
+h+='<button class="addb" onclick="addMobG()">+ Add group</button></div>';return h}
+function mvMob(gi,ii,d){const a=mobG(gi).items,j=ii+d;if(j<0||j>=a.length)return;const x=a[ii];a[ii]=a[j];a[j]=x;sv();rn()}
+function rmMob(gi,ii){mobG(gi).items.splice(ii,1);sv();rn()}
+function addMob(gi){mobG(gi).items.push({id:id('m'),name:'New item'});sv();rn()}
+function addMobG(){dl().mobility.push({group:'New group',items:[]});sv();rn()}
+function rmMobGAsk(gi){ovConfirm('Remove group “'+esc(mobG(gi).group)+'”?','Its '+mobG(gi).items.length+' items go with it.',
+[{label:'Remove group',click:'rmMobG('+gi+')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+function rmMobG(gi){dl().mobility.splice(gi,1);sv();closeOv();rn()}
+function vEdTher(){
+const t=dl().therapist;
+let h=edHdr('Therapist Items',t.length+' items','goProg()');
+h+='<div class="co">';
+t.forEach((it,i)=>{
+h+='<div class="card" style="padding:12px">'
++'<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input class="tin fx" value="'+esc(it.name)+'" onchange="dl().therapist['+i+'].name=this.value;sv()"><button class="rowx" onclick="rmTher('+i+')">✕</button></div>'
++'<input class="tin" style="margin-bottom:8px" placeholder="Note" value="'+esc(it.note||'')+'" onchange="dl().therapist['+i+'].note=this.value;sv()">'
++'<input class="tin" placeholder="Video URL" inputmode="url" value="'+esc(it.video||'')+'" onchange="dl().therapist['+i+'].video=this.value.trim()||undefined;sv()">'
++'</div>'});
+h+='<button class="addb" onclick="addTher()">+ Add item</button>';
+h+='</div>';return h}
+function rmTher(i){dl().therapist.splice(i,1);sv();rn()}
+function addTher(){dl().therapist.push({name:'New item',note:''});sv();rn()}
+
+/* ═══════════ STAGE 2 — REFERENCE EDITOR ═══════════ */
+function vEdRef(){
+const r=prog().reference=prog().reference||[];
+let h=edHdr('Reference',r.length+' sections','goProg()');
+h+='<div class="co">';
+r.forEach((s,i)=>{
+h+='<div class="erow"><div class="mvc"><button class="mvb" onclick="mvRef('+i+',-1)">▲</button><button class="mvb" onclick="mvRef('+i+',1)">▼</button></div><div class="em2" onclick="openRef('+i+')"><div class="en2">'+esc(s.t)+'</div><div class="es2">'+esc(String(s.b||'').replace(/[*|#-]/g,'').slice(0,64))+'…</div></div><button class="rowx" onclick="rmRefAsk('+i+')">✕</button></div>'});
+h+='<button class="addb" onclick="addRef()">+ Add section</button>';
+h+='<div class="note">Body supports **bold**, “- ” lists, and |table|rows|.</div></div>';return h}
+function mvRef(i,d){const a=prog().reference,j=i+d;if(j<0||j>=a.length)return;const x=a[i];a[i]=a[j];a[j]=x;sv();rn()}
+function rmRefAsk(i){ovConfirm('Delete “'+esc(prog().reference[i].t)+'”?','This reference text can’t be recovered.',
+[{label:'Delete section',click:'rmRef('+i+')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+function rmRef(i){prog().reference.splice(i,1);sv();closeOv();rn()}
+function addRef(){prog().reference.push({t:'New section',b:''});sv();openRef(prog().reference.length-1)}
+function openRef(i){S.edRef=i;S.view='edrefsec';rn()}
+function vEdRefSec(){
+const s=prog().reference[S.edRef];if(!s){S.view='edref';return vEdRef()}
+let h=edHdr('Edit Section','',"S.view='edref';rn()");
+h+='<div class="co">';
+h+='<div class="flab" style="margin-top:0">Title</div><input class="tin" value="'+esc(s.t)+'" onchange="prog().reference[S.edRef].t=this.value;sv()">';
+h+='<div class="flab">Body</div><textarea class="tarea" style="min-height:320px" onchange="prog().reference[S.edRef].b=this.value;sv()">'+esc(s.b)+'</textarea>';
+h+='</div>';return h}
+
+/* ═══════════ STAGE 3 — TRENDS TAB ═══════════ */
+function calShift(d){S.calM+=d;rn()}
+function calCard(){
+const now=new Date(),base=new Date(now.getFullYear(),now.getMonth()+(S.calM||0),1);
+const y=base.getFullYear(),m=base.getMonth();
+const days=new Date(y,m+1,0).getDate(),lead=(new Date(y,m,1).getDay()+6)%7;
+const tdk=tk(),createdDk=tk(new Date(DB.meta.created||Date.now()));
+let h='<div class="card"><div class="calnav"><button onclick="calShift(-1)" aria-label="Earlier">‹</button><div class="cm">'+MN[m]+' '+y+'</div><button onclick="calShift(1)" aria-label="Later"'+(S.calM>=0?' disabled style="opacity:.3"':'')+'>›</button></div>';
+h+='<div class="cal">'+['M','T','W','T','F','S','S'].map(d=>'<div class="calh">'+d+'</div>').join('');
+for(let i=0;i<lead;i++)h+='<div class="calc out"></div>';
+for(let d=1;d<=days;d++){
+const dk=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+if(dk>tdk){h+='<div class="calc" style="opacity:.35">'+d+'</div>';continue}
+const p=dayProgress(dk);let f=p.total?p.done/p.total:0;
+if(sessionsFor(dk).some(s=>s.finishedAt))f=Math.max(f,.8);
+let cls='calc',st='';
+if(f>0){const a=f>=1?.85:.16+f*.5;st=' style="background:rgba(127,176,105,'+a.toFixed(2)+')'+(f>=.67?';color:#0e130c':'')+'"'}
+else if(dk<tdk&&dk>=createdDk&&p.total>0&&tplForDate(dk))cls+=' miss';
+if(dk===tdk)cls+=' tod';
+h+='<div class="'+cls+'"'+st+'>'+d+'</div>'}
+h+='</div><div class="leg">less <i></i><i style="background:rgba(127,176,105,.3)"></i><i style="background:rgba(127,176,105,.55)"></i><i style="background:rgba(127,176,105,.85)"></i> more</div></div>';
+return h}
+function vTrends(){
+const pr=prScan();
+let h='<header class="hero"><div><div class="eyebrow">Trends</div><h1 class="title">Progress</h1></div></header>';
+h+='<div class="sl first"><span class="lt">Consistency</span><span class="rule"></span></div>';
+h+=calCard();
+h+='<div class="sl"><span class="lt">Recent PRs</span><span class="rule"></span><span class="cnt num">'+pr.feed.length+'</span></div>';
+if(!pr.feed.length)h+='<div class="card"><div class="ckr">PRs appear when you beat your own history. Log sessions — the baseline builds itself.</div></div>';
+else h+='<div class="card" style="padding:4px 14px">'+pr.feed.slice(0,12).map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div><div class="prd num">'+fmtDk(f.date)+(f.date.slice(0,4)!==tk().slice(0,4)?' ’'+f.date.slice(2,4):'')+'</div></div>').join('')+'</div>';
+h+='<div class="sl"><span class="lt">Strength Trends</span><span class="rule"></span></div>';
+const exs=trendExs();
+if(!exs.length)h+='<div class="card"><div class="ckr">Charts unlock with your first finished session.</div></div>';
+exs.forEach(x=>{
+h+='<div class="hrow" onclick="openTrend(\''+x.ex.id+'\')"><div class="hico lift">'+esc(initials(x.ex.name))+'</div><div class="hm"><div class="ht">'+esc(x.ex.name)+'</div><div class="hs num">'+x.n+' session'+(x.n>1?'s':'')+' · last '+esc(x.lastTxt)+'</div></div><div class="hd2 num">'+fmtDk(x.lastDate)+(x.lastDate.slice(0,4)!==tk().slice(0,4)?' ’'+x.lastDate.slice(2,4):'')+'</div></div>'});
+h+='<div class="fl">Blocks · Stage 3</div>';
+return h}
+function initials(n){const p=String(n).replace(/\(.*?\)/g,'').trim().split(/\s+/);return((p[0]||'?')[0]+(p[1]?p[1][0]:(p[0]||'  ')[1]||'')).toUpperCase()}
+function openTrend(exId){S.trEx=exId;S.e1=false;S.view='trend';rn()}
+function trendChart(ser,useReps){
+const W=520,H=232,L=42,R=14,Tp=18,B=28;
+const pts=ser.map(p=>({t:p.t,v:useReps?p.mxR:rndDisp(toU(p.topW,'lb',unit()),unit()),e1:p.e1?rndDisp(toU(p.e1,'lb',unit()),unit()):0}));
+const showE1=!useReps&&S.e1;
+let vmin=Infinity,vmax=-Infinity;
+pts.forEach(p=>{vmin=Math.min(vmin,p.v);vmax=Math.max(vmax,p.v);if(showE1&&p.e1){vmin=Math.min(vmin,p.e1);vmax=Math.max(vmax,p.e1)}});
+if(vmin===vmax){vmin-=5;vmax+=5}
+const pad=(vmax-vmin)*.12;vmin=Math.max(0,vmin-pad);vmax+=pad;
+const t0=pts[0].t,t1=pts[pts.length-1].t,tr=Math.max(1,t1-t0);
+const X=t=>pts.length===1?(L+(W-L-R)/2):L+(t-t0)/tr*(W-L-R);
+const Y=v=>Tp+(1-(v-vmin)/(vmax-vmin))*(H-Tp-B);
+const path=a=>a.map((p,i)=>(i?'L':'M')+X(p.t).toFixed(1)+' '+Y(p.v).toFixed(1)).join(' ');
+const FF='-apple-system,sans-serif';
+let h='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
+[vmax,(vmin+vmax)/2,vmin].forEach(v=>{const y=Y(v);
+h+='<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" stroke="#24272e" stroke-width="1"/><text x="'+(L-7)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="11.5" fill="#6b727e" font-family="'+FF+'">'+Math.round(v)+'</text>'});
+if(showE1)h+='<path d="'+path(pts.filter(p=>p.e1).map(p=>({t:p.t,v:p.e1})))+'" fill="none" stroke="#9aa1ac" stroke-width="1.6" stroke-dasharray="5 5" opacity=".7"/>';
+h+='<path d="'+path(pts)+'" fill="none" stroke="#ff6f2e" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+pts.forEach(p=>{h+='<circle cx="'+X(p.t).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="3.4" fill="#0b0c0f" stroke="#ff6f2e" stroke-width="2.2"/>'});
+const yr=ser[0].date.slice(0,4)!==ser[ser.length-1].date.slice(0,4);
+h+='<text x="'+L+'" y="'+(H-8)+'" font-size="11.5" fill="#6b727e" font-family="'+FF+'">'+fmtDk(ser[0].date)+(yr?' ’'+ser[0].date.slice(2,4):'')+'</text>';
+if(ser.length>1)h+='<text x="'+(W-R)+'" y="'+(H-8)+'" text-anchor="end" font-size="11.5" fill="#6b727e" font-family="'+FF+'">'+fmtDk(ser[ser.length-1].date)+(yr?' ’'+ser[ser.length-1].date.slice(2,4):'')+'</text>';
+if(showE1)h+='<text x="'+(W-R)+'" y="'+(Tp-4)+'" text-anchor="end" font-size="11" fill="#9aa1ac" font-family="'+FF+'">est 1RM – –</text>';
+return'<div class="chartw">'+h+'</svg></div>'}
+function vTrend(){
+const ex=exOf(S.trEx),ser=seriesFor(ex.id);
+if(!ser.length){S.view='tabs';S.tab='trends';return vTabs()}
+const useReps=ser.every(p=>p.topW<=0);
+const pe=prScan().perEx[ex.id]||{};
+let h='<div class="shd"><div class="shdi"><button class="bk" onclick="S.view=\'tabs\';S.tab=\'trends\';rn()">'+I_BACK+'</button>'
++'<div class="shm"><div class="sht">'+esc(ex.name)+'</div><div class="shs num">'+ser.length+' session'+(ser.length>1?'s':'')+' · '+(useReps?'best reps':'top set · '+unit())+'</div></div>'
++(useReps?'':'<button class="fin q num" style="font-size:13px'+(S.e1?';border-color:var(--ember-line);color:var(--ember)':'')+'" onclick="S.e1=!S.e1;rn()">est 1RM</button>')+'</div></div>';
+h+='<div class="co">';
+h+='<div class="card" style="padding:12px 10px 8px">'+trendChart(ser,useReps)+'</div>';
+h+='<div class="sl"><span class="lt">Personal Records</span><span class="rule"></span></div><div class="card">';
+const rows=[];
+if(!useReps&&pe.maxW>0){
+rows.push(['Top weight',rndDisp(toU(pe.maxW,'lb',unit()),unit())+' '+unit()+' × '+pe.maxWReps,pe.maxWDate]);
+rows.push(['Est. 1RM — Epley','≈ '+Math.round(toU(pe.maxE1,'lb',unit()))+' '+unit(),pe.e1Date]);
+Object.keys(pe.repAt||{}).map(Number).sort((a,b)=>b-a).slice(0,4).forEach(w=>{
+ if(w!==pe.maxW)rows.push(['Best at '+rndDisp(toU(w,'lb',unit()),unit())+' '+unit(),'× '+pe.repAt[String(w)],null])})}
+if(pe.maxReps>0)rows.push(['Max reps',''+pe.maxReps,pe.maxRepsDate]);
+h+=rows.length?rows.map(r=>'<div class="tpe"><span class="tpen">'+r[0]+'</span><span class="tpes num">'+r[1]+(r[2]?' · '+fmtDk(r[2])+(r[2].slice(0,4)!==tk().slice(0,4)?' ’'+r[2].slice(2,4):''):'')+'</span></div>').join(''):'<div class="ckr">No working sets yet.</div>';
+h+='</div>';
+h+='<div class="sl"><span class="lt">Sessions</span><span class="rule"></span></div>';
+DB.sessions.filter(s=>s.finishedAt&&s.sets.some(x=>x.exId===ex.id&&!x.warmup)).sort((a,b)=>b.startedAt-a.startedAt).slice(0,8).forEach(s=>{
+const rs=workingSets(s,ex.id).filter(x=>!x.warmup).sort((a,b)=>a.n-b.n);
+h+='<div class="card" style="padding:12px 14px;display:flex;gap:12px;align-items:baseline"><div class="hd2 num" style="text-align:left;min-width:50px;flex-shrink:0">'+fmtDk(s.date)+(s.date.slice(0,4)!==tk().slice(0,4)?'<br>’'+s.date.slice(2,4):'')+'</div><div class="dline">'+rs.map(r=>'<span class="dpill num">'+setTxt(r,ex.bw)+'</span>').join('')+'</div></div>'});
+h+='</div>';return h}
 
 /* ═══════════ MARKDOWN-LITE ═══════════ */
 function inlineMd(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}
@@ -1012,7 +1629,7 @@ fT();fU();return'<div class="md">'+out.join('')+'</div>'}
 
 /* ═══════════ SHEETS / OVERLAYS / TOAST ═══════════ */
 function sheet(title,sub,body){
-document.getElementById('ov').innerHTML='<div class="ov" onclick="if(event.target===this)closeOv()"><div class="sheet"><div class="grab"></div><div class="sht2">'+title+'</div>'+(sub?'<div class="shs2">'+sub+'</div>':'')+body+'</div></div>'}
+document.getElementById('ov').innerHTML='<div class="ov" onclick="if(event.target===this)closeOv()"><div class="sheet"><div class="grab"></div><div class="sht2">'+title+'</div>'+(sub?'<div class="shs2">'+sub+'</div>':'')+body+'</div></div>';wire()}
 function closeOv(){document.getElementById('ov').innerHTML=''}
 function ovConfirm(title,body,actions){
 const btns=actions.map(a=>{
@@ -1034,15 +1651,18 @@ const body=
 '<div class="strow"><div class="stn">Units<small>history converts on display</small></div>'+seg2([{v:'lb',l:'lb'},{v:'kg',l:'kg'}],unit(),'setUnit')+'</div>'
 +'<div class="strow"><div class="stn">Keep screen awake<small>during a session</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.wake?'1':'0','setWake')+'</div>'
 +'<div class="strow"><div class="stn">Timer chime<small>visual flash always on</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.sound?'1':'0','setSound')+'</div>'
++'<div class="strow"><div class="stn">Default rest<small>when nothing more specific is set</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sRest" data-args="[-15]">−</button><div class="stv num" id="sRestV">'+rD()+'s</div><button class="stb" data-hold data-fn="sRest" data-args="[15]">+</button></div></div>'
 +'<div class="shbtns">'
 +'<button class="btn btn-p" onclick="doExport()">Export data</button>'
 +'<div style="text-align:center;font-size:13px;color:var(--muted)">'+(le?'Last export · '+fmtDk(tk(new Date(le))):'Never exported — data lives only on this device')+'</div>'
 +'<button class="btn btn-o" onclick="doImportPick()">Import backup</button>'
++'<button class="btn btn-o" onclick="doImportCsvPick()">Import workout history · CSV</button>'
 +'<button class="btn btn-d" onclick="resetAsk()">Erase all data</button>'
-+'<div style="text-align:center;font-size:11px;letter-spacing:.14em;color:#3d424b;font-weight:700;margin-top:6px">BLOCKS V1 · STAGE 1</div>'
++'<div style="text-align:center;font-size:11px;letter-spacing:.14em;color:#3d424b;font-weight:700;margin-top:6px">BLOCKS V1 · STAGE 3</div>'
 +'</div>';
 sheet('Settings','',body)}
 function setUnit(u){DB.settings.unit=u;PV={};CV=null;sv();rn();gear()}
+function sRest(d){DB.settings.restDefault=Math.min(600,Math.max(15,rD()+d));sv();const el=document.getElementById('sRestV');if(el)el.textContent=rD()+'s'}
 function setWake(v){DB.settings.wake=v==='1';sv();gear()}
 function setSound(v){DB.settings.sound=v==='1';sv();gear()}
 function resetAsk(){ovConfirm('Erase all data?','Every session, check, and edit on this device will be deleted. Export first if in doubt.',
@@ -1054,6 +1674,7 @@ function resetAll(){localStorage.removeItem('blocks_v1');location.reload()}
 /* ═══════════ BOOT ═══════════ */
 ld();
 document.getElementById('impf').addEventListener('change',e=>{const f=e.target.files[0];if(f)handleImport(f);e.target.value=''});
+document.getElementById('impcsv').addEventListener('change',e=>{const f=e.target.files[0];if(f)handleCsv(f);e.target.value=''});
 document.addEventListener('touchstart',()=>{if(AC&&AC.state==='suspended')AC.resume()},{passive:true});
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
 if('serviceWorker'in navigator){
