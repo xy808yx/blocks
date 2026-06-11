@@ -1,5 +1,6 @@
 // BLOCKS service worker — versioned cache-first so the app boots offline at the gym.
-const V = 'blocks-v3';
+const V = 'blocks-v4';
+const FONTS = 'blocks-fonts-v1';
 const ASSETS = ['./', './index.html', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -8,7 +9,7 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== V).map(k => caches.delete(k))))
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== V && k !== FONTS).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -20,7 +21,23 @@ self.addEventListener('message', e => {
 // Cache-first with background refresh: instant offline boot, silent update fetch.
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
-  if (e.request.method !== 'GET' || url.origin !== location.origin) return;
+  if (e.request.method !== 'GET') return;
+  // Display font (Google Fonts): cache-first so type renders offline after first load.
+  if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname)) {
+    e.respondWith(
+      caches.open(FONTS).then(c =>
+        c.match(e.request).then(hit => {
+          const net = fetch(e.request).then(res => {
+            if (res && (res.ok || res.type === 'opaque')) c.put(e.request, res.clone());
+            return res;
+          }).catch(() => hit);
+          return hit || net;
+        })
+      )
+    );
+    return;
+  }
+  if (url.origin !== location.origin) return;
   e.respondWith(
     caches.match(e.request, { ignoreSearch: true }).then(hit => {
       const refresh = fetch(e.request).then(res => {
