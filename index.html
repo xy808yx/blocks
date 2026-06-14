@@ -204,6 +204,9 @@ a{color:var(--ember);text-decoration:none}
 .adds{font-size:14px;font-weight:600;color:var(--muted);padding:9px 4px 4px;display:inline-block}
 .adds:active{color:var(--dim)}
 .rowx{font-size:13px;font-weight:600;color:var(--danger);padding:8px 10px}
+.exf{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.exrm{font-size:13px;font-weight:600;color:var(--muted);padding:9px 6px 4px}
+.exrm:active{color:var(--danger)}
 
 /* ── rest chip ── */
 .restc{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:60;width:min(92vw,420px);background:rgba(27,30,37,.92);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border:1px solid var(--border-h);border-radius:18px;padding:11px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 18px 44px -10px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
@@ -530,7 +533,7 @@ dayOverrides:{},
 
 /* ═══════════ STATE & PERSISTENCE ═══════════ */
 let DB=null;
-let S={tab:'today',view:'tabs',sel:null,sid:null,amend:false,det:null,mobFrom:'today',editKey:null,edT:null,edE:0,edX:null,edRef:0,trEx:null,calM:0,e1:false,pick:null,histAll:false};
+let S={tab:'today',view:'tabs',sel:null,sid:null,amend:false,backfill:false,det:null,mobFrom:'today',editKey:null,edT:null,edE:0,edX:null,edRef:0,trEx:null,calM:0,e1:false,pick:null,histAll:false};
 let PV={},CV=null,CE={spr:false,aer:false},EXTRA={};
 let T=null,TINT=null,EINT=null,WL=null,AC=null,UPD=null,IMPORTED=null,PRC=null,IMPCSV=null,RSC=null;
 const DY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -546,6 +549,8 @@ function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).s
 function tk(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function fmtDk(dk){const[y,m,d]=dk.split('-').map(Number);return MN[m-1]+' '+d}
 function dowOf(dk){const[y,m,d]=dk.split('-').map(Number);return new Date(y,m-1,d).getDay()}
+function shiftDk(dk,n){const[y,m,d]=dk.split('-').map(Number);return tk(new Date(y,m-1,d+n))}
+function anchorTs(dk){const[y,m,d]=dk.split('-').map(Number);return new Date(y,m-1,d,12,0,0).getTime()}
 function mmss(ms){const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
@@ -569,9 +574,11 @@ function autoScheme(e){return(e.warmups?e.warmups+' wu + ':'')+e.sets+' × '+(e.
 function schemeOf(e){return e.scheme||autoScheme(e)}
 function fmtMon(dk){return MN[+dk.slice(5,7)-1]+' '+dk.slice(0,4)}
 function entriesOf(sess){
-const t=tpl(sess.templateId);
-let ent=t?t.entries.filter(e=>e.enabled||workingSets(sess,e.exId).length):[];
+const t=tpl(sess.templateId),hidden=sess.hidden||[];
+let ent=t?t.entries.filter(e=>(e.enabled||workingSets(sess,e.exId).length)&&!hidden.includes(e.exId)):[];
 const known={};ent.forEach(e=>known[e.exId]=1);
+(sess.addons||[]).forEach(exId=>{if(!known[exId]){known[exId]=1;
+ ent.push({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false,synth:true,addon:true})}});
 sess.sets.forEach(st=>{if(!known[st.exId]){known[st.exId]=1;
  ent=ent.concat([{exId:st.exId,warmups:0,sets:0,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false,synth:true}])}});
 return ent}
@@ -759,12 +766,16 @@ const n=IMPCSV.sessions.length;IMPCSV=null;sv();closeOv();S.view='tabs';S.tab='h
 toast(n+' workouts added to history')}
 
 /* ═══════════ RING / PROGRESS ═══════════ */
+function liftCounts(dk,t){
+const s=sessionsFor(dk).find(x=>x.kind!=='cardio'&&x.templateId===t.id);
+let d=0,tot=0;
+if(s)entriesOf(s).filter(e=>e.enabled).forEach(e=>{const log=workingSets(s,e.exId).length,rows=Math.max(e.warmups+e.sets,log);tot+=rows;d+=Math.min(rows,log)});
+else t.entries.filter(e=>e.enabled).forEach(e=>{tot+=e.warmups+e.sets});
+return{d,tot}}
 function dayProgress(dk){
 const t=tplForDate(dk),checks=dayChecks(dk),sess=sessionsFor(dk);
 let total=0,done=0;
-if(t&&t.kind==='lift'){
- const logged={};sess.forEach(s=>{if(s.templateId===t.id)s.sets.forEach(x=>{logged[x.exId]=(logged[x.exId]||0)+1})});
- t.entries.filter(e=>e.enabled).forEach(e=>{const rows=e.warmups+e.sets;total+=rows;done+=Math.min(rows,logged[e.exId]||0)})}
+if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);total+=lc.tot;done+=lc.d}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  total+=2;if(cs&&cs.sprints)done++;if(cs&&cs.aerobic)done++;
@@ -846,7 +857,7 @@ const EB='<svg class="eb" width="46" height="46" viewBox="0 0 32 32"><g fill="#f
 let PREVV='tabs';
 
 /* ═══════════ NAV / SHELL ═══════════ */
-function nav(t){S.tab=t;S.view='tabs';S.sel=null;S.calM=0;S.histAll=false;rn()}
+function nav(t){S.tab=t;S.view='tabs';S.sel=null;S.calM=0;S.histAll=false;S.backfill=false;rn()}
 function goProg(){S.view='tabs';S.tab='program';rn()}
 function openEd(v){S.view=v;rn()}
 function back(){S.view='tabs';S.tab=S.mobFrom==='program'?'program':'today';rn()}
@@ -904,9 +915,7 @@ function setV(el,txt){if(!el)return;el.textContent=txt;el.classList.remove('tick
 function dayParts(dk){
 const t=tplForDate(dk),checks=dayChecks(dk),sess=sessionsFor(dk);
 let wd=0,wt=0;
-if(t&&t.kind==='lift'){
- const logged={};sess.forEach(s=>{if(s.templateId===t.id)s.sets.forEach(x=>{logged[x.exId]=(logged[x.exId]||0)+1})});
- t.entries.filter(e=>e.enabled).forEach(e=>{const rows=e.warmups+e.sets;wt+=rows;wd+=Math.min(rows,logged[e.exId]||0)})}
+if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);wd=lc.d;wt=lc.tot}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  wt+=2;if(cs&&cs.sprints)wd++;if(cs&&cs.aerobic)wd++;
@@ -990,6 +999,8 @@ items.forEach(it=>{h+=ckRow(it,checks)});
 return h}
 function vPreview(dk,dow){
 const d=S.sel,tid=prog().schedule[d],t=tid?tpl(tid):null;
+const ord=[1,2,3,4,5,6,0],ti=ord.indexOf(dow),[Y,M,D]=dk.split('-').map(Number);
+const selDk=tk(new Date(Y,M-1,D+ord.indexOf(d)-ti)),isPast=selDk<dk;
 let h='<header class="hero"><div><div class="eyebrow">Preview · <b>'+DY[d]+'</b></div><h1 class="title">'+esc(t?t.name:'Rest Day')+'</h1>'
 +'<button class="lnk" onclick="selDay('+dow+')">← Back to today</button></div></header>';
 h+=weekStrip(dk);
@@ -1002,6 +1013,9 @@ else{h+='<div class="tpe"><span class="tpen">Sprint Run-Throughs</span><span cla
  +'<div class="tpe"><span class="tpen">Bike / Swim</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>';
  (t.checks||[]).forEach(c=>{h+='<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>'})}
 h+='</div>';
+if(isPast){const done=sessionsFor(selDk).some(s=>s.finishedAt);
+ if(done)h+='<button class="btn btn-o" style="margin-top:4px" onclick="openPastDay(\''+selDk+'\')">View this day’s session</button>';
+ else h+='<button class="btn btn-p" style="margin-top:4px" onclick="startPastSession(\''+selDk+'\',\''+t.id+'\')">Log '+DAB[d]+' · '+fmtDk(selDk)+'</button>'}
 const canSwap=!activeSession()&&!sessionsFor(dk).length&&!DB.dayOverrides[dk];
 if(canSwap)h+='<button class="btn btn-o" style="margin-top:4px" onclick="swapTo('+d+')">Do this session today instead</button>';
 }else h+='<div class="card"><div class="ckr">Rest — daily block + 30 min walk only.</div></div>';
@@ -1019,15 +1033,49 @@ function swapTo(d){DB.dayOverrides[tk()]=d;sv();closeOv();S.sel=null;CV=null;rn(
 toast(d===-1?'Resting today':'Doing '+DAB[d]+'\'s session today')}
 function unswap(){delete DB.dayOverrides[tk()];sv();CV=null;rn()}
 
+/* ═══════════ BACKFILL — log a workout you missed entering ═══════════ */
+function pastSheet(dk){
+dk=dk||shiftDk(tk(),-1);if(dk>tk())dk=tk();
+const sched=tplForDate(dk),ex=sessionsFor(dk);
+let opts='';
+prog().templates.forEach(t=>{const isS=sched&&sched.id===t.id;
+ opts+='<button class="btn btn-'+(isS?'p':'o')+'" onclick="startPastSession(\''+dk+'\',\''+t.id+'\')">'+esc(t.name)+(isS?' · scheduled':'')+'</button>'});
+opts+='<button class="btn" style="color:var(--muted)" onclick="closeOv()">Cancel</button>';
+const note=DY[dowOf(dk)]+', '+fmtDk(dk)+(ex.length?' · '+ex.length+' already logged':'');
+sheet('Log a past workout','Pick the day, then the session you did — it lands on that date in your history.',
+'<div class="flab" style="margin-top:0">Date</div><input class="tin num" type="date" max="'+tk()+'" value="'+dk+'" onchange="pastSheet(this.value)" style="margin-bottom:2px"><div class="note" style="margin:9px 0 2px">'+esc(note)+'</div><div class="shbtns">'+opts+'</div>')}
+function startPastSession(dk,tid){
+const t=tid?tpl(tid):tplForDate(dk);if(!t){toast('Pick a workout');return}
+closeOv();PV={};EXTRA={};S.editKey=null;CV=null;
+if(t.kind==='cardio'){let s=sessionsFor(dk).find(x=>x.kind==='cardio');
+ if(!s){const a=anchorTs(dk);s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t.name,templateId:t.id,kind:'cardio',startedAt:a,finishedAt:a,sets:[]};DB.sessions.push(s);sv()}
+ openDetail(s.id);return}
+let s=sessionsFor(dk).find(x=>x.kind!=='cardio'&&x.templateId===t.id);
+if(s){S.sid=s.id;S.amend=true;S.backfill=false;S.view='session';rn();return}
+const a=anchorTs(dk);
+s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t.name,templateId:t.id,kind:'lift',startedAt:a,finishedAt:a+180000,sets:[]};
+DB.sessions.push(s);sv();
+S.sid=s.id;S.amend=true;S.backfill=true;S.view='session';rn()}
+function openPastDay(dk){const s=sessionsFor(dk).find(x=>x.finishedAt);if(s)openDetail(s.id)}
+
 /* ═══════════ SESSION LIFECYCLE ═══════════ */
 function startSession(){
 const dk=tk(),t=tplForDate(dk);if(!t)return;
 const s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t.name,templateId:t.id,kind:'lift',startedAt:Date.now(),finishedAt:null,sets:[]};
 DB.sessions.push(s);sv();PV={};EXTRA={};S.editKey=null;S.sid=s.id;S.amend=false;S.view='session';rn()}
 function resumeSession(sid){PV={};EXTRA={};S.editKey=null;S.sid=sid;S.amend=false;S.view='session';rn()}
-function exitSession(){if(S.amend){S.amend=false;S.view='detail';S.det=S.sid}else{S.view='tabs';S.tab='today'}S.editKey=null;rn()}
+function exitSession(){if(S.backfill){endBackfill();return}if(S.amend){S.amend=false;S.view='detail';S.det=S.sid}else{S.view='tabs';S.tab='today'}S.editKey=null;rn()}
+function endBackfill(){
+const s=sessById(S.sid);let n=0;
+if(s){n=s.sets.length;
+ if(!n)DB.sessions=DB.sessions.filter(x=>x.id!==s.id);
+ else s.finishedAt=s.startedAt+Math.min(5400000,(n+1)*180000);
+ sv()}
+S.backfill=false;S.amend=false;S.editKey=null;killRest();S.view='tabs';S.tab='history';rn();
+toast(n?n+' set'+(n>1?'s':'')+' saved to '+(s?fmtDk(s.date):'history'):'Nothing logged — discarded')}
 function finishAsk(){
 const s=sessById(S.sid);if(!s)return;
+if(S.backfill){endBackfill();return}
 if(S.amend){exitSession();return}
 const mins=Math.max(1,Math.round((Date.now()-s.startedAt)/60000));
 ovConfirm('Finish session?','<b>'+s.sets.length+' sets</b> · '+mins+' min',
@@ -1105,11 +1153,12 @@ body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+e
 +ghostLine(ex,sess)
 +'<div class="cols"><span>Set</span><span>'+(ex.bw?'Load':unit())+'</span><span>Reps</span><span></span></div>'
 +rows
-+'<button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button></div>'});
++'<div class="exf"><button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button><button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div>'});
+body+='<button class="addb" onclick="pickExFor(\'session\')">+ Add exercise</button>';
 const elapsed=S.amend?fmtDk(sess.date):'<span id="elap">'+mmss(Date.now()-sess.startedAt)+'</span>';
 const hd='<div class="shd"><div class="shdi"><button class="bk" onclick="exitSession()">'+I_BACK+'</button>'
-+'<div class="shm"><div class="sht">'+(S.amend?'Edit · ':'')+esc(sess.name)+'</div><div class="shs num">'+elapsed+' · '+sess.sets.length+' sets</div></div>'
-+'<button class="fin'+(S.amend?' q':'')+'" onclick="finishAsk()">'+(S.amend?'Done':'Finish')+'</button></div></div>';
++'<div class="shm"><div class="sht">'+(S.backfill?'Log · ':S.amend?'Edit · ':'')+esc(sess.name)+'</div><div class="shs num">'+elapsed+' · '+sess.sets.length+' sets</div></div>'
++'<button class="fin'+(S.amend?' q':'')+'" onclick="finishAsk()">'+(S.backfill?'Save':S.amend?'Done':'Finish')+'</button></div></div>';
 return hd+'<div class="co nopad">'+body+'</div>'}
 function clearPV(exId){Object.keys(PV).forEach(k=>{if(k.indexOf(exId+'_')===0)delete PV[k]})}
 function logSet(exId,i){
@@ -1119,7 +1168,7 @@ const ex=exOf(exId),key=exId+'_'+i;
 if(!PV[key]){const p=prefill(entry,ex,i,sess);PV[key]={w:p.w,r:p.reps}}
 const pv=PV[key];
 if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
-sess.sets.push({exId,n:i+1,w:{v:+pv.w||0,u:unit()},reps:Math.round(pv.r),warmup:i<entry.warmups||undefined,amrap:entry.amrap||undefined,ts:Date.now()});
+sess.sets.push({exId,n:i+1,w:{v:+pv.w||0,u:unit()},reps:Math.round(pv.r),warmup:i<entry.warmups||undefined,amrap:entry.amrap||undefined,ts:S.backfill?sess.startedAt+sess.sets.length*45000:Date.now()});
 clearPV(exId);sv();S.flash=exId+'_'+(i+1);
 if(!S.amend){let rem=0;
 entriesOf(sess).filter(e=>e.enabled).forEach(e=>{const tot=e.warmups+e.sets+(EXTRA[e.exId]||0);
@@ -1157,6 +1206,17 @@ sess.sets=sess.sets.filter(x=>!(x.exId===exId&&x.n===n));
 sess.sets.forEach(x=>{if(x.exId===exId&&x.n>n)x.n--});
 S.editKey=null;clearPV(exId);sv();rn()}
 function addRow(exId){EXTRA[exId]=(EXTRA[exId]||0)+1;rn()}
+function rmExAsk(exId){const s=sessById(S.sid);if(!s)return;
+const n=workingSets(s,exId).length;
+if(!n){rmExGo(exId);return}
+ovConfirm('Remove '+esc(exOf(exId).name)+'?',n+' logged set'+(n>1?'s':'')+' on this day will be deleted.',
+[{label:'Remove exercise',click:'rmExGo(\''+exId+'\')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+function rmExGo(exId){const s=sessById(S.sid);if(!s)return;
+s.sets=s.sets.filter(x=>x.exId!==exId);
+s.addons=(s.addons||[]).filter(x=>x!==exId);
+const t=tpl(s.templateId);
+if(t&&t.entries.some(e=>e.exId===exId)){s.hidden=s.hidden||[];if(!s.hidden.includes(exId))s.hidden.push(exId)}
+delete EXTRA[exId];clearPV(exId);S.editKey=null;sv();closeOv();rn();toast('Removed')}
 
 /* ═══════════ CARDIO ═══════════ */
 function ensureCV(dk,t,sess){
@@ -1178,10 +1238,10 @@ s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t?t.name:'Cardio',tem
 DB.sessions.push(s)}
 return s}
 function saveSprints(dk){const s=getCardioSess(dk,true);
-s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff};s.finishedAt=Date.now();
+s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff};if(!s.finishedAt)s.finishedAt=Date.now();
 CE.spr=false;sv();rn();toast('Sprints logged')}
 function saveAerobic(dk){const s=getCardioSess(dk,true);
-s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};s.finishedAt=Date.now();
+s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();toast(CV.mode==='bike'?'Ride logged':'Swim logged')}
 function cardioArea(dk,t,sessOverride){
 const sess=sessOverride||getCardioSess(dk,false);
@@ -1223,9 +1283,10 @@ return h}
 /* ═══════════ HISTORY ═══════════ */
 function vHistory(){
 const all=DB.sessions.slice().sort((a,b)=>b.startedAt-a.startedAt);
-if(!all.length)return'<div class="empty">'+EB+'<div class="empty-t">No sessions yet</div>Your history starts with the first logged set.</div>';
+let h='<div class="sl first"><span class="lt">History</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="pastSheet()">+ Past workout</button></div>';
+if(!all.length)return h+'<div class="empty" style="padding-top:34px">'+EB+'<div class="empty-t">No sessions yet</div>Log today on the Today tab — or add a workout you did earlier.</div>';
 const list=S.histAll?all:all.slice(0,150);
-let h='',lastM='';
+let lastM='';
 list.forEach(s=>{
 const[y,mo]=s.date.split('-');const mk=MN[+mo-1]+' '+y;
 if(mk!==lastM){h+='<div class="mlab">'+mk+'</div>';lastM=mk}
@@ -1244,10 +1305,13 @@ h+='<div class="hrow" onclick="'+(live?'resumeSession':'openDetail')+'(\''+s.id+
 if(all.length>list.length)h+='<button class="btn btn-o" style="margin-top:6px" onclick="S.histAll=true;rn()">Show all '+all.length+' sessions</button>';
 return h}
 function openDetail(sid){S.det=sid;S.view='detail';rn()}
+function closeDetail(){const s=sessById(S.det);
+if(s&&s.kind==='cardio'&&!s.sprints&&!s.aerobic&&!(s.sets&&s.sets.length)){DB.sessions=DB.sessions.filter(x=>x.id!==s.id);sv()}
+S.view='tabs';S.tab='history';rn()}
 function vDetail(){
 const s=sessById(S.det);
 if(!s){S.view='tabs';return vTabs()}
-let h='<div class="shd"><div class="shdi"><button class="bk" onclick="S.view=\'tabs\';S.tab=\'history\';rn()">'+I_BACK+'</button>'
+let h='<div class="shd"><div class="shdi"><button class="bk" onclick="closeDetail()">'+I_BACK+'</button>'
 +'<div class="shm"><div class="sht">'+esc(s.name)+'</div><div class="shs num">'+DY[dowOf(s.date)]+' · '+fmtDk(s.date)
 +(s.finishedAt?' · '+Math.max(1,Math.round((s.finishedAt-s.startedAt)/60000))+' min':'')+'</div></div></div></div>';
 h+='<div class="co">';
@@ -1268,7 +1332,7 @@ h+='<div class="shbtns"><button class="btn btn-o" onclick="amendSession(\''+s.id
 h+='<div class="shbtns"><button class="btn btn-d" onclick="delAsk(\''+s.id+'\')">Delete session</button></div>';
 h+='</div>';
 return h}
-function amendSession(sid){PV={};EXTRA={};S.editKey=null;S.sid=sid;S.amend=true;S.view='session';rn()}
+function amendSession(sid){PV={};EXTRA={};S.editKey=null;S.sid=sid;S.amend=true;S.backfill=false;S.view='session';rn()}
 function delAsk(sid){ovConfirm('Delete this session?','It disappears from history permanently.',
 [{label:'Delete',click:'delSession(\''+sid+'\')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
 function delSession(sid){DB.sessions=DB.sessions.filter(x=>x.id!==sid);sv();closeOv();S.view='tabs';S.tab='history';rn();toast('Deleted')}
@@ -1451,7 +1515,7 @@ function rmEntry(){tEd().entries.splice(S.edE,1);sv();closeOv();S.view='edtpl';r
 /* ═══════════ STAGE 2 — EXERCISE PICKER ═══════════ */
 function pickExFor(mode){S.pick={mode,q:''};S.view='pickex';rn()}
 function vPickEx(){
-let h=edHdr('Choose Exercise','',S.pick.mode==='add'?"S.view='edtpl';rn()":"S.view='edentry';rn()");
+let h=edHdr('Choose Exercise','',S.pick.mode==='session'?"S.view='session';rn()":S.pick.mode==='add'?"S.view='edtpl';rn()":"S.view='edentry';rn()");
 h+='<div class="co">';
 h+='<input class="tin" placeholder="Search, or type a new name" value="'+esc(S.pick.q||'')+'" oninput="S.pick.q=this.value;filterPick()" style="margin-bottom:12px">';
 h+='<div id="picklist">'+pickList()+'</div>';
@@ -1464,6 +1528,11 @@ h+='<button class="addb" onclick="pickNew()">+ New exercise'+(S.pick.q?' “'+es
 return h}
 function filterPick(){const el=document.getElementById('picklist');if(el)el.innerHTML=pickList()}
 function pickEx(exId){
+if(S.pick.mode==='session'){const s=sessById(S.sid);
+ if(s){s.hidden=(s.hidden||[]).filter(x=>x!==exId);
+  if(!entriesOf(s).some(e=>e.exId===exId)){s.addons=s.addons||[];if(!s.addons.includes(exId))s.addons.push(exId)}
+  sv()}
+ S.view='session';rn();toast('Exercise added');return}
 if(S.pick.mode==='swap'){curEntry().exId=exId;sv();S.view='edentry'}
 else{tEd().entries.push({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false});
 S.edE=tEd().entries.length-1;sv();S.view='edentry'}
