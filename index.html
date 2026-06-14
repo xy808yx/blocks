@@ -164,14 +164,11 @@ a{color:var(--ember);text-decoration:none}
 .hbs{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .hbs b{font-weight:700}
 .hb.on .hbs{color:var(--sage)}
-.hbs2{font-size:12.5px;color:var(--muted);margin-top:1px}
-.hstreak{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0;letter-spacing:.01em}
-.hdots{display:flex;gap:4px;margin-top:11px}
-.hdot{flex:1;height:26px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);padding:0;transition:background .15s,border-color .15s,transform .12s var(--ease)}
-.hdot:active{transform:scale(.9)}
-.hdot.on{background:linear-gradient(180deg,rgba(127,176,105,.55),rgba(127,176,105,.3));border-color:var(--sage-line)}
-.hdot.tod{box-shadow:0 0 0 1.5px var(--ember-line)}
-.hcap{font-size:11.5px;color:var(--muted);text-align:center;margin-top:10px}
+.bedstat{display:flex;align-items:center;gap:13px;padding:14px 16px;margin-bottom:10px}
+.bsf{font-size:25px;line-height:1;flex-shrink:0}
+.bsn{font-family:var(--fd);font-size:18px;font-weight:600;letter-spacing:.01em}
+.bsn b{color:var(--ember-hot)}
+.bss{font-size:12.5px;color:var(--muted);margin-top:1px}
 
 /* ── session header ── */
 .shd{position:sticky;top:0;z-index:50;background:rgba(10,11,14,.84);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid rgba(38,42,51,.8)}
@@ -358,9 +355,17 @@ a{color:var(--ember);text-decoration:none}
 .calc{aspect-ratio:1;border-radius:9px;background:var(--surface2);border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;position:relative}
 .calc.out{visibility:hidden}
 .calc.tod{border-color:var(--ember-line)}
-.calc.miss::after{content:'';position:absolute;bottom:3.5px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:rgba(224,96,79,.5)}
-.leg{display:flex;align-items:center;gap:5px;margin-top:10px;justify-content:flex-end;font-size:10.5px;color:var(--muted)}
-.leg i{width:11px;height:11px;border-radius:3px;background:var(--surface2);display:inline-block}
+.calc.fut{opacity:.32}
+.calc.tr{background:linear-gradient(180deg,rgba(127,176,105,.5),rgba(127,176,105,.3));border-color:var(--sage-line);color:#0e130c;font-weight:700}
+.calc:not(.out):active{transform:scale(.9)}
+.cmk{position:absolute;bottom:3px;left:0;right:0;display:flex;gap:3px;justify-content:center;pointer-events:none}
+.cmk i{width:5px;height:5px;border-radius:50%}
+.cm-bed{background:var(--blue)}
+.cm-fast{background:var(--ember-hot)}
+.leg2{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:13px;justify-content:center;font-size:11px;color:var(--muted)}
+.leg2 span{display:inline-flex;align-items:center;gap:5px}
+.leg2 i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.leg2 .lg-tr{width:11px;height:11px;border-radius:3px;background:linear-gradient(180deg,rgba(127,176,105,.6),rgba(127,176,105,.35));border:1px solid var(--sage-line)}
 .prw{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--border)}
 .prw:last-child{border-bottom:none}
 .prw .pri{width:32px;height:32px;border-radius:9px;background:linear-gradient(180deg,rgba(255,111,46,.2),rgba(255,111,46,.08));color:var(--ember-hot);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
@@ -878,7 +883,7 @@ const I_LIFT='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke
 const I_CARD2='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3.5L9 6.5l4.5 11L16 12h5"/></svg>';
 const I_MOON='<svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 const I_FAST='<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h10M7 20.5h10M7 3.5L12 12 7 20.5M17 3.5L12 12 17 20.5"/></svg>';
-const HABITS=[{key:'fast',label:'Fasting',full:'Fasting',ic:I_FAST},{key:'bed',label:'Bed by 10',full:'In bed by 10PM',ic:I_MOON}];
+const HABITS=[{key:'fast',label:'Fasting',full:'Fasting',ic:I_FAST,off:0,streak:false},{key:'bed',label:'Bed by 10',full:'In bed by 10PM',ic:I_MOON,off:-1,streak:true}];
 const EB='<svg class="eb" width="46" height="46" viewBox="0 0 32 32"><g fill="#ff6f2e"><rect x="12.2" y="5.5" width="7.6" height="5" rx="1.5"/><rect x="9.6" y="13.4" width="12.8" height="5" rx="1.5" opacity=".72"/><rect x="7" y="21.3" width="18" height="5" rx="1.5" opacity=".45"/></g></svg>';
 let PREVV='tabs';
 
@@ -987,31 +992,37 @@ if(el)el.classList.toggle('done',on);upd()}
 
 /* ═══════════ DAILY HABITS (fasting · bedtime) ═══════════ */
 function habitOn(dk,key){return!!(DB.days[dk]&&DB.days[dk][key])}
-function tgHabit(key,el){const dk=tk(),d=DB.days[dk]=DB.days[dk]||{c:[]};
+function habitDef(key){return HABITS.find(h=>h.key===key)||{off:0}}
+function habitDate(key){return shiftDk(tk(),habitDef(key).off)}
+function habitToday(key){return habitOn(habitDate(key),key)}
+function tgHabit(key,el){const dk=habitDate(key),d=DB.days[dk]=DB.days[dk]||{c:[]};
 const on=!d[key];if(on)d[key]=true;else delete d[key];sv();
 if(el){el.classList.toggle('on',on);const s=el.querySelector('.hbs');if(s)s.innerHTML=habitInner(key)}}
-function tgHabitDay(key,dk){const d=DB.days[dk]=DB.days[dk]||{c:[]};
-if(d[key])delete d[key];else d[key]=true;sv();rn()}
-function habitStreak(key){let n=0,d=tk();if(!habitOn(d,key))d=shiftDk(d,-1);
+function habitStreak(key){let n=0,d=habitDate(key);if(!habitOn(d,key))d=shiftDk(d,-1);
 while(habitOn(d,key)){n++;d=shiftDk(d,-1)}return n}
-function habitMonthCount(key){const ym=tk().slice(0,7);let n=0;
-Object.keys(DB.days).forEach(dk=>{if(dk.slice(0,7)===ym&&DB.days[dk][key])n++});return n}
-function habitInner(key){const n=habitStreak(key);
-if(n>0)return'🔥&nbsp;<b>'+n+'</b>&nbsp;day'+(n>1?'s':'');
-return habitOn(tk(),key)?'Logged':'Tap to log'}
-function habitCard(h){const on=habitOn(tk(),h.key);
+function habitBest(key){const ks=Object.keys(DB.days).filter(dk=>DB.days[dk][key]).sort();
+if(!ks.length)return 0;let best=0,run=0,d=ks[0],end=ks[ks.length-1];
+while(d<=end){if(habitOn(d,key)){if(++run>best)best=run}else run=0;d=shiftDk(d,1)}return best}
+function habitInner(key){const def=habitDef(key);
+if(def.streak){const n=habitStreak(key);
+ if(n>0)return'🔥&nbsp;<b>'+n+'</b>&nbsp;night'+(n>1?'s':'');
+ return habitToday(key)?'Logged':'Last night?'}
+return habitToday(key)?'Logged today':'Tap to log'}
+function habitCard(h){const on=habitToday(h.key);
 return'<div class="hb'+(on?' on':'')+'" onclick="tgHabit(\''+h.key+'\',this)"><div class="hbtop"><span class="hbic">'+h.ic+'</span><div class="hbl">'+h.label+'</div><div class="cb">'+CHECK+'</div></div><div class="hbs">'+habitInner(h.key)+'</div></div>'}
 function habitsStrip(){return'<div class="sl"><span class="lt">Daily Habits</span><span class="rule"></span></div><div class="habits">'+HABITS.map(habitCard).join('')+'</div>'}
-function habitDots(key,days){let s='',today=tk();
-for(let i=days-1;i>=0;i--){const dk=shiftDk(today,-i),on=habitOn(dk,key);
-s+='<button class="hdot'+(on?' on':'')+(dk===today?' tod':'')+'" onclick="tgHabitDay(\''+key+'\',\''+dk+'\')" aria-label="'+fmtDk(dk)+'"></button>'}
-return s}
-function habitsTrend(){let h='<div class="sl"><span class="lt">Daily Habits</span><span class="rule"></span></div><div class="card">';
-h+=HABITS.map((hb,i)=>{const n=habitStreak(hb.key),mc=habitMonthCount(hb.key),on=habitOn(tk(),hb.key);
-return(i?'<div style="height:1px;background:var(--border);margin:14px 0"></div>':'')
-+'<div style="display:flex;align-items:center;gap:11px"><span class="hbic" style="color:'+(on?'var(--sage)':'var(--muted)')+'">'+hb.ic+'</span><div style="flex:1;min-width:0"><div class="hbl" style="font-size:15.5px">'+hb.full+'</div><div class="hbs2">'+mc+' this month</div></div><div class="hstreak">'+(n>0?'🔥&nbsp;'+n:'<span style="color:var(--muted);font-size:14px">—</span>')+'</div></div>'
-+'<div class="hdots">'+habitDots(hb.key,14)+'</div>'}).join('');
-h+='<div class="hcap">Last 14 days · tap a day to log it</div></div>';return h}
+function dayHabitSheet(dk){const f=habitOn(dk,'fast'),b=habitOn(dk,'bed'),tr=sessionsFor(dk).some(s=>s.finishedAt);
+sheet(DY[dowOf(dk)]+' · '+fmtDk(dk),tr?'Trained this day':'',
+'<div class="shbtns"><button class="btn '+(b?'btn-p':'btn-o')+'" id="dhb-bed" onclick="dhToggle(\'bed\',\''+dk+'\')">'+(b?'✓ ':'')+'In bed by 10PM</button><button class="btn '+(f?'btn-p':'btn-o')+'" id="dhb-fast" onclick="dhToggle(\'fast\',\''+dk+'\')">'+(f?'✓ ':'')+'Fasted</button><button class="btn" style="color:var(--muted)" onclick="closeOv()">Done</button></div>')}
+function dhToggle(key,dk){const d=DB.days[dk]=DB.days[dk]||{c:[]};
+if(d[key])delete d[key];else d[key]=true;sv();
+const on=!!d[key],btn=document.getElementById('dhb-'+key);
+if(btn){btn.className='btn '+(on?'btn-p':'btn-o');btn.innerHTML=(on?'✓ ':'')+(key==='fast'?'Fasted':'In bed by 10PM')}
+rn()}
+function bedStat(){const n=habitStreak('bed'),best=habitBest('bed');
+const head=n>0?'<b>'+n+'</b> night'+(n>1?'s':'')+' in a row':'Sleep by 10 tonight';
+const sub=best>0?'In bed by 10PM · best '+best+' night'+(best>1?'s':''):'In bed by 10PM · logged each morning';
+return'<div class="card bedstat"><span class="bsf"'+(n>0?'':' style="filter:grayscale(1);opacity:.55"')+'>🔥</span><div class="bsm"><div class="bsn">'+head+'</div><div class="bss">'+sub+'</div></div></div>'}
 function vToday(){
 const dk=tk(),dow=dowOf(dk);
 let h='';
@@ -1029,8 +1040,8 @@ h+=weekStrip(dk);
 if(t&&t.kind==='lift')h+=liftArea(dk,t);
 else if(t&&t.kind==='cardio')h+=cardioArea(dk,t,null);
 else h+='<div class="sl first" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div><div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="font-size:20px">☾</span><div><div class="scard-t" style="font-size:16px">Full recovery</div><div class="ckr" style="margin-top:2px">Daily block + 30 min walk. That\'s it.</div></div></div>';
-h+=habitsStrip();
 h+=dailySection(dk,t);
+h+=habitsStrip();
 return h}
 function liftArea(dk,t){
 const sess=sessionsFor(dk).filter(s=>s.templateId===t.id),fin=sess.filter(s=>s.finishedAt),act=sess.find(s=>!s.finishedAt);
@@ -1723,28 +1734,25 @@ function calCard(){
 const now=new Date(),base=new Date(now.getFullYear(),now.getMonth()+(S.calM||0),1);
 const y=base.getFullYear(),m=base.getMonth();
 const days=new Date(y,m+1,0).getDate(),lead=(new Date(y,m,1).getDay()+6)%7;
-const tdk=tk(),createdDk=tk(new Date(DB.meta.created||Date.now()));
+const tdk=tk();
 let h='<div class="card"><div class="calnav"><button onclick="calShift(-1)" aria-label="Earlier">‹</button><div class="cm">'+MN[m]+' '+y+'</div><button onclick="calShift(1)" aria-label="Later"'+(S.calM>=0?' disabled style="opacity:.3"':'')+'>›</button></div>';
 h+='<div class="cal">'+['M','T','W','T','F','S','S'].map(d=>'<div class="calh">'+d+'</div>').join('');
 for(let i=0;i<lead;i++)h+='<div class="calc out"></div>';
 for(let d=1;d<=days;d++){
 const dk=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-if(dk>tdk){h+='<div class="calc" style="opacity:.35">'+d+'</div>';continue}
-const p=dayProgress(dk);let f=p.total?p.done/p.total:0;
-if(sessionsFor(dk).some(s=>s.finishedAt))f=Math.max(f,.8);
-let cls='calc',st='';
-if(f>0){const a=f>=1?.85:.16+f*.5;st=' style="background:rgba(127,176,105,'+a.toFixed(2)+')'+(f>=.67?';color:#0e130c':'')+'"'}
-else if(dk<tdk&&dk>=createdDk&&p.total>0&&tplForDate(dk))cls+=' miss';
-if(dk===tdk)cls+=' tod';
-h+='<div class="'+cls+'"'+st+'>'+d+'</div>'}
-h+='</div><div class="leg">less <i></i><i style="background:rgba(127,176,105,.3)"></i><i style="background:rgba(127,176,105,.55)"></i><i style="background:rgba(127,176,105,.85)"></i> more</div></div>';
-return h}
+if(dk>tdk){h+='<div class="calc fut">'+d+'</div>';continue}
+let cls='calc'+(sessionsFor(dk).some(s=>s.finishedAt)?' tr':'')+(dk===tdk?' tod':'');
+let mk='';if(habitOn(dk,'bed'))mk+='<i class="cm-bed"></i>';if(habitOn(dk,'fast'))mk+='<i class="cm-fast"></i>';
+h+='<button class="'+cls+'" onclick="dayHabitSheet(\''+dk+'\')">'+d+(mk?'<span class="cmk">'+mk+'</span>':'')+'</button>'}
+h+='</div>';
+h+='<div class="leg2"><span><i class="lg-tr"></i>trained</span><span><i class="cm-bed"></i>bed by 10</span><span><i class="cm-fast"></i>fasted</span></div>';
+return h+'</div>'}
 function vTrends(){
 const pr=prScan();
 let h='<header class="hero"><div><div class="eyebrow">Trends</div><h1 class="title">Progress</h1></div></header>';
 h+='<div class="sl first"><span class="lt">Consistency</span><span class="rule"></span></div>';
 h+=calCard();
-h+=habitsTrend();
+h+=bedStat();
 h+='<div class="sl"><span class="lt">Recent PRs</span><span class="rule"></span><span class="cnt num">'+pr.feed.length+'</span></div>';
 if(!pr.feed.length)h+='<div class="card"><div class="ckr">PRs appear when you beat your own history. Log sessions — the baseline builds itself.</div></div>';
 else h+='<div class="card" style="padding:4px 14px">'+pr.feed.slice(0,12).map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div><div class="prd num">'+fmtDk(f.date)+(f.date.slice(0,4)!==tk().slice(0,4)?' ’'+f.date.slice(2,4):'')+'</div></div>').join('')+'</div>';
