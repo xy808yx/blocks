@@ -233,7 +233,7 @@ a{color:var(--ember);text-decoration:none}
 .restc.hide{display:none}
 .restc.zero{border-color:var(--sage-line);background:rgba(27,37,25,.92)}
 @keyframes pulse{0%,100%{box-shadow:0 18px 44px -10px rgba(0,0,0,.7)}50%{box-shadow:0 0 0 7px rgba(127,176,105,.16)}}
-.restc.zero{animation:pulse 1.2s ease-in-out 3}
+.restc.zero{animation:pulse 1.2s ease-in-out infinite}
 .rcm{flex:1;min-width:0}
 .rcl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .rct{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1.05}
@@ -630,6 +630,8 @@ for(const s of DB.sessions){if(s.id===excludeSid||!s.finishedAt)continue;
 return best}
 function prefill(entry,ex,rowIdx,sess){
 const isWu=rowIdx<entry.warmups;
+if(sess&&!isWu){const lastToday=workingSets(sess,ex.id).filter(s=>!s.warmup).sort((a,b)=>b.n-a.n)[0];
+ if(lastToday)return{w:wInUnit(lastToday.w),reps:lastToday.reps}}
 const prior=lastSessionWith(ex.id,sess?sess.id:null);
 if(prior){const rows=workingSets(prior,ex.id).sort((a,b)=>a.n-b.n);
  const pool=rows.filter(r=>!!r.warmup===isWu);
@@ -650,10 +652,10 @@ return'<div class="ghost"><b>Last · '+fmtDk(prior.date)+'</b> &nbsp;'+parts.joi
 function beep(){if(!DB.settings.sound)return;
 try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();
 if(AC.state==='suspended')AC.resume();
-const t=AC.currentTime;[[0,880],[.18,1175]].forEach(p=>{const o=AC.createOscillator(),g=AC.createGain();
-o.frequency.value=p[1];o.connect(g);g.connect(AC.destination);
-g.gain.setValueAtTime(.0001,t+p[0]);g.gain.exponentialRampToValueAtTime(.35,t+p[0]+.02);
-g.gain.exponentialRampToValueAtTime(.0001,t+p[0]+.16);o.start(t+p[0]);o.stop(t+p[0]+.2)})}catch(e){}}
+const t=AC.currentTime;[[0,880],[.14,1108],[.28,1480]].forEach(p=>{const o=AC.createOscillator(),g=AC.createGain();
+o.type='triangle';o.frequency.value=p[1];o.connect(g);g.connect(AC.destination);
+g.gain.setValueAtTime(.0001,t+p[0]);g.gain.exponentialRampToValueAtTime(.45,t+p[0]+.02);
+g.gain.exponentialRampToValueAtTime(.0001,t+p[0]+.2);o.start(t+p[0]);o.stop(t+p[0]+.24)})}catch(e){}}
 function vibe(p){if(DB.settings.haptics===false)return;try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
 function startRest(sec,label){if(!sec||sec<=0)return;
 T={ends:Date.now()+sec*1000,total:sec,label:label||'Rest',fired:false};
@@ -664,12 +666,11 @@ function tickT(){const c=document.getElementById('restc');if(!T){if(c)c.classLis
 const left=T.ends-Date.now();
 if(c){c.classList.remove('hide');
  const tt=document.getElementById('rcT'),pf=document.getElementById('rcPf'),ll=document.getElementById('rcL');
- if(tt)tt.textContent=left<=0?'Done':mmss(left);
+ if(tt)tt.textContent=left<=0?'+'+mmss(-left):mmss(left);
  if(ll)ll.textContent=left<=0?'Rest over — go':T.label;
  if(pf)pf.style.width=Math.max(0,Math.min(100,left/(T.total*10)))+'%';
- if(left<=0)c.classList.add('zero')}
-if(left<=0&&!T.fired){T.fired=true;beep();vibe([0,90,40,90])}
-if(left<-30000)killRest()}
+ if(left<=0)c.classList.add('zero');else c.classList.remove('zero')}
+if(left<=0&&!T.fired){T.fired=true;beep();vibe([0,90,40,90])}}
 async function lockOn(){if(!DB.settings.wake||!('wakeLock'in navigator))return;
 try{WL=await navigator.wakeLock.request('screen')}catch(e){}}
 function lockOff(){if(WL){WL.release().catch(()=>{});WL=null}}
@@ -1225,7 +1226,7 @@ body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+e
 +ghostLine(ex,sess)
 +'<div class="cols"><span>Set</span><span>'+(ex.bw?'Load':unit())+'</span><span>Reps</span><span></span></div>'
 +rows
-+'<div class="exf"><button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button><button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div>'});
++'<div class="exf"><button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button>'+((EXTRA[entry.exId]||0)>0&&logged.length<total?'<button class="adds" onclick="rmRow(\''+entry.exId+'\')">− Remove set</button>':'')+'<button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div>'});
 body+='<button class="addb" onclick="pickExFor(\'session\')">+ Add exercise</button>';
 const elapsed=S.amend?fmtDk(sess.date):'<span id="elap">'+mmss(Date.now()-sess.startedAt)+'</span>';
 const hd='<div class="shd"><div class="shdi"><button class="bk" onclick="exitSession()">'+I_BACK+'</button>'
@@ -1279,6 +1280,10 @@ sess.sets=sess.sets.filter(x=>!(x.exId===exId&&x.n===n));
 sess.sets.forEach(x=>{if(x.exId===exId&&x.n>n)x.n--});
 S.editKey=null;clearPV(exId);sv();rn();toastUndo('Set removed',()=>{sess.sets=before;sv()})}
 function addRow(exId){EXTRA[exId]=(EXTRA[exId]||0)+1;rn()}
+function rmRow(exId){const n=EXTRA[exId]||0;if(n<=0)return;
+const sess=sessById(S.sid),entry=sess?entryFor(sess,exId):null;
+if(entry)delete PV[exId+'_'+(entry.warmups+entry.sets+n-1)];
+EXTRA[exId]=n-1;rn()}
 function rmExAsk(exId){const s=sessById(S.sid);if(!s)return;
 const n=workingSets(s,exId).length;
 if(!n){rmExGo(exId);return}
@@ -1913,7 +1918,8 @@ function resetAll(){localStorage.removeItem('blocks_v1');location.reload()}
 ld();
 document.getElementById('impf').addEventListener('change',e=>{const f=e.target.files[0];if(f)handleImport(f);e.target.value=''});
 document.getElementById('impcsv').addEventListener('change',e=>{const f=e.target.files[0];if(f)handleCsv(f);e.target.value=''});
-document.addEventListener('touchstart',()=>{if(AC&&AC.state==='suspended')AC.resume()},{passive:true});
+function unlockAudio(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+['touchstart','pointerdown','click'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true}));
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
 if('serviceWorker'in navigator){
 window.addEventListener('load',()=>{
