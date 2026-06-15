@@ -883,7 +883,7 @@ const I_LIFT='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke
 const I_CARD2='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3.5L9 6.5l4.5 11L16 12h5"/></svg>';
 const I_MOON='<svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 const I_FAST='<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h10M7 20.5h10M7 3.5L12 12 7 20.5M17 3.5L12 12 17 20.5"/></svg>';
-const HABITS=[{key:'fast',label:'Fasting',full:'Fasting',ic:I_FAST,off:0,streak:false},{key:'bed',label:'Bed by 10',full:'In bed by 10PM',ic:I_MOON,off:-1,streak:true}];
+const HABITS=[{key:'fast',label:'Fasting',full:'Fasting',ic:I_FAST,off:0,streak:false},{key:'bed',get label(){return bedShort()},get full(){return bedFull()},ic:I_MOON,off:-1,streak:true}];
 const EB='<svg class="eb" width="46" height="46" viewBox="0 0 32 32"><g fill="#ff6f2e"><rect x="12.2" y="5.5" width="7.6" height="5" rx="1.5"/><rect x="9.6" y="13.4" width="12.8" height="5" rx="1.5" opacity=".72"/><rect x="7" y="21.3" width="18" height="5" rx="1.5" opacity=".45"/></g></svg>';
 let PREVV='tabs';
 
@@ -991,6 +991,11 @@ const on=!d.c.includes(cid);d.c=on?d.c.concat([cid]):d.c.filter(x=>x!==cid);sv()
 if(el)el.classList.toggle('done',on);upd()}
 
 /* ═══════════ DAILY HABITS (fasting · bedtime) ═══════════ */
+function bedTime(){return DB.settings.bedtime||'22:00'}
+function fmtTime12(t){const[h,m]=t.split(':').map(Number);let hh=h%12;if(!hh)hh=12;return hh+':'+String(m).padStart(2,'0')+' '+(h<12?'AM':'PM')}
+function fmtTimeShort(t){const[h,m]=t.split(':').map(Number);let hh=h%12;if(!hh)hh=12;return hh+(m?':'+String(m).padStart(2,'0'):'')}
+function bedShort(){return'Bed by '+fmtTimeShort(bedTime())}
+function bedFull(){return'In bed by '+fmtTime12(bedTime())}
 function habitOn(dk,key){return!!(DB.days[dk]&&DB.days[dk][key])}
 function habitDef(key){return HABITS.find(h=>h.key===key)||{off:0}}
 function habitDate(key){return shiftDk(tk(),habitDef(key).off)}
@@ -1013,15 +1018,15 @@ return'<div class="hb'+(on?' on':'')+'" onclick="tgHabit(\''+h.key+'\',this)"><d
 function habitsStrip(){return'<div class="sl"><span class="lt">Daily Habits</span><span class="rule"></span></div><div class="habits">'+HABITS.map(habitCard).join('')+'</div>'}
 function dayHabitSheet(dk){const f=habitOn(dk,'fast'),b=habitOn(dk,'bed'),tr=sessionsFor(dk).some(s=>s.finishedAt);
 sheet(DY[dowOf(dk)]+' · '+fmtDk(dk),tr?'Trained this day':'',
-'<div class="shbtns"><button class="btn '+(b?'btn-p':'btn-o')+'" id="dhb-bed" onclick="dhToggle(\'bed\',\''+dk+'\')">'+(b?'✓ ':'')+'In bed by 10PM</button><button class="btn '+(f?'btn-p':'btn-o')+'" id="dhb-fast" onclick="dhToggle(\'fast\',\''+dk+'\')">'+(f?'✓ ':'')+'Fasted</button><button class="btn" style="color:var(--muted)" onclick="closeOv()">Done</button></div>')}
+'<div class="shbtns"><button class="btn '+(b?'btn-p':'btn-o')+'" id="dhb-bed" onclick="dhToggle(\'bed\',\''+dk+'\')">'+(b?'✓ ':'')+bedFull()+'</button><button class="btn '+(f?'btn-p':'btn-o')+'" id="dhb-fast" onclick="dhToggle(\'fast\',\''+dk+'\')">'+(f?'✓ ':'')+'Fasted</button><button class="btn" style="color:var(--muted)" onclick="closeOv()">Done</button></div>')}
 function dhToggle(key,dk){const d=DB.days[dk]=DB.days[dk]||{c:[]};
 if(d[key])delete d[key];else d[key]=true;sv();
 const on=!!d[key],btn=document.getElementById('dhb-'+key);
-if(btn){btn.className='btn '+(on?'btn-p':'btn-o');btn.innerHTML=(on?'✓ ':'')+(key==='fast'?'Fasted':'In bed by 10PM')}
+if(btn){btn.className='btn '+(on?'btn-p':'btn-o');btn.innerHTML=(on?'✓ ':'')+(key==='fast'?'Fasted':bedFull())}
 rn()}
 function bedStat(){const n=habitStreak('bed'),best=habitBest('bed');
 const head=n>0?'<b>'+n+'</b> night'+(n>1?'s':'')+' in a row':'Sleep by 10 tonight';
-const sub=best>0?'In bed by 10PM · best '+best+' night'+(best>1?'s':''):'In bed by 10PM · logged each morning';
+const sub=best>0?bedFull()+' · best '+best+' night'+(best>1?'s':''):bedFull()+' · logged each morning';
 return'<div class="card bedstat"><span class="bsf"'+(n>0?'':' style="filter:grayscale(1);opacity:.55"')+'>🔥</span><div class="bsm"><div class="bsn">'+head+'</div><div class="bss">'+sub+'</div></div></div>'}
 function vToday(){
 const dk=tk(),dow=dowOf(dk);
@@ -1871,6 +1876,7 @@ const body=
 +'<div class="strow"><div class="stn">Keep screen awake<small>during a session</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.wake?'1':'0','setWake')+'</div>'
 +'<div class="strow"><div class="stn">Timer chime<small>visual flash always on</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.sound?'1':'0','setSound')+'</div>'
 +'<div class="strow"><div class="stn">Default rest<small>when nothing more specific is set</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sRest" data-args="[-15]">−</button><div class="stv num" id="sRestV">'+rD()+'s</div><button class="stb" data-hold data-fn="sRest" data-args="[15]">+</button></div></div>'
++'<div class="strow"><div class="stn">Bedtime target<small>what “bed by” aims for</small></div><div class="stp" style="width:158px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sBed" data-args="[-15]">−</button><div class="stv num" id="sBedV" style="font-size:14px">'+fmtTime12(bedTime())+'</div><button class="stb" data-hold data-fn="sBed" data-args="[15]">+</button></div></div>'
 +'<div class="shbtns">'
 +'<button class="btn btn-p" onclick="doExport()">Export data</button>'
 +'<div style="text-align:center;font-size:13px;color:var(--muted)">'+(le?'Last export · '+fmtDk(tk(new Date(le))):'Never exported — data lives only on this device')+'</div>'
@@ -1882,6 +1888,7 @@ const body=
 sheet('Settings','',body)}
 function setUnit(u){DB.settings.unit=u;PV={};CV=null;sv();rn();gear()}
 function sRest(d){DB.settings.restDefault=Math.min(600,Math.max(15,rD()+d));sv();setV(document.getElementById('sRestV'),rD()+'s')}
+function sBed(d){const[h,m]=bedTime().split(':').map(Number);const t=Math.max(1080,Math.min(1425,h*60+m+d));DB.settings.bedtime=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');sv();setV(document.getElementById('sBedV'),fmtTime12(bedTime()));rn()}
 function setWake(v){DB.settings.wake=v==='1';sv();gear()}
 function setSound(v){DB.settings.sound=v==='1';sv();gear()}
 function resetAsk(){ovConfirm('Erase all data?','Every session, check, and edit on this device will be deleted. Export first if in doubt.',
