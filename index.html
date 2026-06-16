@@ -955,18 +955,23 @@ if(t&&t.kind==='cardio'){
  (t.checks||[]).filter(c=>c.enabled).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
 let dd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))dd++});
 return{wd,wt,dd,dt:di.length}}
+function workoutDone(dk,t){const sess=sessionsFor(dk);
+if(sess.some(s=>s.finishedAt))return true;
+if(t&&t.kind==='cardio'){const s=sess.find(x=>x.kind==='cardio');return!!(s&&(s.sprints||s.aerobic))}
+if(t&&t.kind==='lift'){const s=sess.find(x=>x.kind!=='cardio'&&x.templateId===t.id);return!!(s&&s.sets.some(st=>!st.warmup))}
+return false}
 function upd(){
 if(S.view==='mobility'){const ck=dayChecks(tk());
  prog().checklists.mobility.forEach((g,gi)=>{const c=document.getElementById('cnt-g'+gi);
   if(c){const dn=g.items.filter(i=>ck.includes(i.id)).length;c.textContent=dn+'/'+g.items.length;
   const sl=document.getElementById('sl-g'+gi);if(sl)sl.classList.toggle('done',dn===g.items.length&&g.items.length>0)}});return}
 const rf=document.getElementById('ringF');if(!rf)return;
-const dk=tk(),p=dayParts(dk),tot=p.wt+p.dt,dn=p.wd+p.dd,pct=tot?Math.round(dn/tot*100):0;
+const dk=tk(),p=dayParts(dk),tD=tplForDate(dk),hasW=!!(tD&&(tD.kind==='lift'||tD.kind==='cardio')),wTot=hasW?1:0,wDn=hasW&&workoutDone(dk,tD)?1:0,tot=wTot+p.dt,dn=wDn+p.dd,pct=tot?Math.round(dn/tot*100):0;
 rf.style.strokeDashoffset=100-pct;rf.classList.toggle('full',pct===100&&tot>0);
 const rN=document.getElementById('ringN');if(rN)rN.innerHTML=dn+'<span>/'+tot+'</span>';
 const hs=document.getElementById('heroSub');if(hs&&pct===100&&tot>0)hs.innerHTML='<span class="sg">✓ Day complete</span>';
 const cw=document.getElementById('cnt-work');if(cw)cw.textContent=p.wd+'/'+p.wt;
-const sw=document.getElementById('sl-work');if(sw)sw.classList.toggle('done',p.wt>0&&p.wd>=p.wt);
+const sw=document.getElementById('sl-work');if(sw)sw.classList.toggle('done',wDn===1);
 const cd=document.getElementById('cnt-daily');if(cd)cd.textContent=p.dd+'/'+p.dt;
 const sd=document.getElementById('sl-daily');if(sd)sd.classList.toggle('done',p.dt>0&&p.dd>=p.dt)}
 
