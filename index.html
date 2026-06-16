@@ -46,7 +46,7 @@ a{color:var(--ember);text-decoration:none}
 .hdi{max-width:560px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;padding-top:max(13px,env(safe-area-inset-top))}
 .wm{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-size:15.5px;font-weight:700;letter-spacing:.3em;color:#b9bfc9;text-indent:.04em}
 .wm svg{filter:drop-shadow(0 0 6px rgba(255,111,46,.28))}
-.hbt{min-width:44px;min-height:38px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:var(--dim);transition:background .2s,color .2s}
+.hbt{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:var(--dim);transition:background .2s,color .2s}
 .hbt:active{background:var(--surface2);color:var(--text)}
 .tb{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(10,11,14,.86);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid rgba(38,42,51,.8)}
 .tbi{max-width:560px;margin:0 auto;display:flex;padding-bottom:env(safe-area-inset-bottom)}
@@ -201,7 +201,7 @@ a{color:var(--ember);text-decoration:none}
 .sr+.sr{margin-top:2px}
 .srn{font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;text-align:left;padding-left:4px}
 .sr.wu .srn{color:var(--blue)}
-.stp{display:flex;align-items:stretch;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:46px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.stp{display:flex;align-items:stretch;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:54px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
 .stb{width:38px;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:22px;font-weight:500;flex-shrink:0;user-select:none;-webkit-user-select:none;transition:background .15s,color .15s}
 .stb:active{background:var(--border);color:var(--text)}
 .stv{flex:1;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;min-width:0;letter-spacing:-.01em}
@@ -348,7 +348,7 @@ a{color:var(--ember);text-decoration:none}
 /* ── trends ── */
 .calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .calnav .cm{font-family:var(--fd);font-size:18px;font-weight:600;letter-spacing:.03em}
-.calnav button{min-width:44px;min-height:36px;border-radius:9px;color:var(--dim);background:var(--surface2);border:1px solid var(--border);font-size:16px;transition:background .2s}
+.calnav button{min-width:44px;min-height:44px;border-radius:9px;color:var(--dim);background:var(--surface2);border:1px solid var(--border);font-size:16px;transition:background .2s}
 .calnav button:active{background:var(--border)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4.5px}
 .calh{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-align:center;text-transform:uppercase;padding:2px 0 4px}
@@ -540,7 +540,7 @@ const reference=[
 - Pogos, bounds, box-jump test — reactive calf demand.
 - Loaded hip hinge (RDLs), Nordics, single-leg RDLs — eccentric load routes through the calf.
 **Cut** — bad risk/reward or no sprint value.
-- Depth / drop jumps (shock method) — needs ≥95% LSI, tendon-lag tail bites hardest.
+- Depth / drop jumps (shock method) — needs near-full reactive capacity + clean landings; tendon-lag tail bites hardest.
 - Tuck jumps — no value over pogos + bounds.
 - Box jumps as training — keep only as the Gate 3 test.`},
 {t:'Timeline',b:`- **Wk 5-6 · Cleared** — Gate 1, Phase 3. Seated calf raises began.
@@ -555,7 +555,7 @@ const reference=[
 ];
 return{
 schemaVersion:1,
-contentRev:1,
+contentRev:2,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -580,20 +580,24 @@ const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec
 const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/></svg>';
 const KG=0.45359237;
 
+let FRESH=false;
 function ld(){try{DB=JSON.parse(localStorage.getItem('blocks_v1')||'null')}catch(e){DB=null}
-if(!DB||DB.schemaVersion!==1){DB=seedDB();sv();return}
+if(!DB||DB.schemaVersion!==1){DB=seedDB();FRESH=true;sv();return}
 migrate()}
-/* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history. */
+/* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
+   Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-if((DB.contentRev||0)>=1)return;
+let cr=DB.contentRev||0;if(cr>=2)return;
 const fp=seedDB().programs[0];
-(DB.programs||[]).forEach(p=>{
- if(p.reference&&fp.reference){const fg=fp.reference.find(r=>r.t==='Phase Gates'),og=p.reference.find(r=>r.t==='Phase Gates');if(fg&&og)og.b=fg.b}
- const ft=(fp.templates||[]).find(x=>x.id==='t_cardio'),ot=(p.templates||[]).find(x=>x.id==='t_cardio');
- if(ft&&ot){ot.note=ft.note;ot.aerCue=ft.aerCue}
-});
-DB.contentRev=1;sv()}
-function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Could not save')}}
+const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
+if(cr<1){
+ patchRef('Phase Gates');
+ (DB.programs||[]).forEach(p=>{const ft=(fp.templates||[]).find(x=>x.id==='t_cardio'),ot=(p.templates||[]).find(x=>x.id==='t_cardio');if(ft&&ot){ot.note=ft.note;ot.aerCue=ft.aerCue}});
+ cr=1;
+}
+if(cr<2){patchRef('Parked & Cut');cr=2;}
+DB.contentRev=cr;sv()}
+function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function tk(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function fmtDk(dk){const[y,m,d]=dk.split('-').map(Number);return MN[m-1]+' '+d}
@@ -1335,7 +1339,7 @@ mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:t.aerD.durMin,zone:ae?ae.zone:t.aer
 CE={spr:!sp,aer:!ae}}
 function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
 setV(document.getElementById('cv-'+f),CV[f])}
-function cseg(f,v){if(!CV)return;CV[f]=v;rn()}
+function cseg(f,v){if(!CV)return;CV[f]=v;vibe(8);rn()}
 function cedit(which){CE[which]=true;rn()}
 function cfld(label,f,step,min,max){
 return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="cstep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="cv-'+f+'">'+CV[f]+'</div><button class="stb" data-hold data-fn="cstep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
@@ -1346,10 +1350,10 @@ s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t?t.name:'Cardio',tem
 DB.sessions.push(s)}
 return s}
 function saveSprints(dk){const s=getCardioSess(dk,true);
-s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff};if(!s.finishedAt)s.finishedAt=Date.now();
+s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff};delete s.aerobic;if(!s.finishedAt)s.finishedAt=Date.now();
 CE.spr=false;sv();rn();toast('Sprints logged')}
 function saveAerobic(dk){const s=getCardioSess(dk,true);
-s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};if(!s.finishedAt)s.finishedAt=Date.now();
+s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};delete s.sprints;if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();toast(CV.mode==='bike'?'Ride logged':CV.mode==='run'?'Run logged':'Swim logged')}
 function cardioArea(dk,t,sessOverride){
 const sess=sessOverride||getCardioSess(dk,false);
@@ -1955,6 +1959,7 @@ document.getElementById('impcsv').addEventListener('change',e=>{const f=e.target
 function unlockAudio(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
 ['touchstart','pointerdown','click'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true}));
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+if(FRESH){setTimeout(()=>toast('Welcome — tap any set to log it. Back up anytime from Settings.'),800);}
 if('serviceWorker'in navigator){
 window.addEventListener('load',()=>{
 navigator.serviceWorker.register('./sw.js').then(reg=>{
