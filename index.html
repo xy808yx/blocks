@@ -421,7 +421,7 @@ ex('s3','Hanging Leg Raises',1,90,['core']),
 ex('s4','Bulgarian Split Squats',1,120,['legs','glutes']),
 ex('cl','Stick Landings',1,60,['calves','landing mechanics']),
 ex('spr','Sprint Run-Throughs',1,0,['sprint'],'sprint'),
-ex('aer','Bike / Swim',1,0,['aerobic'],'cardio'),
+ex('aer','Bike / Swim / Run',1,0,['aerobic'],'cardio'),
 ];
 const en=(exId,o)=>Object.assign({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false},o);
 const templates=[
@@ -446,12 +446,12 @@ const templates=[
  en('s4',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'BW → hold plates'}),
 ]},
 {id:'t_cardio',name:'Cardio + Mobility',kind:'cardio',
- note:'Sprints on Friday — Tuesday is the fasted recovery day (bike/swim + mobility only). Volume before intensity.',
+ note:'One modality per day — sprints OR bike/swim/run, not both. Sprints on Friday; Tuesday is the fasted recovery day (easy aerobic + mobility). Volume before intensity.',
  entries:[],
  sprD:{reps:3,distM:50,eff:55},
  aerD:{mode:'bike',durMin:30,zone:'1-2'},
  sprCue:'walk-back recovery · Fri (not the fasted Tue)',
- aerCue:'zone 1-2 · no jogging yet',
+ aerCue:'zone 1-2 · keep it easy',
  checks:[
  {id:'cl',name:'Stick Landings',detail:'2-3 × 5 · before sprints · low step or in place · land soft & silent, hold 2-3s',enabled:false},
  {id:'mobdone',name:'Full Mobility Routine',detail:'roll · stretch · flows',link:'mobility',enabled:true},
@@ -499,18 +499,27 @@ const reference=[
 - Test: 3 × 15 single-leg raises pain-free. Symmetrical dorsiflexion ROM.
 - Deficit calf raises (slow 3s/3s) on pull days — structural base. BSS on push days.
 - Sprint run-throughs begun — 50-60% on turf.
-**Gate 3 — Phase 5 · NEXT TARGET**
-- Test: 25+ single-leg raises matching other side · hop LSI ≥90% · ≥90% plantarflexion LSI · ≥2× BW single-leg raise · 10-20 single-leg hops in place, pain-free.
-- Add first: fast calf raises — 3×10 light, crisp, before heavy raises, metronome ~132bpm (speed-of-contraction bridge).
-- Add second: stick landings — Friday, fresh, before sprints, 2-3×5, soft & silent, hold 2-3s. Absorption before reactive.
+**Gate 3 — Return to Run · Phase 5 · NEXT TARGET**
+- Pass — single-leg heel raises: 25-30, full ROM, pain-free. ✓ you pass.
+- Pass — single-leg hops in place: 10-20 pain-free, progressing to forward hops. ✓ you pass (30-50 easily).
+- Pass — loaded soleus-bias raises (bent-knee / seated): strong, controlled, built up over weeks — not a maxed single rep.
+- Pass — pain ≤2/10 during loading, settling within 24hr. The mild post-sprint tightness needs to go quiet.
+- ⚠ Symmetry caveat: your injured leg was your dominant leg, so left-right comparison overstates recovery. Judge by absolute capacity, your own pre-injury baseline, and symptoms — not LSI.
+- Strength number, if you want one: ~5-rep-max at ~50% bodyweight added, via your therapist.
+- Build first: fast calf raises — 3×10 light, crisp, before heavy raises, metronome ~132bpm (speed-of-contraction bridge).
+- Then: stick landings — Friday, fresh, before sprints, 2-3×5, soft & silent, hold 2-3s. Absorption before reactive.
 - Then: pogos (bilateral, low, stiff ankle, toes up) → low horizontal bounds (distance before speed).
-- Box jump CHECK (test, not training): 5 bilateral onto ~30cm + 5 unilateral onto 15-20cm, <10% asymmetry.
+- Box jump CHECK (test, not training): 5 bilateral onto ~30cm + 5 unilateral onto 15-20cm — judge absolute capacity, not symmetry.
 - Right-side hip/glute hinge (RDLs, step-downs) 2-3×/wk — proximal ≈30% of plantarflexion force; addresses the R-soleus overload chain.
 - Sprint: progress 80% → 95%, each pain-free. Jogging unlocks here — after sprint milestones.
-**Gate 4 — Full Return · Wk 20-24**
-- Test: hop LSI ≥95% · pain-free max sprint · one week no symptoms.
+**Gate 4 — Return to Sport · Full Return · Wk 20-24**
+- Pass — pain-free maximal sprint.
+- Pass — pain-free max hopping / jumping, clean landings.
+- Pass — one full week symptom-free.
+- First: establish tempo-running / volume tolerance before max work — inadequate running-volume tolerance is a top recurrence cause.
 - Single-leg hops → continuous → triple hops. Reactive, sport-specific top of the ladder.
 - True max sprint — full send. Block starts resume LAST.
+- Keep loading the calf even after performance returns — stopping is the other leading recurrence cause.
 - 1 week full training per 2 weeks missed.`},
 {t:'Sprint Return Progression',b:`Increase volume first (more reps), then intensity (faster). Never both in the same session. Check 48hr response each time.
 |Stage|Reps × Distance|Effort|Notes|
@@ -546,6 +555,7 @@ const reference=[
 ];
 return{
 schemaVersion:1,
+contentRev:1,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -571,7 +581,18 @@ const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.
 const KG=0.45359237;
 
 function ld(){try{DB=JSON.parse(localStorage.getItem('blocks_v1')||'null')}catch(e){DB=null}
-if(!DB||DB.schemaVersion!==1){DB=seedDB();sv()}}
+if(!DB||DB.schemaVersion!==1){DB=seedDB();sv();return}
+migrate()}
+/* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history. */
+function migrate(){
+if((DB.contentRev||0)>=1)return;
+const fp=seedDB().programs[0];
+(DB.programs||[]).forEach(p=>{
+ if(p.reference&&fp.reference){const fg=fp.reference.find(r=>r.t==='Phase Gates'),og=p.reference.find(r=>r.t==='Phase Gates');if(fg&&og)og.b=fg.b}
+ const ft=(fp.templates||[]).find(x=>x.id==='t_cardio'),ot=(p.templates||[]).find(x=>x.id==='t_cardio');
+ if(ft&&ot){ot.note=ft.note;ot.aerCue=ft.aerCue}
+});
+DB.contentRev=1;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Could not save')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function tk(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -808,7 +829,7 @@ let total=0,done=0;
 if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);total+=lc.tot;done+=lc.d}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
- total+=2;if(cs&&cs.sprints)done++;if(cs&&cs.aerobic)done++;
+ total+=1;if(cs&&(cs.sprints||cs.aerobic))done++;
  (t.checks||[]).filter(c=>c.enabled).forEach(c=>{total++;if(checks.includes(c.id))done++})}
 const di=dailyItems(dk);total+=di.length;di.forEach(d=>{if(checks.includes(d.id))done++});
 return{done,total}}
@@ -951,7 +972,7 @@ let wd=0,wt=0;
 if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);wd=lc.d;wt=lc.tot}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
- wt+=2;if(cs&&cs.sprints)wd++;if(cs&&cs.aerobic)wd++;
+ wt+=1;if(cs&&(cs.sprints||cs.aerobic))wd++;
  (t.checks||[]).filter(c=>c.enabled).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
 let dd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))dd++});
 return{wd,wt,dd,dt:di.length}}
@@ -1088,7 +1109,8 @@ h+='<div class="card">';
 if(t.kind==='lift')t.entries.forEach(e=>{const ex=exOf(e.exId);
  h+='<div class="tpe'+(e.enabled?'':' offed')+'"><span class="tpen">'+esc(ex.name)+'</span><span class="tpes num">'+esc(schemeOf(e))+(e.enabled?'':' · off')+'</span></div>'});
 else{h+='<div class="tpe"><span class="tpen">Sprint Run-Throughs</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>'
- +'<div class="tpe"><span class="tpen">Bike / Swim</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>';
+ +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:12px;letter-spacing:.08em">— or —</div>'
+ +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>';
  (t.checks||[]).forEach(c=>{h+='<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>'})}
 h+='</div>';
 if(isPast){const done=sessionsFor(selDk).some(s=>s.finishedAt);
@@ -1303,10 +1325,12 @@ if(t&&t.entries.some(e=>e.exId===exId)){s.hidden=s.hidden||[];if(!s.hidden.inclu
 delete EXTRA[exId];clearPV(exId);S.editKey=null;sv();closeOv();rn();toastUndo('Exercise removed',()=>{s.sets=bSets;s.addons=bAdd;s.hidden=bHid;sv()})}
 
 /* ═══════════ CARDIO ═══════════ */
+function aerLabel(m){return m==='bike'?'Bike':m==='run'?'Run':'Swim'}
 function ensureCV(dk,t,sess){
 if(CV&&CV.dk===dk)return;
 const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null;
-CV={dk,reps:sp?sp.reps:t.sprD.reps,dist:sp?sp.distM:t.sprD.distM,eff:sp?sp.effortPct:t.sprD.eff,
+const type=sp?'sprint':ae?'aerobic':effDow(dk)===5?'sprint':'aerobic';
+CV={dk,type,reps:sp?sp.reps:t.sprD.reps,dist:sp?sp.distM:t.sprD.distM,eff:sp?sp.effortPct:t.sprD.eff,
 mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:t.aerD.durMin,zone:ae?ae.zone:t.aerD.zone};
 CE={spr:!sp,aer:!ae}}
 function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
@@ -1326,7 +1350,7 @@ s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff};if(!s.finishedAt)s.finis
 CE.spr=false;sv();rn();toast('Sprints logged')}
 function saveAerobic(dk){const s=getCardioSess(dk,true);
 s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};if(!s.finishedAt)s.finishedAt=Date.now();
-CE.aer=false;sv();rn();toast(CV.mode==='bike'?'Ride logged':'Swim logged')}
+CE.aer=false;sv();rn();toast(CV.mode==='bike'?'Ride logged':CV.mode==='run'?'Run logged':'Swim logged')}
 function cardioArea(dk,t,sessOverride){
 const sess=sessOverride||getCardioSess(dk,false);
 ensureCV(dk,t,sess);
@@ -1334,17 +1358,21 @@ const checks=dayChecks(dk);
 let h='<div class="sl" id="sl-work"><span class="lt">'+esc(t.name)+'</span><span class="rule"></span><span class="cnt num" id="cnt-work"></span></div>';
 if(t.note)h+='<div class="note">'+esc(t.note)+'</div>';
 (t.checks||[]).filter(c=>c.enabled&&c.id==='cl').forEach(c=>{h+=ckRow(c,checks)});
+h+='<div class="seg" style="margin:4px 0 14px"><button class="sgb'+(CV.type==='sprint'?' on':'')+'" onclick="cseg(\'type\',\'sprint\')">Sprints</button><button class="sgb'+(CV.type==='aerobic'?' on':'')+'" onclick="cseg(\'type\',\'aerobic\')">Bike / Swim / Run</button></div>';
+if(CV.type==='sprint'){
 h+='<div class="exc"><div class="exh"><div class="exn">Sprint Run-Throughs</div><span class="chip bl">Sprint</span></div><div class="exs">'+esc(t.sprCue||'')+'</div>';
 if(sess&&sess.sprints&&!CE.spr)h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+sess.sprints.reps+' × '+sess.sprints.distM+' m</b> @ '+sess.sprints.effortPct+'%<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';
 else h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div><button class="btn btn-o" style="min-height:46px" onclick="saveSprints(\''+dk+'\')">Save sprints</button>';
 h+='</div>';
-h+='<div class="exc"><div class="exh"><div class="exn">Bike / Swim</div><span class="chip bl">Aerobic</span></div><div class="exs">'+esc(t.aerCue||'')+'</div>';
-if(sess&&sess.aerobic&&!CE.aer)h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+(sess.aerobic.mode==='bike'?'Bike':'Swim')+' · '+sess.aerobic.durMin+' min</b> · zone '+sess.aerobic.zone+'<button class="ed" onclick="cedit(\'aer\')">Edit</button></div>';
-else{h+='<div class="seg" style="margin:12px 0 8px"><button class="sgb'+(CV.mode==='bike'?' on':'')+'" onclick="cseg(\'mode\',\'bike\')">Bike</button><button class="sgb'+(CV.mode==='swim'?' on':'')+'" onclick="cseg(\'mode\',\'swim\')">Swim</button></div>'
+}else{
+h+='<div class="exc"><div class="exh"><div class="exn">Bike / Swim / Run</div><span class="chip bl">Aerobic</span></div><div class="exs">'+esc(t.aerCue||'')+'</div>';
+if(sess&&sess.aerobic&&!CE.aer)h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+aerLabel(sess.aerobic.mode)+' · '+sess.aerobic.durMin+' min</b> · zone '+sess.aerobic.zone+'<button class="ed" onclick="cedit(\'aer\')">Edit</button></div>';
+else{h+='<div class="seg" style="margin:12px 0 8px">'+['bike','swim','run'].map(m=>'<button class="sgb'+(CV.mode===m?' on':'')+'" onclick="cseg(\'mode\',\''+m+'\')">'+aerLabel(m)+'</button>').join('')+'</div>'
 +'<div class="fgrid" style="grid-template-columns:1fr 1.4fr">'+cfld('Min','dur',5,5,180)
 +'<div class="fld"><div class="fl2">Zone</div><div class="seg" style="height:46px">'+['1','1-2','2'].map(z=>'<button class="sgb'+(CV.zone===z?' on':'')+'" onclick="cseg(\'zone\',\''+z+'\')">'+z+'</button>').join('')+'</div></div></div>'
 +'<button class="btn btn-o" style="min-height:46px" onclick="saveAerobic(\''+dk+'\')">Save cardio</button>'}
 h+='</div>';
+}
 (t.checks||[]).filter(c=>c.enabled&&c.id!=='cl').forEach(c=>{h+=ckRow(c,checks)});
 return h}
 
@@ -1377,7 +1405,7 @@ if(mk!==lastM){h+='<div class="mlab">'+mk+'</div>';lastM=mk}
 let sub='';
 if(s.kind==='cardio'){const p=[];
  if(s.sprints)p.push(s.sprints.reps+'×'+s.sprints.distM+'m @'+s.sprints.effortPct+'%');
- if(s.aerobic)p.push((s.aerobic.mode==='bike'?'bike':'swim')+' '+s.aerobic.durMin+'m');
+ if(s.aerobic)p.push(s.aerobic.mode+' '+s.aerobic.durMin+'m');
  sub=p.join(' · ')||'—'}
 else{const w=s.sets.filter(x=>!x.warmup).length;
  sub=w+' sets'+(s.finishedAt?' · '+Math.max(1,Math.round((s.finishedAt-s.startedAt)/60000))+' min':'')}
@@ -1438,7 +1466,8 @@ let b='';
 if(t.kind==='lift')b=t.entries.map(e=>{const ex=exOf(e.exId);
  return'<div class="tpe'+(e.enabled?'':' offed')+'"><span class="tpen">'+esc(ex.name)+'</span><span class="tpes num">'+esc(schemeOf(e))+(e.enabled?'':' · off')+'</span></div>'}).join('');
 else{b='<div class="tpe"><span class="tpen">Sprints</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>'
- +'<div class="tpe"><span class="tpen">Bike / Swim</span><span class="tpes num">'+t.aerD.durMin+' min · z'+t.aerD.zone+'</span></div>'
+ +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:12px;letter-spacing:.08em">— or —</div>'
+ +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · z'+t.aerD.zone+'</span></div>'
  +(t.checks||[]).map(c=>'<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>').join('')}
 if(t.note)b+='<p style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:10px">'+esc(t.note)+'</p>';
 b+='<button class="lnk" onclick="openEdT(\''+t.id+'\')">Edit template →</button>';
@@ -1514,7 +1543,7 @@ o[k]=Math.min(max,Math.max(min,(+o[k]||0)+d));sv();
 setV(document.getElementById('tv-'+f.replace('.','-')),o[k])}
 function tFld(label,f,step,min,max){
 return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="tStep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="tv-'+f.replace('.','-')+'">'+tGet(f)+'</div><button class="stb" data-hold data-fn="tStep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
-function newTplSheet(){sheet('New template','','<div class="shbtns"><button class="btn btn-o" onclick="newTpl(\'lift\')">Lift — sets × reps</button><button class="btn btn-o" onclick="newTpl(\'cardio\')">Cardio — sprints / bike / swim</button><button class="btn" style="color:var(--muted)" onclick="closeOv()">Cancel</button></div>')}
+function newTplSheet(){sheet('New template','','<div class="shbtns"><button class="btn btn-o" onclick="newTpl(\'lift\')">Lift — sets × reps</button><button class="btn btn-o" onclick="newTpl(\'cardio\')">Cardio — sprints / bike / swim / run</button><button class="btn" style="color:var(--muted)" onclick="closeOv()">Cancel</button></div>')}
 function newTpl(kind){
 const t=kind==='lift'?{id:id('t'),name:'New Lift Day',kind:'lift',note:'',entries:[]}
 :{id:id('t'),name:'New Cardio Day',kind:'cardio',note:'',entries:[],sprD:{reps:3,distM:50,eff:60},aerD:{mode:'bike',durMin:30,zone:'1-2'},sprCue:'',aerCue:'',checks:[]};
@@ -1538,7 +1567,7 @@ h+='<div class="sl"><span class="lt">Sprint defaults</span><span class="rule"></
 h+='<div class="fgrid">'+tFld('Reps','sprD.reps',1,1,20)+tFld('Dist m','sprD.distM',10,10,400)+tFld('Effort %','sprD.eff',5,10,100)+'</div>';
 h+='<div class="flab">Sprint cue</div><input class="tin" value="'+esc(t.sprCue||'')+'" onchange="tEd().sprCue=this.value;sv()">';
 h+='<div class="sl"><span class="lt">Aerobic defaults</span><span class="rule"></span></div>';
-h+='<div class="seg" style="margin-bottom:10px"><button class="sgb'+(t.aerD.mode==='bike'?' on':'')+'" onclick="tEd().aerD.mode=\'bike\';sv();rn()">Bike</button><button class="sgb'+(t.aerD.mode==='swim'?' on':'')+'" onclick="tEd().aerD.mode=\'swim\';sv();rn()">Swim</button></div>';
+h+='<div class="seg" style="margin-bottom:10px">'+['bike','swim','run'].map(m=>'<button class="sgb'+(t.aerD.mode===m?' on':'')+'" onclick="tEd().aerD.mode=\''+m+'\';sv();rn()">'+aerLabel(m)+'</button>').join('')+'</div>';
 h+='<div class="fgrid" style="grid-template-columns:1fr 1.4fr">'+tFld('Min','aerD.durMin',5,5,180)
 +'<div class="fld"><div class="fl2">Zone</div><div class="seg" style="height:46px">'+['1','1-2','2'].map(z=>'<button class="sgb'+(t.aerD.zone===z?' on':'')+'" onclick="tEd().aerD.zone=\''+z+'\';sv();rn()">'+z+'</button>').join('')+'</div></div></div>';
 h+='<div class="flab">Aerobic cue</div><input class="tin" value="'+esc(t.aerCue||'')+'" onchange="tEd().aerCue=this.value;sv()">';
