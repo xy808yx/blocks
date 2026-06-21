@@ -219,7 +219,7 @@ a{color:var(--ember);text-decoration:none}
 .sr.done.new{animation:srin .55s var(--ease)}
 @keyframes srin{from{background:rgba(127,176,105,.32);transform:scale(.97)}}
 .sr.done .dtx{font-size:15.5px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums;grid-column:2/4;text-align:center}
-.sr.done .dck{height:40px;display:flex;align-items:center;justify-content:center;color:var(--sage)}
+.sr.done .dck{height:44px;display:flex;align-items:center;justify-content:center;color:var(--sage)}
 .sr.done .dck svg{width:18px;height:18px}
 .adds{font-size:14px;font-weight:600;color:var(--muted);padding:9px 4px 4px;display:inline-block}
 .adds:active{color:var(--dim)}
@@ -251,6 +251,13 @@ a{color:var(--ember);text-decoration:none}
 .sgb{flex:1;min-height:40px;border-radius:8px;font-size:14.5px;font-weight:650;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
 .sgb.on{background:var(--border-h);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06)}
 .savedl{display:flex;align-items:center;gap:10px;font-size:15.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.rxc{background:linear-gradient(180deg,rgba(255,111,46,.10),rgba(255,111,46,.04));border:1px solid var(--ember-line);border-radius:15px;padding:13px 15px;margin-bottom:12px}
+.rxh{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:8px}
+.rxp{font-family:var(--fd);font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ember)}
+.rxt{font-size:23px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.rxe{font-size:14px;font-weight:600;color:var(--dim)}
+.rxr{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.45}
+.rxl{font-size:13px;color:var(--dim);margin-top:9px;padding-top:9px;border-top:1px solid var(--border)}
 .savedl b{color:var(--text);font-weight:650}
 .savedl .ed{margin-left:auto;font-size:14px;font-weight:650;color:var(--ember);padding:8px 4px}
 
@@ -352,7 +359,7 @@ a{color:var(--ember);text-decoration:none}
 .calnav button:active{background:var(--border)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4.5px}
 .calh{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-align:center;text-transform:uppercase;padding:2px 0 4px}
-.calc{aspect-ratio:1;border-radius:9px;background:var(--surface2);border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;position:relative}
+.calc{aspect-ratio:1;min-height:42px;border-radius:9px;background:var(--surface2);border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;position:relative}
 .calc.out{visibility:hidden}
 .calc.tod{border-color:var(--ember-line)}
 .calc.fut{opacity:.32}
@@ -428,7 +435,7 @@ const templates=[
 {id:'t_pull',name:'Pull + Calves',kind:'lift',
  note:'Straight sets, full rest. Hang pause replaces dead hangs. Consistent reps across all 4 sets → add weight. Calf raises: when 3×15 is easy, hold a plate.',
  entries:[
- en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,cue:'3-5s hang each rep'}),
+ en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,cue:'3-5s hang each rep · R shoulder cranky → neutral/chin grip + stop shy of failure (until Sept)'}),
  en('p2',{sets:3,scheme:'3 × 10/side',defReps:10,cue:'full rest'}),
  en('p3',{sets:3,scheme:'3 × 12-15',defReps:12,cue:'2s hold at top'}),
  en('p4',{sets:3,scheme:'3 × 15',defReps:15,cue:'ext. rotation at top'}),
@@ -440,8 +447,8 @@ const templates=[
  note:'Straight sets, full rest 90-120s. Top of rep range for 2 consecutive sessions → add 5 lbs. BSS: bodyweight first, then hold plates.',
  entries:[
  en('s0',{warmups:2,sets:0,scheme:'2 × 15 · warm-up',defReps:15,cue:'light plates'}),
- en('s1',{sets:4,scheme:'4 × 8-10',defReps:8,cue:'full rest'}),
- en('s2',{sets:3,scheme:'3 × max',amrap:true,defReps:10}),
+ en('s1',{sets:4,scheme:'4 × 8-10',defReps:8,cue:'LEFT arm only — right resting (impingement) until Sept · full rest'}),
+ en('s2',{sets:3,scheme:'3 × max',amrap:true,defReps:10,enabled:false}),
  en('s3',{sets:3,scheme:'3 × 8-10',defReps:8}),
  en('s4',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'BW → hold plates'}),
 ]},
@@ -453,6 +460,7 @@ const templates=[
  sprCue:'walk-back recovery · Fri (not the fasted Tue)',
  aerCue:'zone 1-2 · keep it easy',
  checks:[
+ {id:'mbt',name:'Med Ball Throws — pick 1',detail:'before sprints, while fresh · 3-5 × 3-5 @ 100% intent, full recovery · ① Overhead-back scoop (up & out, full triple extension) · ② Chest pass / shotput (horizontal push) · ③ Rotational scoop (into wall) · throw for distance, not fatigue',enabled:true},
  {id:'cl',name:'Stick Landings',detail:'2-3 × 5 · before sprints · low step or in place · land soft & silent, hold 2-3s',enabled:false},
  {id:'mobdone',name:'Full Mobility Routine',detail:'roll · stretch · flows',link:'mobility',enabled:true},
 ]},
@@ -555,13 +563,14 @@ const reference=[
 ];
 return{
 schemaVersion:1,
-contentRev:2,
+contentRev:5,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
 activeProgramId:'p_rtt',
 programs:[{id:'p_rtt',name:'Return to Training',subtitle:'Phase IV — rebuilding · Gate 3 next',
  schedule:{0:null,1:'t_pull',2:'t_cardio',3:'t_push',4:'t_pull',5:'t_cardio',6:'t_push'},
+ sprintPlan:{focus:'100',phaseKey:'accel',repTarget:5,cleanStreak:0,sessionCount:0},
  templates,checklists:{daily,dailyNote:'Run the full list twice — one set of each per pass.',mobility,therapist},reference}],
 sessions:[],
 days:{},
@@ -579,6 +588,13 @@ const DAB=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/></svg>';
 const KG=0.45359237;
+/* Sprint plan — phases per event focus. Generic so 200/400 drop in as new keys (each: speed-endurance / special-endurance phases). */
+const SPRINTPLAN={'100':[
+{key:'strides',name:'Strides',type:'extensive',distM:50,repStart:6,repCap:8,effort:75},
+{key:'accel',name:'Accelerations',type:'accel',distM:30,repStart:5,repCap:8,effort:90},
+{key:'maxv',name:'Max Velocity',type:'max-V',distM:50,repStart:4,repCap:6,effort:100},
+{key:'free',name:'Free / 100m',type:'sprint',distM:60,repStart:4,repCap:6,effort:100}
+]};
 
 let FRESH=false;
 function ld(){try{DB=JSON.parse(localStorage.getItem('blocks_v1')||'null')}catch(e){DB=null}
@@ -587,7 +603,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=2)return;
+let cr=DB.contentRev||0;if(cr>=5)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -596,6 +612,33 @@ if(cr<1){
  cr=1;
 }
 if(cr<2){patchRef('Parked & Cut');cr=2;}
+if(cr<3){
+ const ft=(fp.templates||[]).find(x=>x.id==='t_cardio');
+ const fchk=ft&&(ft.checks||[]).find(c=>c.id==='mbt');
+ (DB.programs||[]).forEach(p=>{
+  const oc=(p.templates||[]).find(x=>x.id==='t_cardio');
+  if(oc&&fchk&&!(oc.checks||[]).some(c=>c.id==='mbt'))(oc.checks=oc.checks||[]).unshift(JSON.parse(JSON.stringify(fchk)));
+  const op=(p.templates||[]).find(x=>x.id==='t_push');if(op){const e=(op.entries||[]).find(x=>x.exId==='s2');if(e)e.enabled=false}
+ });
+ cr=3;
+}
+if(cr<4){
+ const ftp=(fp.templates||[]).find(x=>x.id==='t_push');
+ const ftl=(fp.templates||[]).find(x=>x.id==='t_pull');
+ const fcue=(t,id)=>{const e=t&&(t.entries||[]).find(x=>x.exId===id);return e?e.cue:null};
+ (DB.programs||[]).forEach(p=>{
+  const op=(p.templates||[]).find(x=>x.id==='t_push');
+  if(op){const e=(op.entries||[]).find(x=>x.exId==='s1'),c=fcue(ftp,'s1');if(e&&c!=null)e.cue=c}
+  const ol=(p.templates||[]).find(x=>x.id==='t_pull');
+  if(ol){const e1=(ol.entries||[]).find(x=>x.exId==='p1'),c1=fcue(ftl,'p1');if(e1&&c1!=null)e1.cue=c1}
+ });
+ cr=4;
+}
+if(cr<5){
+ const fpl=fp.sprintPlan;
+ (DB.programs||[]).forEach(p=>{if(!p.sprintPlan&&fpl)p.sprintPlan=JSON.parse(JSON.stringify(fpl))});
+ cr=5;
+}
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -617,6 +660,7 @@ function dayChecks(dk){return(DB.days[dk]&&DB.days[dk].c)||[]}
 function isTrainingDay(t){return!!(t&&t.kind==='lift')}
 function dailyItems(dk){const t=tplForDate(dk);return prog().checklists.daily.filter(d=>!(d.skipOnTraining&&isTrainingDay(t)))}
 function sessionsFor(dk){return DB.sessions.filter(s=>s.date===dk)}
+function cardioIsSprint(dk,cs){return cs&&cs.sprints?true:cs&&cs.aerobic?false:effDow(dk)===5}
 function activeSession(){return DB.sessions.find(s=>!s.finishedAt)||null}
 function sessById(sid){return DB.sessions.find(s=>s.id===sid)||null}
 function workingSets(sess,exId){return sess.sets.filter(s=>s.exId===exId)}
@@ -682,11 +726,16 @@ o.type='triangle';o.frequency.value=p[1];o.connect(g);g.connect(AC.destination);
 g.gain.setValueAtTime(.0001,t+p[0]);g.gain.exponentialRampToValueAtTime(.45,t+p[0]+.02);
 g.gain.exponentialRampToValueAtTime(.0001,t+p[0]+.2);o.start(t+p[0]);o.stop(t+p[0]+.24)})}catch(e){}}
 function vibe(p){if(DB.settings.haptics===false)return;try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+/* Persist the rest timer so it survives a phone screen-off eviction or SW-update reload (common at the gym). */
+function saveRest(){try{T?localStorage.setItem('blocks_rest',JSON.stringify(T)):localStorage.removeItem('blocks_rest')}catch(e){}}
+function restoreRest(){try{const r=JSON.parse(localStorage.getItem('blocks_rest')||'null');
+if(r&&r.ends&&Date.now()<r.ends+300000){if(r.ends<=Date.now())r.fired=true;T=r;clearInterval(TINT);TINT=setInterval(tickT,250);tickT()}
+else localStorage.removeItem('blocks_rest')}catch(e){}}
 function startRest(sec,label){if(!sec||sec<=0)return;
-T={ends:Date.now()+sec*1000,total:sec,label:label||'Rest',fired:false};
+T={ends:Date.now()+sec*1000,total:sec,label:label||'Rest',fired:false};saveRest();
 clearInterval(TINT);TINT=setInterval(tickT,250);tickT()}
-function killRest(){T=null;clearInterval(TINT);const c=document.getElementById('restc');if(c)c.classList.add('hide')}
-function t30(){if(!T)return;T.ends+=30000;T.total+=30;T.fired=false;const c=document.getElementById('restc');if(c)c.classList.remove('zero');tickT()}
+function killRest(){T=null;saveRest();clearInterval(TINT);const c=document.getElementById('restc');if(c)c.classList.add('hide')}
+function t30(){if(!T)return;T.ends+=30000;T.total+=30;T.fired=false;saveRest();const c=document.getElementById('restc');if(c)c.classList.remove('zero');tickT()}
 function tickT(){const c=document.getElementById('restc');if(!T){if(c)c.classList.add('hide');return}
 const left=T.ends-Date.now();
 if(c){c.classList.remove('hide');
@@ -834,7 +883,7 @@ if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);total+=lc.tot;done+=lc.d}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  total+=1;if(cs&&(cs.sprints||cs.aerobic))done++;
- (t.checks||[]).filter(c=>c.enabled).forEach(c=>{total++;if(checks.includes(c.id))done++})}
+ (t.checks||[]).filter(c=>c.enabled&&(c.id!=='mbt'||cardioIsSprint(dk,cs))).forEach(c=>{total++;if(checks.includes(c.id))done++})}
 const di=dailyItems(dk);total+=di.length;di.forEach(d=>{if(checks.includes(d.id))done++});
 return{done,total}}
 
@@ -977,7 +1026,7 @@ if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);wd=lc.d;wt=lc.tot}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  wt+=1;if(cs&&(cs.sprints||cs.aerobic))wd++;
- (t.checks||[]).filter(c=>c.enabled).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
+ (t.checks||[]).filter(c=>c.enabled&&(c.id!=='mbt'||cardioIsSprint(dk,cs))).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
 let dd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))dd++});
 return{wd,wt,dd,dt:di.length}}
 function workoutDone(dk,t){const sess=sessionsFor(dk);
@@ -1066,7 +1115,7 @@ let h='';
 const n=nagDue();
 if(n)h+='<div class="ban em"><span>🛟</span><span><b>'+n+' session'+(n>1?'s':'')+'</b> since last backup</span><span class="bba"><button class="bbtn" onclick="doExport()">Export</button><button class="bbtn q" onclick="nagLater()">Later</button></span></div>';
 const act=activeSession();
-if(act&&!(S.sel!=null&&S.sel!==dow))h+='<div class="ban"><span><b>'+esc(act.name)+'</b> in progress'+(act.date!==dk?' · '+fmtDk(act.date):'')+'</span><span class="bba"><button class="bbtn" onclick="resumeSession(\''+act.id+'\')">Resume</button><button class="bbtn q" onclick="finishQuick(\''+act.id+'\')">End</button></span></div>';
+if(act&&!(S.sel!=null&&S.sel!==dow))h+='<div class="ban"><span><b>'+esc(act.name)+'</b> in progress'+(act.date!==dk?' · '+fmtDk(act.date):'')+'</span><span class="bba"><button class="bbtn" onclick="resumeSession(\''+act.id+'\')">Resume</button><button class="bbtn q" onclick="finishQuickAsk(\''+act.id+'\')">End</button></span></div>';
 if(S.sel!=null&&S.sel!==dow)return h+vPreview(dk,dow);
 const t=tplForDate(dk),ov=DB.dayOverrides[dk]!=null;
 const title=t?t.name:'Rest Day';
@@ -1193,6 +1242,9 @@ else toast('Session saved')}
 function finishQuick(sid){const s=sessById(sid);if(!s)return;
 const last=s.sets.length?Math.max.apply(null,s.sets.map(x=>x.ts)):s.startedAt;
 s.finishedAt=last;sv();rn();toast('Session ended')}
+function finishQuickAsk(sid){const s=sessById(sid);if(!s)return;const mins=Math.max(1,Math.round((Date.now()-s.startedAt)/60000));
+ovConfirm('End session?','<b>'+s.sets.length+' sets</b> · '+mins+' min',[{label:'End session',click:'finishQuickGo(\''+sid+'\')',kind:'p'},{label:'Keep going',click:'closeOv()',kind:'o'}])}
+function finishQuickGo(sid){closeOv();finishQuick(sid)}
 function discardAsk(){ovConfirm('Discard this session?','All sets logged in it will be deleted.',
 [{label:'Discard',click:'discardSession()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
 function discardSession(){DB.sessions=DB.sessions.filter(x=>x.id!==S.sid);sv();killRest();lockOff();closeOv();S.view='tabs';S.tab='today';rn()}
@@ -1206,13 +1258,13 @@ function editPV(key,f,el,bw){if(el.querySelector('input'))return;const p=PV[key]
 const cur=+p[f]||0;
 el.innerHTML='<input class="vin num" type="text" inputmode="decimal" value="'+(cur||'')+'">';
 const inp=el.firstChild;inp.focus();try{inp.select()}catch(e){}
-const commit=()=>{const n=parseFloat(inp.value);p[f]=isNaN(n)?cur:Math.max(0,n);el.textContent=fmtVal(key,f,bw)};
+const commit=()=>{const n=parseFloat(inp.value);p[f]=isNaN(n)?cur:Math.max(f==='r'?1:0,n);el.textContent=fmtVal(key,f,bw)};
 inp.addEventListener('blur',commit);
 inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur()})}
-function stepGroup(key,f,step,bw){
-return'<div class="stp"><button class="stb" data-hold data-fn="stepPV" data-args=\''+JSON.stringify([key,f,-step,0,bw])+'\'>−</button>'
+function stepGroup(key,f,step,bw){const mn=f==='r'?1:0;
+return'<div class="stp"><button class="stb" data-hold data-fn="stepPV" data-args=\''+JSON.stringify([key,f,-step,mn,bw])+'\'>−</button>'
 +'<div class="stv num" id="v-'+key+'-'+f+'" onclick="editPV(\''+key+'\',\''+f+'\',this,'+bw+')">'+fmtVal(key,f,bw)+'</div>'
-+'<button class="stb" data-hold data-fn="stepPV" data-args=\''+JSON.stringify([key,f,step,0,bw])+'\'>+</button></div>'}
++'<button class="stb" data-hold data-fn="stepPV" data-args=\''+JSON.stringify([key,f,step,mn,bw])+'\'>+</button></div>'}
 function pendRow(ex,entry,i,sess){
 const key=ex.id+'_'+i;
 if(!PV[key]){const p=prefill(entry,ex,i,sess);PV[key]={w:p.w,r:p.reps}}
@@ -1334,7 +1386,9 @@ function ensureCV(dk,t,sess){
 if(CV&&CV.dk===dk)return;
 const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null;
 const type=sp?'sprint':ae?'aerobic':effDow(dk)===5?'sprint':'aerobic';
-CV={dk,type,reps:sp?sp.reps:t.sprD.reps,dist:sp?sp.distM:t.sprD.distM,eff:sp?sp.effortPct:t.sprD.eff,
+const _rx=sprintRx(prog().sprintPlan);
+CV={dk,type,reps:sp?sp.reps:(_rx?_rx.reps:t.sprD.reps),dist:sp?sp.distM:(_rx?_rx.distM:t.sprD.distM),eff:sp?sp.effortPct:(_rx?_rx.effort:t.sprD.eff),
+quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',
 mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:t.aerD.durMin,zone:ae?ae.zone:t.aerD.zone};
 CE={spr:!sp,aer:!ae}}
 function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
@@ -1349,12 +1403,28 @@ if(!s&&create){const t=tplForDate(dk);
 s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t?t.name:'Cardio',templateId:t?t.id:'t_cardio',kind:'cardio',startedAt:Date.now(),finishedAt:Date.now(),sets:[]};
 DB.sessions.push(s)}
 return s}
-function saveSprints(dk){const s=getCardioSess(dk,true);
-s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff};delete s.aerobic;if(!s.finishedAt)s.finishedAt=Date.now();
+function saveSprints(dk){const s=getCardioSess(dk,true);const _new=!s.sprints;
+s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,phaseKey:(prog().sprintPlan||{}).phaseKey||null};
+delete s.aerobic;if(!s.finishedAt)s.finishedAt=Date.now();
+if(_new)advanceSprintPlan(prog().sprintPlan,s);
 CE.spr=false;sv();rn();toast('Sprints logged')}
 function saveAerobic(dk){const s=getCardioSess(dk,true);
 s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};delete s.sprints;if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();toast(CV.mode==='bike'?'Ride logged':CV.mode==='run'?'Run logged':'Swim logged')}
+function sprintPhases(plan){return SPRINTPLAN[(plan&&plan.focus)||'100']||SPRINTPLAN['100']}
+function sprintRx(plan){if(!plan)return null;const ph=sprintPhases(plan);let ix=ph.findIndex(p=>p.key===plan.phaseKey);if(ix<0)ix=0;const phase=ph[ix];
+const deload=((plan.sessionCount||0)%4)===3;
+let reps=Math.max(phase.repStart,Math.min(phase.repCap,plan.repTarget||phase.repStart));
+if(deload)reps=Math.max(2,Math.round(reps*0.6));
+return{phase,idx:ix,total:ph.length,reps,distM:phase.distM,effort:phase.effort,type:phase.type,deload}}
+function lastSprint(dk){let best=null;DB.sessions.forEach(s=>{if(s.sprints&&s.date<dk&&(!best||s.date>best.date))best=s});return best?best.sprints:null}
+function advanceSprintPlan(plan,sess){if(!plan)return;const sp=sess.sprints||{};const ph=sprintPhases(plan);let ix=ph.findIndex(p=>p.key===plan.phaseKey);if(ix<0)ix=0;const phase=ph[ix];
+plan.sessionCount=(plan.sessionCount||0)+1;
+const clean=(sp.pain==null||sp.pain<=2)&&sp.quality!=='faded';
+if(clean){
+if((plan.repTarget||phase.repStart)<phase.repCap)plan.repTarget=(plan.repTarget||phase.repStart)+1;
+else{plan.cleanStreak=(plan.cleanStreak||0)+1;if(plan.cleanStreak>=2&&ix<ph.length-1){plan.phaseKey=ph[ix+1].key;plan.repTarget=ph[ix+1].repStart;plan.cleanStreak=0}}
+}else{plan.cleanStreak=0;plan.repTarget=Math.max(phase.repStart,(plan.repTarget||phase.repStart)-1)}}
 function cardioArea(dk,t,sessOverride){
 const sess=sessOverride||getCardioSess(dk,false);
 ensureCV(dk,t,sess);
@@ -1364,9 +1434,15 @@ if(t.note)h+='<div class="note">'+esc(t.note)+'</div>';
 (t.checks||[]).filter(c=>c.enabled&&c.id==='cl').forEach(c=>{h+=ckRow(c,checks)});
 h+='<div class="seg" style="margin:4px 0 14px"><button class="sgb'+(CV.type==='sprint'?' on':'')+'" onclick="cseg(\'type\',\'sprint\')">Sprints</button><button class="sgb'+(CV.type==='aerobic'?' on':'')+'" onclick="cseg(\'type\',\'aerobic\')">Bike / Swim / Run</button></div>';
 if(CV.type==='sprint'){
+(t.checks||[]).filter(c=>c.enabled&&c.id==='mbt').forEach(c=>{h+=ckRow(c,checks)});
+const _rx=sprintRx(prog().sprintPlan),_last=lastSprint(dk);
+if(_rx)h+='<div class="rxc"><div class="rxh"><span class="rxp">Phase '+(_rx.idx+1)+'/'+_rx.total+' · '+esc(_rx.phase.name)+'</span>'+(_rx.deload?'<span class="chip sg">deload</span>':'')+'</div><div class="rxt">'+_rx.reps+' × '+_rx.distM+'m <span class="rxe">@ up to '+_rx.effort+'%</span></div><div class="rxr">'+esc(_rx.type)+' · full recovery · stop early if speed drops</div>'+(_last?'<div class="rxl">Last: '+_last.reps+'×'+_last.distM+'m @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+'</div>':'')+'</div>';
 h+='<div class="exc"><div class="exh"><div class="exn">Sprint Run-Throughs</div><span class="chip bl">Sprint</span></div><div class="exs">'+esc(t.sprCue||'')+'</div>';
-if(sess&&sess.sprints&&!CE.spr)h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+sess.sprints.reps+' × '+sess.sprints.distM+' m</b> @ '+sess.sprints.effortPct+'%<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';
-else h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div><button class="btn btn-o" style="min-height:46px" onclick="saveSprints(\''+dk+'\')">Save sprints</button>';
+if(sess&&sess.sprints&&!CE.spr){const _s=sess.sprints;h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+_s.reps+' × '+_s.distM+' m</b> @ '+_s.effortPct+'%'+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+'<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';}
+else{h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div>';
+h+='<div class="flab">How did it feel?</div><div class="seg">'+['fresh','solid','faded'].map(q=>'<button class="sgb'+(CV.quality===q?' on':'')+'" onclick="cseg(\'quality\',\''+q+'\')">'+q.charAt(0).toUpperCase()+q.slice(1)+'</button>').join('')+'</div>';
+h+='<div class="flab">Calf · pain</div><div class="seg">'+[['none',0],['≤2',2],['>2',3]].map(p=>'<button class="sgb'+(CV.pain===p[1]?' on':'')+'" onclick="cseg(\'pain\','+p[1]+')">'+p[0]+'</button>').join('')+'</div>';
+h+='<button class="btn btn-o" style="min-height:46px;margin-top:14px" onclick="saveSprints(\''+dk+'\')">Save sprints</button>';}
 h+='</div>';
 }else{
 h+='<div class="exc"><div class="exh"><div class="exn">Bike / Swim / Run</div><span class="chip bl">Aerobic</span></div><div class="exs">'+esc(t.aerCue||'')+'</div>';
@@ -1377,7 +1453,7 @@ else{h+='<div class="seg" style="margin:12px 0 8px">'+['bike','swim','run'].map(
 +'<button class="btn btn-o" style="min-height:46px" onclick="saveAerobic(\''+dk+'\')">Save cardio</button>'}
 h+='</div>';
 }
-(t.checks||[]).filter(c=>c.enabled&&c.id!=='cl').forEach(c=>{h+=ckRow(c,checks)});
+(t.checks||[]).filter(c=>c.enabled&&c.id!=='cl'&&c.id!=='mbt').forEach(c=>{h+=ckRow(c,checks)});
 return h}
 
 /* ═══════════ MOBILITY ═══════════ */
@@ -1475,7 +1551,7 @@ else{b='<div class="tpe"><span class="tpen">Sprints</span><span class="tpes num"
  +(t.checks||[]).map(c=>'<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>').join('')}
 if(t.note)b+='<p style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:10px">'+esc(t.note)+'</p>';
 b+='<button class="lnk" onclick="openEdT(\''+t.id+'\')">Edit template →</button>';
-h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled).length+' moves':''),b)});
+h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled).length+' moves':(function(){const pl=prog().sprintPlan,rx=pl?sprintRx(pl):null;return rx?'Phase '+(rx.idx+1)+'/'+rx.total:'sprint · cardio'})()),b)});
 h+='<div class="sl"><span class="lt">Checklists</span><span class="rule"></span></div>';
 h+=det('Daily Block',p.checklists.daily.length+' items',p.checklists.daily.map(d=>'<div class="tpe"><span class="tpen">'+esc(d.name)+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'eddaily\')">Edit →</button>');
 h+=det('Mobility',p.checklists.mobility.reduce((a,g)=>a+g.items.length,0)+' items',p.checklists.mobility.map(g=>'<p style="margin:10px 0 4px"><strong style="color:var(--text);font-size:13px;letter-spacing:.06em;text-transform:uppercase">'+esc(g.group)+'</strong></p>'+g.items.map(i=>'<div class="tpe"><span class="tpen" style="font-weight:500;color:var(--dim)">'+esc(i.name)+'</span></div>').join('')).join('')+'<button class="lnk" onclick="openMobility(\'program\')">Open today\'s checklist →</button> <button class="lnk" onclick="openEd(\'edmob\')">Edit →</button>');
@@ -1969,7 +2045,7 @@ navigator.serviceWorker.register('./sw.js').then(reg=>{
 }).catch(()=>{});
 let refreshed=false;
 navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshed){refreshed=true;location.reload()}})})}
-rn();
+rn();restoreRest();
 </script>
 </body>
 </html>
