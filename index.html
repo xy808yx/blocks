@@ -529,12 +529,38 @@ const reference=[
 - True max sprint — full send. Block starts resume LAST.
 - Keep loading the calf even after performance returns — stopping is the other leading recurrence cause.
 - 1 week full training per 2 weeks missed.`},
-{t:'Sprint Return Progression',b:`Increase volume first (more reps), then intensity (faster). Never both in the same session. Check 48hr response each time.
-|Stage|Reps × Distance|Effort|Notes|
-|Now (wk 8-9)|3 × 50m|50-60%|2-3 more pain-free sessions|
-|Weeks 9-10|4-5 × 50-60m|50-60%|Volume up, intensity same|
-|Weeks 10-12|4-5 × 60m|60-70%|Intensity up|
-|Weeks 12-14|4-5 × 60-80m|70-80%|Approaching Gate 3|`},
+{t:'Sprint Program',b:`**By feel · 1×/week (Friday) · build top speed first, extend later · 100m now → 200 → 400 (track available).**
+| Phase | Distance | Reps | Effort |
+| Run-Throughs | 40-60m build-ups, float down | 6-8 (most volume) | ≤80% |
+| Sprint | accel 10-30m + flying 10-20m | 3-6 | ceiling 80→95% |
+| Extend | 40-60m / 7-10s held speed | 3-5 | 90-95% (dial=rest) |
+| 200 → 400m | later · track | — | — |
+**How it climbs — one dial at a time**
+- Grow clean reps at the current effort cap FIRST, then raise the ceiling and reset reps low. Never both in one week.
+- Most meters when slow, fewest at top speed.
+- Clean = 0/10 pain during fast (≥90%) reps, settled in 24h, calf normal next morning.
+- Pain or a "faded" rating holds you and drops a rep.
+- No true near-max until ~8 weeks of fast running are banked.
+- Auto-deload every 3rd-4th Friday (recovery — it doesn't advance the dials).
+**Every Friday**
+- Sprint-only through the calf window (heavy lower lift sits on Monday).
+- Warm up → readiness check (flat caps today's ceiling) → ramp in (70→80→top).
+- Full recovery (rest till springy) · stop when form breaks · float down, never brake hard.
+- Flat day? Log the easy run-through fallback — the trip's never wasted.
+**Later — 200m / 400m**
+- Speed first; you can't hold a speed you haven't built. Defer until Sprint is months-clean and a bent-knee (soleus) capacity check passes.
+- 200m = tighten rest on familiar reps. 400m = small, optional, late — a real push likely earns a 2nd easy speed day.`},
+{t:'Sprint Rationale & Sources',b:`**Short-to-long; build max velocity then extend it; polarize intensity — fast (≥95%) or easy (<70%), not chronic medium tempo.** Haugen et al., elite sprint development review. [Sports Med Open](https://pmc.ncbi.nlm.nih.gov/articles/PMC6872694/)
+**Volume before intensity — most meters at low effort, fewer as speed rises; progress on soreness, not rep counts** (50%/1:3 → 75%/1:5 → 90-100%/1:7). [Return to sprinting after injury](https://pmc.ncbi.nlm.nih.gov/articles/PMC7134353/)
+**~8-week floor before near-max** — calf recurrence risk is highest the first ~8 weeks; ~20% of repeats happen before full recovery; ~13-21% recur over 2 years. [Calf strains review](https://link.springer.com/article/10.1186/s40798-025-00960-4) · [AFL recurrence](https://pmc.ncbi.nlm.nih.gov/articles/PMC12410626/)
+**Soleus gate before 200/400** — ~90% of recurrent calf strains are soleus, loaded most under fatigue. [Soleus](https://pmc.ncbi.nlm.nih.gov/articles/PMC8761182/)
+**Absolute injured-leg gate, not L/R symmetry** — your injured calf is your dominant (stronger) side, so symmetry overstates recovery. [Calf rehab](https://e3rehab.com/calf-muscle-strain-injury/)
+**One sprint day, high-low week** — equal-volume 1×/week matched 2× for speed/power (under-delivers for endurance — matters if you push the 400). [1× vs 2×](https://pubmed.ncbi.nlm.nih.gov/34079162/) · [high-low](https://www.sprintcoach.com/blog/revisiting-the-high-low-concept-of-training)
+**"Stop when form breaks"** — technique degrades before measurable speed (~3-4% velocity drop-off). [VBT autoregulation](https://www.outputsports.com/blog/autoregulation-with-velocity-based-training)
+**Honest caveats**
+- One Friday can't reach the weekly max-velocity "protective dose" — safety rests on per-rep quality + the pain gate + your year-round strength/plyo base.
+- The 1×-vs-2× study was youth soccer, not a returning masters sprinter — directional, not exact.
+- Scheduling, deload rhythm, and by-feel cues are coaching convention, not RCT-proven for your profile.`},
 {t:'Plyometric Progression',b:`Earn the right to be reactive by first proving you can absorb. Count contacts not sets — start ~40-60 quality contacts, increase ≤10-20%/wk. Fresh, before lifts. 1-2×/wk, never back-to-back with sprint or weighted calf work.
 |Stage|Exercise|Gate|Notes|
 |Base|Heavy deficit raises|Now|Slow 3s/3s — structural|
@@ -562,7 +588,7 @@ const reference=[
 ];
 return{
 schemaVersion:1,
-contentRev:7,
+contentRev:8,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -602,7 +628,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=7)return;
+let cr=DB.contentRev||0;if(cr>=8)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -640,6 +666,14 @@ if(cr<5){
 }
 if(cr<6){patchRef('How the Tear Heals');cr=6;}
 if(cr<7){const fpl=fp.sprintPlan;(DB.programs||[]).forEach(p=>{if(fpl)p.sprintPlan=JSON.parse(JSON.stringify(fpl))});cr=7;}
+if(cr<8){
+ const cards=(fp.reference||[]).filter(r=>r.t==='Sprint Program'||r.t==='Sprint Rationale & Sources');
+ (DB.programs||[]).forEach(p=>{if(!p.reference||!cards.length)return;
+  p.reference=p.reference.filter(r=>r.t!=='Sprint Return Progression'&&r.t!=='Sprint Program'&&r.t!=='Sprint Rationale & Sources');
+  const gi=p.reference.findIndex(r=>r.t==='Phase Gates'),fresh=cards.map(c=>JSON.parse(JSON.stringify(c)));
+  if(gi>=0)p.reference.splice(gi+1,0,...fresh);else p.reference.unshift(...fresh)});
+ cr=8;
+}
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -1987,7 +2021,7 @@ h+='<div class="card" style="padding:12px 14px;display:flex;gap:12px;align-items
 h+='</div>';return h}
 
 /* ═══════════ MARKDOWN-LITE ═══════════ */
-function inlineMd(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}
+function inlineMd(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')}
 function md(src){
 const out=[];let tbl=null,ul=null;
 const fT=()=>{if(tbl){out.push('<table>'+tbl.map((r,i)=>'<tr>'+r.map(c=>'<t'+(i?'d':'h')+'>'+inlineMd(c)+'</t'+(i?'d':'h')+'>').join('')+'</tr>').join('')+'</table>');tbl=null}};
