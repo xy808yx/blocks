@@ -558,19 +558,18 @@ const reference=[
 {t:'How the Tear Heals',b:`**Phase 1 — Destruction · Hours 0-48.** Torn fibers retract. Hematoma forms scaffold. Neutrophils (hrs 1-24), macrophages (hrs 24-72) secrete growth factors activating satellite cells.
 **Phase 2 — Repair · Days 3-21.** Satellite cells fuse into myotubes bridging the gap. Fibroblasts lay Type III collagen — weak, disorganized. Grade II gap too large to fully bridge; scar fills the rest.
 **Phase 3 — Remodeling · Weeks 3-6+ months.** Type III → Type I collagen, organized along stress lines. Concentric = moderate stress. Eccentric = highest demand — remodeling stimulus if mature, re-tear if too early.
-**Why re-tears happen.** Scar is stiffer than original muscle. The junction between scar and healthy tissue is the weakest link — re-tears happen at the margins. Bulletproofing = surrounding tissue strong enough that the junction never sees failure-threshold forces.
-**Peptide false confidence.** BPC-157/TB-500 accelerate early repair, so pain drops — but collagen maturation runs on its own clock. Tissue feels healed while architecture is immature. Gates test structure, not perception.`},
+**Why re-tears happen.** Scar is stiffer than original muscle. The junction between scar and healthy tissue is the weakest link — re-tears happen at the margins. Bulletproofing = surrounding tissue strong enough that the junction never sees failure-threshold forces.`},
 ];
 return{
 schemaVersion:1,
-contentRev:5,
+contentRev:7,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
 activeProgramId:'p_rtt',
 programs:[{id:'p_rtt',name:'Return to Training',subtitle:'Phase IV — rebuilding · Gate 3 next',
  schedule:{0:null,1:'t_pull',2:'t_cardio',3:'t_push',4:'t_pull',5:'t_cardio',6:'t_push'},
- sprintPlan:{focus:'100',phaseKey:'accel',repTarget:5,cleanStreak:0,sessionCount:0},
+ sprintPlan:{focus:'100',phaseKey:'sprint',ceiling:85,repTarget:4,cleanStreak:0,loadedFridays:0,fastWeeks:12},
  templates,checklists:{daily,dailyNote:'Run the full list twice — one set of each per pass.',mobility,therapist},reference}],
 sessions:[],
 days:{},
@@ -588,13 +587,13 @@ const DAB=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/></svg>';
 const KG=0.45359237;
-/* Sprint plan — phases per event focus. Generic so 200/400 drop in as new keys (each: speed-endurance / special-endurance phases). */
+/* Sprint plan v2 — 3 phases per event focus; intensity ceiling and rep target are SEPARATE dials (advance one at a time, volume before intensity). Generic so 200/400 add as new focus keys later. */
 const SPRINTPLAN={'100':[
-{key:'strides',name:'Strides',type:'extensive',distM:50,repStart:6,repCap:8,effort:75},
-{key:'accel',name:'Accelerations',type:'accel',distM:30,repStart:5,repCap:8,effort:90},
-{key:'maxv',name:'Max Velocity',type:'max-V',distM:50,repStart:4,repCap:6,effort:100},
-{key:'free',name:'Free / 100m',type:'sprint',distM:60,repStart:4,repCap:6,effort:100}
+{key:'reentry',name:'Run-Throughs',type:'re-entry',dist:'40-60m build-ups · gradual float-down',distM:50,repFloor:6,repCap:8,cFloor:70,cCap:80},
+{key:'sprint',name:'Sprint',type:'accel / max-V',dist:'accel 10-30m (rolling) + flying 10-20m',distM:30,repFloor:4,repCap:6,cFloor:80,cCap:100},
+{key:'extend',name:'Extend',type:'speed-endurance',dist:'40-60m / 7-10s held-speed reps',distM:60,repFloor:3,repCap:5,cFloor:90,cCap:95}
 ]};
+const SPRINT_FLOOR_WEEKS=8; /* no true near-max (>90%) until this many weeks of fast running are banked (calf peak-recurrence window) */
 
 let FRESH=false;
 function ld(){try{DB=JSON.parse(localStorage.getItem('blocks_v1')||'null')}catch(e){DB=null}
@@ -603,7 +602,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=5)return;
+let cr=DB.contentRev||0;if(cr>=7)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -639,6 +638,8 @@ if(cr<5){
  (DB.programs||[]).forEach(p=>{if(!p.sprintPlan&&fpl)p.sprintPlan=JSON.parse(JSON.stringify(fpl))});
  cr=5;
 }
+if(cr<6){patchRef('How the Tear Heals');cr=6;}
+if(cr<7){const fpl=fp.sprintPlan;(DB.programs||[]).forEach(p=>{if(fpl)p.sprintPlan=JSON.parse(JSON.stringify(fpl))});cr=7;}
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -1387,8 +1388,8 @@ if(CV&&CV.dk===dk)return;
 const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null;
 const type=sp?'sprint':ae?'aerobic':effDow(dk)===5?'sprint':'aerobic';
 const _rx=sprintRx(prog().sprintPlan);
-CV={dk,type,reps:sp?sp.reps:(_rx?_rx.reps:t.sprD.reps),dist:sp?sp.distM:(_rx?_rx.distM:t.sprD.distM),eff:sp?sp.effortPct:(_rx?_rx.effort:t.sprD.eff),
-quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',
+CV={dk,type,reps:sp?sp.reps:(_rx?_rx.reps:t.sprD.reps),dist:sp?sp.distM:(_rx?_rx.distM:t.sprD.distM),eff:sp?sp.effortPct:(_rx?_rx.ceiling:t.sprD.eff),
+quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',ready:sp&&sp.ready?sp.ready:'',fallback:sp&&sp.fallback?1:0,
 mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:t.aerD.durMin,zone:ae?ae.zone:t.aerD.zone};
 CE={spr:!sp,aer:!ae}}
 function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
@@ -1404,27 +1405,48 @@ s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t?t.name:'Cardio',tem
 DB.sessions.push(s)}
 return s}
 function saveSprints(dk){const s=getCardioSess(dk,true);const _new=!s.sprints;
-s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,phaseKey:(prog().sprintPlan||{}).phaseKey||null};
+s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,phaseKey:(prog().sprintPlan||{}).phaseKey||null};
 delete s.aerobic;if(!s.finishedAt)s.finishedAt=Date.now();
 if(_new)advanceSprintPlan(prog().sprintPlan,s);
-CE.spr=false;sv();rn();toast('Sprints logged')}
+CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':'Sprints logged')}
+function sprFallback(dk){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=6;CV.dist=50;CV.eff=70}else{const rx=sprintRx(prog().sprintPlan);if(rx){CV.reps=rx.reps;CV.dist=rx.distM;CV.eff=rx.ceiling}}rn()}
 function saveAerobic(dk){const s=getCardioSess(dk,true);
 s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};delete s.sprints;if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();toast(CV.mode==='bike'?'Ride logged':CV.mode==='run'?'Run logged':'Swim logged')}
 function sprintPhases(plan){return SPRINTPLAN[(plan&&plan.focus)||'100']||SPRINTPLAN['100']}
-function sprintRx(plan){if(!plan)return null;const ph=sprintPhases(plan);let ix=ph.findIndex(p=>p.key===plan.phaseKey);if(ix<0)ix=0;const phase=ph[ix];
-const deload=((plan.sessionCount||0)%4)===3;
-let reps=Math.max(phase.repStart,Math.min(phase.repCap,plan.repTarget||phase.repStart));
-if(deload)reps=Math.max(2,Math.round(reps*0.6));
-return{phase,idx:ix,total:ph.length,reps,distM:phase.distM,effort:phase.effort,type:phase.type,deload}}
+function sprintPhaseIx(plan){const ph=sprintPhases(plan),ix=ph.findIndex(p=>p.key===plan.phaseKey);return ix<0?1:ix}
+function sprintDeloadEvery(plan){return (plan.fastWeeks||0)<SPRINT_FLOOR_WEEKS?2:4}
+function sprintRx(plan){if(!plan)return null;const ph=sprintPhases(plan),ix=sprintPhaseIx(plan),phase=ph[ix];
+const every=sprintDeloadEvery(plan);
+const deload=(plan.loadedFridays||0)>0&&((plan.loadedFridays||0)%every)===(every-1);
+let ceiling=Math.max(phase.cFloor,Math.min(phase.cCap,plan.ceiling||phase.cFloor));
+const floorBlocked=(plan.fastWeeks||0)<SPRINT_FLOOR_WEEKS;
+if(floorBlocked)ceiling=Math.min(ceiling,90);
+let reps=Math.max(phase.repFloor,Math.min(phase.repCap,plan.repTarget||phase.repFloor));
+if(deload){reps=Math.max(2,Math.round(reps*0.6));ceiling=Math.min(ceiling,phase.cFloor+5)}
+return{phase,idx:ix,total:ph.length,reps,ceiling,distM:phase.distM,dist:phase.dist,type:phase.type,deload,floorBlocked}}
 function lastSprint(dk){let best=null;DB.sessions.forEach(s=>{if(s.sprints&&s.date<dk&&(!best||s.date>best.date))best=s});return best?best.sprints:null}
-function advanceSprintPlan(plan,sess){if(!plan)return;const sp=sess.sprints||{};const ph=sprintPhases(plan);let ix=ph.findIndex(p=>p.key===plan.phaseKey);if(ix<0)ix=0;const phase=ph[ix];
-plan.sessionCount=(plan.sessionCount||0)+1;
-const clean=(sp.pain==null||sp.pain<=2)&&sp.quality!=='faded';
-if(clean){
-if((plan.repTarget||phase.repStart)<phase.repCap)plan.repTarget=(plan.repTarget||phase.repStart)+1;
-else{plan.cleanStreak=(plan.cleanStreak||0)+1;if(plan.cleanStreak>=2&&ix<ph.length-1){plan.phaseKey=ph[ix+1].key;plan.repTarget=ph[ix+1].repStart;plan.cleanStreak=0}}
-}else{plan.cleanStreak=0;plan.repTarget=Math.max(phase.repStart,(plan.repTarget||phase.repStart)-1)}}
+/* One dial at a time: clean -> grow reps to cap, THEN raise the effort ceiling and reset reps, THEN advance phase. Fast reps (>=90%) demand pain 0. Calendar floor holds near-max. Fallback/easy days don't progress. */
+function advanceSprintPlan(plan,sess){if(!plan)return;const sp=sess.sprints||{};
+plan.fastWeeks=(plan.fastWeeks||0)+1;
+if(sp.fallback)return;
+const _every=sprintDeloadEvery(plan),_wasDeload=(plan.loadedFridays||0)>0&&((plan.loadedFridays||0)%_every)===(_every-1);
+plan.loadedFridays=(plan.loadedFridays||0)+1;
+if(_wasDeload)return;
+const ph=sprintPhases(plan),ix=sprintPhaseIx(plan),phase=ph[ix];
+const fast=(sp.effortPct||0)>=90;
+const clean=(fast?(sp.pain==null||sp.pain===0):(sp.pain==null||sp.pain<=2))&&sp.quality!=='faded';
+if(!clean){plan.cleanStreak=0;plan.repTarget=Math.max(phase.repFloor,(plan.repTarget||phase.repFloor)-1);return}
+plan.cleanStreak=(plan.cleanStreak||0)+1;
+const rt=plan.repTarget||phase.repFloor,cl=plan.ceiling||phase.cFloor;
+if(rt<phase.repCap){plan.repTarget=rt+1;return}
+if(cl<phase.cCap){const nc=Math.min(phase.cCap,cl+5);if(nc>90&&(plan.fastWeeks||0)<SPRINT_FLOOR_WEEKS)return;plan.ceiling=nc;plan.repTarget=phase.repFloor;plan.cleanStreak=0;return}
+if(ix<ph.length-1){const nx=ph[ix+1];plan.phaseKey=nx.key;plan.ceiling=nx.cFloor;plan.repTarget=nx.repFloor;plan.cleanStreak=0}}
+function sprintMapHtml(plan){if(!plan)return'';const ph=sprintPhases(plan),rx=sprintRx(plan);
+let h='<div class="tpe"><span class="tpen" style="color:var(--ember)">Sprint progression · Phase '+(rx.idx+1)+'/'+ph.length+'</span><span class="tpes num">'+rx.reps+' × '+rx.distM+'m @ up to '+rx.ceiling+'%</span></div>';
+ph.forEach((p,i)=>{const on=i===rx.idx;h+='<div class="tpe"><span class="tpen" style="color:'+(on?'var(--text)':'var(--muted)')+';font-weight:'+(on?'600':'500')+'">'+(on?'▸ ':'&nbsp;&nbsp;')+esc(p.name)+'</span><span class="tpes" style="color:var(--muted);font-weight:500">'+esc(p.dist)+'</span></div>'});
+h+='<div class="tpe"><span class="tpen" style="color:var(--muted);font-weight:500">&nbsp;&nbsp;200m → 400m</span><span class="tpes" style="color:var(--muted)">later · track</span></div>';
+return h}
 function cardioArea(dk,t,sessOverride){
 const sess=sessOverride||getCardioSess(dk,false);
 ensureCV(dk,t,sess);
@@ -1435,14 +1457,21 @@ if(t.note)h+='<div class="note">'+esc(t.note)+'</div>';
 h+='<div class="seg" style="margin:4px 0 14px"><button class="sgb'+(CV.type==='sprint'?' on':'')+'" onclick="cseg(\'type\',\'sprint\')">Sprints</button><button class="sgb'+(CV.type==='aerobic'?' on':'')+'" onclick="cseg(\'type\',\'aerobic\')">Bike / Swim / Run</button></div>';
 if(CV.type==='sprint'){
 (t.checks||[]).filter(c=>c.enabled&&c.id==='mbt').forEach(c=>{h+=ckRow(c,checks)});
-const _rx=sprintRx(prog().sprintPlan),_last=lastSprint(dk);
-if(_rx)h+='<div class="rxc"><div class="rxh"><span class="rxp">Phase '+(_rx.idx+1)+'/'+_rx.total+' · '+esc(_rx.phase.name)+'</span>'+(_rx.deload?'<span class="chip sg">deload</span>':'')+'</div><div class="rxt">'+_rx.reps+' × '+_rx.distM+'m <span class="rxe">@ up to '+_rx.effort+'%</span></div><div class="rxr">'+esc(_rx.type)+' · full recovery · stop early if speed drops</div>'+(_last?'<div class="rxl">Last: '+_last.reps+'×'+_last.distM+'m @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+'</div>':'')+'</div>';
+const _rx=sprintRx(prog().sprintPlan),_last=lastSprint(dk),_fb=CV.fallback;
+if(_rx){
+if(_fb)h+='<div class="rxc"><div class="rxh"><span class="rxp">Easy day · Run-Throughs</span></div><div class="rxt">6 × 50m <span class="rxe">@ ~70%</span></div><div class="rxr">flat day — bank easy clean reps · gradual float-down · no near-max</div></div>';
+else{const _cap=CV.ready==='flat'?Math.min(_rx.ceiling,85):_rx.ceiling;
+h+='<div class="rxc"><div class="rxh"><span class="rxp">Phase '+(_rx.idx+1)+'/'+_rx.total+' · '+esc(_rx.phase.name)+'</span>'+(_rx.deload?'<span class="chip sg">deload</span>':'')+'</div><div class="rxt">'+_rx.reps+' × '+_rx.distM+'m <span class="rxe">@ up to '+_cap+'%</span></div><div class="rxr">'+esc(_rx.dist)+'</div><div class="rxr">ramp in (70→80→top) · rest till springy · stop when form breaks · float down, never brake</div>'+(_rx.floorBlocked?'<div class="rxr" style="color:var(--ember-hot)">near-max held until ~8 wks of fast running are banked</div>':'')+(_last?'<div class="rxl">Last: '+_last.reps+'×'+_last.distM+'m @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>':'')+'</div>';}
+}
 h+='<div class="exc"><div class="exh"><div class="exn">Sprint Run-Throughs</div><span class="chip bl">Sprint</span></div><div class="exs">'+esc(t.sprCue||'')+'</div>';
-if(sess&&sess.sprints&&!CE.spr){const _s=sess.sprints;h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+_s.reps+' × '+_s.distM+' m</b> @ '+_s.effortPct+'%'+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+'<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';}
-else{h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div>';
+if(sess&&sess.sprints&&!CE.spr){const _s=sess.sprints;h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+_s.reps+' × '+_s.distM+' m</b> @ '+_s.effortPct+'%'+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+(_s.fallback?' · easy':'')+'<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';}
+else{
+if(!_fb)h+='<div class="flab">Readiness</div><div class="seg">'+[['Springy','springy'],['Normal','normal'],['Flat','flat']].map(r=>'<button class="sgb'+(CV.ready===r[1]?' on':'')+'" onclick="cseg(\'ready\',\''+r[1]+'\')">'+r[0]+'</button>').join('')+'</div>';
+h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div>';
 h+='<div class="flab">How did it feel?</div><div class="seg">'+['fresh','solid','faded'].map(q=>'<button class="sgb'+(CV.quality===q?' on':'')+'" onclick="cseg(\'quality\',\''+q+'\')">'+q.charAt(0).toUpperCase()+q.slice(1)+'</button>').join('')+'</div>';
 h+='<div class="flab">Calf · pain</div><div class="seg">'+[['none',0],['≤2',2],['>2',3]].map(p=>'<button class="sgb'+(CV.pain===p[1]?' on':'')+'" onclick="cseg(\'pain\','+p[1]+')">'+p[0]+'</button>').join('')+'</div>';
-h+='<button class="btn btn-o" style="min-height:46px;margin-top:14px" onclick="saveSprints(\''+dk+'\')">Save sprints</button>';}
+h+='<button class="btn btn-o" style="min-height:46px;margin-top:14px" onclick="saveSprints(\''+dk+'\')">'+(_fb?'Save easy day':'Save sprints')+'</button>';
+h+='<button class="lnk" style="display:block;margin-top:10px;text-align:center" onclick="sprFallback(\''+dk+'\')">'+(_fb?'↩ back to today\'s plan':'Flat day? Easy run-throughs instead →')+'</button>';}
 h+='</div>';
 }else{
 h+='<div class="exc"><div class="exh"><div class="exn">Bike / Swim / Run</div><span class="chip bl">Aerobic</span></div><div class="exs">'+esc(t.aerCue||'')+'</div>';
@@ -1545,7 +1574,7 @@ p.templates.forEach(t=>{
 let b='';
 if(t.kind==='lift')b=t.entries.map(e=>{const ex=exOf(e.exId);
  return'<div class="tpe'+(e.enabled?'':' offed')+'"><span class="tpen">'+esc(ex.name)+'</span><span class="tpes num">'+esc(schemeOf(e))+(e.enabled?'':' · off')+'</span></div>'}).join('');
-else{b='<div class="tpe"><span class="tpen">Sprints</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>'
+else{b=(prog().sprintPlan?sprintMapHtml(prog().sprintPlan):'<div class="tpe"><span class="tpen">Sprints</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>')
  +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:12px;letter-spacing:.08em">— or —</div>'
  +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · z'+t.aerD.zone+'</span></div>'
  +(t.checks||[]).map(c=>'<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>').join('')}
