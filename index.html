@@ -1534,7 +1534,7 @@ if(!PV[key]){const p=prefill(entry,ex,i,sess);PV[key]={w:p.w,r:p.reps}}
 const pv=PV[key];
 if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
 sess.sets.push({exId,n:i+1,w:{v:+pv.w||0,u:unit()},reps:Math.round(pv.r),warmup:i<entry.warmups||undefined,amrap:entry.amrap||undefined,ts:S.backfill?sess.startedAt+sess.sets.length*45000:Date.now()});
-clearPV(exId);sv();vibe(12);S.flash=exId+'_'+(i+1);
+delete PV[key];sv();vibe(12);S.flash=exId+'_'+(i+1);
 if(!S.amend){let rem=0;
 entriesOf(sess).filter(e=>e.enabled).forEach(e=>{const tot=e.warmups+e.sets+(EXTRA[e.exId]||0);
  rem+=Math.max(0,tot-workingSets(sess,e.exId).length)});
@@ -1564,13 +1564,13 @@ const st=sess.sets.find(x=>x.exId===exId&&x.n===n);if(!st)return;
 const pv=PV['e_'+exId+'_'+n];if(!pv)return;
 if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
 st.w={v:+pv.w||0,u:unit()};st.reps=Math.round(pv.r);
-S.editKey=null;clearPV(exId);sv();rn()}
+S.editKey=null;delete PV['e_'+exId+'_'+n];sv();rn()}
 function removeSet(exId,n){
 const sess=sessById(S.sid);if(!sess)return;
 const before=JSON.parse(JSON.stringify(sess.sets));
 sess.sets=sess.sets.filter(x=>!(x.exId===exId&&x.n===n));
 sess.sets.forEach(x=>{if(x.exId===exId&&x.n>n)x.n--});
-S.editKey=null;clearPV(exId);sv();rn();toastUndo('Set removed',()=>{sess.sets=before;sv()})}
+S.editKey=null;delete PV['e_'+exId+'_'+n];sv();rn();toastUndo('Set removed',()=>{sess.sets=before;sv()})}
 function addRow(exId){EXTRA[exId]=(EXTRA[exId]||0)+1;rn()}
 function rmRow(exId){const n=EXTRA[exId]||0;if(n<=0)return;
 const sess=sessById(S.sid),entry=sess?entryFor(sess,exId):null;
