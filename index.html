@@ -1239,10 +1239,9 @@ if(t&&t.kind==='cardio'){
 let dd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))dd++});
 return{wd,wt,dd,dt:di.length}}
 function workoutDone(dk,t){const sess=sessionsFor(dk);
-if(sess.some(s=>s.finishedAt))return true;
 if(t&&t.kind==='cardio'){const s=sess.find(x=>x.kind==='cardio');return!!(s&&(s.sprints||s.aerobic))}
 if(t&&t.kind==='lift'){const s=sess.find(x=>x.kind!=='cardio'&&x.templateId===t.id);return!!(s&&s.sets.some(st=>!st.warmup))}
-return false}
+return sess.some(s=>s.finishedAt)}
 function upd(){
 if(S.view==='mobility'){const ck=dayChecks(tk());
  prog().checklists.mobility.forEach((g,gi)=>{const c=document.getElementById('cnt-g'+gi);
@@ -1335,23 +1334,61 @@ h+=weekStrip(dk);
 if(t&&t.kind==='lift')h+=liftArea(dk,t);
 else if(t&&t.kind==='cardio')h+=cardioArea(dk,t,null);
 else h+='<div class="sl first" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div><div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="font-size:20px">☾</span><div><div class="scard-t" style="font-size:16px">Full recovery</div><div class="ckr" style="margin-top:2px">Daily block + 30 min walk. That\'s it.</div></div></div>';
+h+=extraArea(dk,t);
 h+=dailySection(dk,t);
 h+=habitsStrip();
 return h}
-function liftArea(dk,t){
+function liftArea(dk,t,opts){
+opts=opts||{};const xtra=!!opts.extra;
 const sess=sessionsFor(dk).filter(s=>s.templateId===t.id),fin=sess.filter(s=>s.finishedAt),act=sess.find(s=>!s.finishedAt);
 const cnt=t.entries.filter(e=>e.enabled).length,setsN=t.entries.filter(e=>e.enabled).reduce((a,e)=>a+e.warmups+e.sets,0);
-let h='<div class="sl" id="sl-work"><span class="lt">'+esc(t.name)+'</span><span class="rule"></span><span class="cnt num" id="cnt-work"></span></div>';
-if(t.note)h+='<div class="note">'+esc(t.note)+'</div>';
+const _rid=(act||fin[fin.length-1]||{}).id||'';
+let h='<div class="sl" id="'+(xtra?'sl-xlift':'sl-work')+'"><span class="lt">'+esc(t.name)+'</span><span class="rule"></span>'+(xtra?'<button class="xrm" onclick="rmExtraLift(\''+_rid+'\')" aria-label="Remove" style="background:none;border:none;color:var(--muted);font-size:18px;line-height:1;padding:0 4px;cursor:pointer">×</button>':'<span class="cnt num" id="cnt-work"></span>')+'</div>';
+if(t.note&&!xtra)h+='<div class="note">'+esc(t.note)+'</div>';
 h+='<div class="card">';
 if(act)h+='<div class="scard-t">Session in progress</div><div class="scard-m num">'+act.sets.length+' sets logged · started '+mmss(Date.now()-act.startedAt)+' ago</div><button class="btn btn-p" onclick="resumeSession(\''+act.id+'\')">Continue session</button>';
 else if(fin.length){const s=fin[fin.length-1];
 h+='<div class="scard-t" style="color:var(--sage)">✓ Session complete</div><div class="scard-m num">'+s.sets.length+' sets · '+Math.round((s.finishedAt-s.startedAt)/60000)+' min</div><button class="btn btn-o" onclick="openDetail(\''+s.id+'\')">View / amend</button>';}
 else{h+='<div class="scard-t">'+esc(t.name)+'</div><div class="scard-m num">'+cnt+' exercises · '+setsN+' sets'+(activeSession()?' · finish the open session first':'')+'</div>'
-+(activeSession()?'':'<button class="btn btn-p" onclick="startSession()">Start session</button>');
-if(!activeSession()&&!DB.dayOverrides[tk()])h+='<button class="lnk" style="margin-top:6px" onclick="swapSheet()">Swap day…</button>'}
++(activeSession()?'':'<button class="btn btn-p" onclick="startSession(\''+t.id+'\')">Start session</button>');
+if(!xtra&&!activeSession()&&!DB.dayOverrides[tk()])h+='<button class="lnk" style="margin-top:6px" onclick="swapSheet()">Swap day…</button>'}
 h+='</div>';
 return h}
+/* ═══════════ EXTRA / STACKED WORKOUTS ═══════════ */
+function extraArea(dk,t){
+let h='';const pk=t?t.kind:'rest';
+if(pk!=='cardio'){
+const cs=getCardioSess(dk,false);
+if(cs||S.addCardio){const ct=prog().templates.find(x=>x.kind==='cardio');if(ct)h+=cardioArea(dk,ct,cs,{extra:true})}}
+if(pk!=='lift'){
+const ls=sessionsFor(dk).find(s=>s.kind!=='cardio');
+if(ls){const lt=tpl(ls.templateId);if(lt)h+=liftArea(dk,lt,{extra:true})}}
+h+=addWorkoutBar(dk,t);
+return h}
+function addWorkoutBar(dk,t){
+const pk=t?t.kind:'rest';
+const hasCardio=pk==='cardio'||!!getCardioSess(dk,false)||S.addCardio;
+const hasLift=pk==='lift'||sessionsFor(dk).some(s=>s.kind!=='cardio');
+if(hasCardio&&hasLift)return'';
+return'<button class="lnk" style="display:block;margin:12px auto 2px;text-align:center" onclick="addWorkoutSheet()">+ Add workout</button>'}
+function addWorkoutSheet(){
+const dk=tk(),t=tplForDate(dk),pk=t?t.kind:'rest';
+const hasCardio=pk==='cardio'||!!getCardioSess(dk,false)||S.addCardio;
+const hasLift=pk==='lift'||sessionsFor(dk).some(s=>s.kind!=='cardio');
+let b='';
+if(!hasLift)prog().templates.filter(x=>x.kind==='lift').forEach(x=>{const isS=t&&t.id===x.id;
+b+='<button class="btn btn-'+(isS?'p':'o')+'" onclick="addLift(\''+x.id+'\')">'+esc(x.name)+(isS?' · scheduled':'')+'</button>'});
+if(!hasCardio){
+b+='<button class="btn btn-o" onclick="addCardio(\'aerobic\')">Bike / Swim / Run</button>';
+b+='<button class="btn btn-o" onclick="addCardio(\'sprint\')">Sprints</button>'}
+b+='<button class="btn" style="color:var(--muted)" onclick="closeOv()">Cancel</button>';
+sheet('Add a workout','Stacks onto today — your scheduled session stays primary.','<div class="shbtns">'+b+'</div>')}
+function addLift(tid){closeOv();startSession(tid)}
+function addCardio(type){S.addCardio=true;const dk=tk(),ct=prog().templates.find(x=>x.kind==='cardio');CV=null;ensureCV(dk,ct,getCardioSess(dk,false));if(type)CV.type=type;closeOv();rn()}
+function rmExtraCardio(){const dk=tk(),s=getCardioSess(dk,false);S.addCardio=false;CV=null;
+if(s){const idx=DB.sessions.findIndex(x=>x.id===s.id),removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==s.id);sv();rn();toastUndo('Cardio removed',()=>{DB.sessions.splice(idx,0,removed);sv()})}
+else rn()}
+function rmExtraLift(sid){const idx=DB.sessions.findIndex(x=>x.id===sid);if(idx<0)return;const removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==sid);if(S.sid===sid)S.sid=null;sv();rn();toastUndo('Workout removed',()=>{DB.sessions.splice(idx,0,removed);sv()})}
 function dailySection(dk,t){
 const checks=dayChecks(dk),items=dailyItems(dk),training=isTrainingDay(t);
 let h='<div class="sl" id="sl-daily"><span class="lt">Daily Block</span><span class="rule"></span><span class="cnt num" id="cnt-daily"></span></div>';
@@ -1421,8 +1458,8 @@ S.sid=s.id;S.amend=true;S.backfill=true;S.view='session';rn()}
 function openPastDay(dk){const s=sessionsFor(dk).find(x=>x.finishedAt);if(s)openDetail(s.id)}
 
 /* ═══════════ SESSION LIFECYCLE ═══════════ */
-function startSession(){
-const dk=tk(),t=tplForDate(dk);if(!t)return;
+function startSession(tid){
+const dk=tk(),t=tid?tpl(tid):tplForDate(dk);if(!t)return;
 const s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t.name,templateId:t.id,kind:'lift',startedAt:Date.now(),finishedAt:null,sets:[]};
 DB.sessions.push(s);sv();PV={};EXTRA={};S.editKey=null;S.sid=s.id;S.amend=false;S.view='session';rn()}
 function resumeSession(sid){PV={};EXTRA={};S.editKey=null;S.sid=sid;S.amend=false;S.view='session';rn()}
@@ -1594,7 +1631,7 @@ function aerLabel(m){return m==='bike'?'Bike':m==='run'?'Run':'Swim'}
 function ensureCV(dk,t,sess){
 if(CV&&CV.dk===dk)return;
 const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null;
-const type=sp?'sprint':ae?'aerobic':effDow(dk)===5?'sprint':'aerobic';
+const type=(sp&&!ae)?'aerobic':(ae&&!sp)?'sprint':sp?'sprint':effDow(dk)===5?'sprint':'aerobic';
 const _rx=sprintRx(prog().sprintPlan);
 CV={dk,type,reps:sp?sp.reps:(_rx?_rx.reps:t.sprD.reps),dist:sp?sp.distM:(_rx?_rx.distM:t.sprD.distM),eff:sp?sp.effortPct:(_rx?_rx.ceiling:t.sprD.eff),
 quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',ready:sp&&sp.ready?sp.ready:'',fallback:sp&&sp.fallback?1:0,
@@ -1614,12 +1651,12 @@ DB.sessions.push(s)}
 return s}
 function saveSprints(dk){const s=getCardioSess(dk,true);const _new=!s.sprints;
 s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,phaseKey:(prog().sprintPlan||{}).phaseKey||null};
-delete s.aerobic;if(!s.finishedAt)s.finishedAt=Date.now();
+if(!s.finishedAt)s.finishedAt=Date.now();
 if(_new)advanceSprintPlan(prog().sprintPlan,s);
 CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':'Sprints logged')}
 function sprFallback(dk){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=6;CV.dist=50;CV.eff=70}else{const rx=sprintRx(prog().sprintPlan);if(rx){CV.reps=rx.reps;CV.dist=rx.distM;CV.eff=rx.ceiling}}rn()}
 function saveAerobic(dk){const s=getCardioSess(dk,true);
-s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};delete s.sprints;if(!s.finishedAt)s.finishedAt=Date.now();
+s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();toast(CV.mode==='bike'?'Ride logged':CV.mode==='run'?'Run logged':'Swim logged')}
 function sprintPhases(plan){return SPRINTPLAN[(plan&&plan.focus)||'100']||SPRINTPLAN['100']}
 function sprintPhaseIx(plan){const ph=sprintPhases(plan),ix=ph.findIndex(p=>p.key===plan.phaseKey);return ix<0?1:ix}
@@ -1655,24 +1692,30 @@ let h='<div class="tpe"><span class="tpen" style="color:var(--ember)">Sprint pro
 ph.forEach((p,i)=>{const on=i===rx.idx;h+='<div class="tpe"><span class="tpen" style="color:'+(on?'var(--text)':'var(--muted)')+';font-weight:'+(on?'600':'500')+'">'+(on?'▸ ':'&nbsp;&nbsp;')+esc(p.name)+'</span><span class="tpes" style="color:var(--muted);font-weight:500">'+esc(p.dist)+'</span></div>'});
 h+='<div class="tpe"><span class="tpen" style="color:var(--muted);font-weight:500">&nbsp;&nbsp;200m → 400m</span><span class="tpes" style="color:var(--muted)">later · track</span></div>';
 return h}
-function cardioArea(dk,t,sessOverride){
+function cardioArea(dk,t,sessOverride,opts){
+opts=opts||{};const xtra=!!opts.extra;
 const sess=sessOverride||getCardioSess(dk,false);
 ensureCV(dk,t,sess);
 const checks=dayChecks(dk);
-let h='<div class="sl" id="sl-work"><span class="lt">'+esc(t.name)+'</span><span class="rule"></span><span class="cnt num" id="cnt-work"></span></div>';
-if(t.note)h+='<div class="note">'+esc(t.note)+'</div>';
-(t.checks||[]).filter(c=>c.enabled&&c.id==='cl').forEach(c=>{h+=ckRow(c,checks)});
-h+='<div class="seg" style="margin:4px 0 14px"><button class="sgb'+(CV.type==='sprint'?' on':'')+'" onclick="cseg(\'type\',\'sprint\')">Sprints</button><button class="sgb'+(CV.type==='aerobic'?' on':'')+'" onclick="cseg(\'type\',\'aerobic\')">Bike / Swim / Run</button></div>';
-if(CV.type==='sprint'){
-(t.checks||[]).filter(c=>c.enabled&&c.id==='mbt').forEach(c=>{h+=ckRow(c,checks)});
+let h='<div class="sl" id="'+(xtra?'sl-xcardio':'sl-work')+'"><span class="lt">'+esc(xtra?'Cardio':t.name)+'</span><span class="rule"></span>'+(xtra?'<button class="xrm" onclick="rmExtraCardio()" aria-label="Remove" style="background:none;border:none;color:var(--muted);font-size:18px;line-height:1;padding:0 4px;cursor:pointer">×</button>':'<span class="cnt num" id="cnt-work"></span>')+'</div>';
+if(t.note&&!xtra)h+='<div class="note">'+esc(t.note)+'</div>';
+if(!xtra)(t.checks||[]).filter(c=>c.enabled&&c.id==='cl').forEach(c=>{h+=ckRow(c,checks)});
+const sprSaved=!!(sess&&sess.sprints&&!CE.spr),aerSaved=!!(sess&&sess.aerobic&&!CE.aer);
+const sprOpen=!(sess&&sess.sprints)||CE.spr,aerOpen=!(sess&&sess.aerobic)||CE.aer;
+if(sprOpen||aerOpen)h+='<div class="seg" style="margin:4px 0 14px"><button class="sgb'+(CV.type==='sprint'?' on':'')+'" onclick="cseg(\'type\',\'sprint\')">Sprints</button><button class="sgb'+(CV.type==='aerobic'?' on':'')+'" onclick="cseg(\'type\',\'aerobic\')">Bike / Swim / Run</button></div>';
+const showSpr=CV.type==='sprint'&&sprOpen;
+if(sprSaved||showSpr){
 const _rx=sprintRx(prog().sprintPlan),_last=lastSprint(dk),_fb=CV.fallback;
+if(showSpr){
+if(!xtra)(t.checks||[]).filter(c=>c.enabled&&c.id==='mbt').forEach(c=>{h+=ckRow(c,checks)});
 if(_rx){
 if(_fb)h+='<div class="rxc"><div class="rxh"><span class="rxp">Easy day · Run-Throughs</span></div><div class="rxt">6 × 50m <span class="rxe">@ ~70%</span></div><div class="rxr">flat day — bank easy clean reps · gradual float-down · no near-max</div></div>';
 else{const _cap=CV.ready==='flat'?Math.min(_rx.ceiling,85):_rx.ceiling;
 h+='<div class="rxc"><div class="rxh"><span class="rxp">Phase '+(_rx.idx+1)+'/'+_rx.total+' · '+esc(_rx.phase.name)+'</span>'+(_rx.deload?'<span class="chip sg">deload</span>':'')+'</div><div class="rxt">'+_rx.reps+' × '+_rx.distM+'m <span class="rxe">@ up to '+_cap+'%</span></div><div class="rxr">'+esc(_rx.dist)+'</div><div class="rxr">ramp in (70→80→top) · rest till springy · stop when form breaks · float down, never brake</div>'+(_rx.floorBlocked?'<div class="rxr" style="color:var(--ember-hot)">near-max held until ~8 wks of fast running are banked</div>':'')+(_last?'<div class="rxl">Last: '+_last.reps+'×'+_last.distM+'m @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>':'')+'</div>';}
 }
+}
 h+='<div class="exc"><div class="exh"><div class="exn">Sprint Run-Throughs</div><span class="chip bl">Sprint</span></div><div class="exs">'+esc(t.sprCue||'')+'</div>';
-if(sess&&sess.sprints&&!CE.spr){const _s=sess.sprints;h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+_s.reps+' × '+_s.distM+' m</b> @ '+_s.effortPct+'%'+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+(_s.fallback?' · easy':'')+'<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';}
+if(sprSaved){const _s=sess.sprints;h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+_s.reps+' × '+_s.distM+' m</b> @ '+_s.effortPct+'%'+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+(_s.fallback?' · easy':'')+'<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';}
 else{
 if(!_fb)h+='<div class="flab">Readiness</div><div class="seg">'+[['Springy','springy'],['Normal','normal'],['Flat','flat']].map(r=>'<button class="sgb'+(CV.ready===r[1]?' on':'')+'" onclick="cseg(\'ready\',\''+r[1]+'\')">'+r[0]+'</button>').join('')+'</div>';
 h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div>';
@@ -1681,16 +1724,18 @@ h+='<div class="flab">Calf · pain</div><div class="seg">'+[['none',0],['≤2',2
 h+='<button class="btn btn-o" style="min-height:46px;margin-top:14px" onclick="saveSprints(\''+dk+'\')">'+(_fb?'Save easy day':'Save sprints')+'</button>';
 h+='<button class="lnk" style="display:block;margin-top:10px;text-align:center" onclick="sprFallback(\''+dk+'\')">'+(_fb?'↩ back to today\'s plan':'Flat day? Easy run-throughs instead →')+'</button>';}
 h+='</div>';
-}else{
+}
+const showAer=CV.type==='aerobic'&&aerOpen;
+if(aerSaved||showAer){
 h+='<div class="exc"><div class="exh"><div class="exn">Bike / Swim / Run</div><span class="chip bl">Aerobic</span></div><div class="exs">'+esc(t.aerCue||'')+'</div>';
-if(sess&&sess.aerobic&&!CE.aer)h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+aerLabel(sess.aerobic.mode)+' · '+sess.aerobic.durMin+' min</b> · zone '+sess.aerobic.zone+'<button class="ed" onclick="cedit(\'aer\')">Edit</button></div>';
+if(aerSaved)h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+aerLabel(sess.aerobic.mode)+' · '+sess.aerobic.durMin+' min</b> · zone '+sess.aerobic.zone+'<button class="ed" onclick="cedit(\'aer\')">Edit</button></div>';
 else{h+='<div class="seg" style="margin:12px 0 8px">'+['bike','swim','run'].map(m=>'<button class="sgb'+(CV.mode===m?' on':'')+'" onclick="cseg(\'mode\',\''+m+'\')">'+aerLabel(m)+'</button>').join('')+'</div>'
 +'<div class="fgrid" style="grid-template-columns:1fr 1.4fr">'+cfld('Min','dur',5,5,180)
 +'<div class="fld"><div class="fl2">Zone</div><div class="seg" style="height:46px">'+['1','1-2','2'].map(z=>'<button class="sgb'+(CV.zone===z?' on':'')+'" onclick="cseg(\'zone\',\''+z+'\')">'+z+'</button>').join('')+'</div></div></div>'
 +'<button class="btn btn-o" style="min-height:46px" onclick="saveAerobic(\''+dk+'\')">Save cardio</button>'}
 h+='</div>';
 }
-(t.checks||[]).filter(c=>c.enabled&&c.id!=='cl'&&c.id!=='mbt').forEach(c=>{h+=ckRow(c,checks)});
+if(!xtra)(t.checks||[]).filter(c=>c.enabled&&c.id!=='cl'&&c.id!=='mbt').forEach(c=>{h+=ckRow(c,checks)});
 return h}
 
 /* ═══════════ MOBILITY ═══════════ */
