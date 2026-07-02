@@ -603,11 +603,11 @@ const templates=[
 {id:'t_pull',name:'Pull + Calves',kind:'lift',
  note:'Straight sets, full rest. Hang pause replaces dead hangs. Consistent reps across all 4 sets → add weight. Calf raises: when 3×15 is easy, hold a plate.',
  entries:[
- en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,cue:'3-5s hang each rep · R shoulder cranky → neutral/chin grip + stop shy of failure (until Sept)'}),
+ en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,enabled:false,cue:'Parked — protecting a catching/unstable R shoulder · revisit at weekly PT'}),
  en('p2',{sets:3,scheme:'3 × 10/side',defReps:10,cue:'full rest'}),
  en('p3',{sets:3,scheme:'3 × 12-15',defReps:12,cue:'2s hold at top'}),
  en('p4',{sets:3,scheme:'3 × 15',defReps:15,cue:'ext. rotation at top'}),
- en('p5',{sets:3,scheme:'3 × 8',defReps:8,cue:'max intent'}),
+ en('p5',{sets:3,scheme:'3 × 8',defReps:8,enabled:false,cue:'Parked — ballistic overhead; resting a catching/unstable R shoulder · revisit at weekly PT'}),
  en('pf',{sets:3,scheme:'3 × 10',defReps:10,enabled:false,cue:'light · fast up / controlled down · metronome ~132bpm · before heavy raises'}),
  en('p6',{sets:3,scheme:'3 × 15/leg',defReps:15,cue:'3s up, 3s down → weighted when easy'}),
 ]},
@@ -615,7 +615,7 @@ const templates=[
  note:'Straight sets, full rest 90-120s. Top of rep range for 2 consecutive sessions → add 5 lbs. BSS: bodyweight first, then hold plates.',
  entries:[
  en('s0',{warmups:2,sets:0,scheme:'2 × 15 · warm-up',defReps:15,cue:'light plates'}),
- en('s1',{sets:4,scheme:'4 × 8-10',defReps:8,cue:'LEFT arm only — right resting (impingement) until Sept · full rest'}),
+ en('s1',{sets:4,scheme:'4 × 8-10',defReps:8,cue:'LEFT arm only — right resting (catching/unstable shoulder) · revisit at weekly PT · full rest'}),
  en('s2',{sets:3,scheme:'3 × max',amrap:true,defReps:10,enabled:false}),
  en('s3',{sets:3,scheme:'3 × 8-10',defReps:8}),
  en('s4',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'BW → hold plates'}),
@@ -628,7 +628,7 @@ const templates=[
  sprCue:'walk-back recovery · Fri (not the fasted Tue)',
  aerCue:'zone 1-2 · keep it easy',
  checks:[
- {id:'mbt',name:'Med Ball Throws — pick 1',detail:'before sprints, while fresh · 3-5 × 3-5 @ 100% intent, full recovery · ① Overhead-back scoop (up & out, full triple extension) · ② Chest pass / shotput (horizontal push) · ③ Rotational scoop (into wall) · throw for distance, not fatigue',enabled:true},
+ {id:'mbt',name:'Med Ball Throws — pick 1',detail:'before sprints, while fresh · 3-5 × 3-5 @ 100% intent, full recovery · ① Overhead-back scoop (up & out, full triple extension) · ② Chest pass / shotput (horizontal push) · ③ Rotational scoop (into wall) · throw for distance, not fatigue',enabled:false},
  {id:'cl',name:'Stick Landings',detail:'2-3 × 5 · before sprints · low step or in place · land soft & silent, hold 2-3s',enabled:false},
  {id:'mobdone',name:'Full Mobility Routine',detail:'roll · stretch · flows',link:'mobility',enabled:true},
 ]},
@@ -755,7 +755,7 @@ const reference=[
 ];
 return{
 schemaVersion:1,
-contentRev:10,
+contentRev:11,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -795,7 +795,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=10)return;
+let cr=DB.contentRev||0;if(cr>=11)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -860,6 +860,21 @@ if(cr<10){
   if(c.dailyNotePm==null)c.dailyNotePm='Evening pass — one set of each. Warm tissue — this is where to push stretch depth. Dead hangs skipped on training days.';
   delete c.dailyNote});
  cr=10;
+}
+if(cr<11){
+ /* Right shoulder now shows catching/instability (see triage) — protect the joint: park pull-ups (p1), med-ball slams (p5), and the sprint-day throws check (mbt); refresh right-arm cues. Non-destructive: only parks items still enabled; keeps rows/trap-3/face-pulls + left-side press; logged history untouched; all reversible via the editor. */
+ const ftl=(fp.templates||[]).find(x=>x.id==='t_pull');
+ const ftp=(fp.templates||[]).find(x=>x.id==='t_push');
+ const fcue=(t,id)=>{const e=t&&(t.entries||[]).find(x=>x.exId===id);return e?e.cue:null};
+ (DB.programs||[]).forEach(p=>{
+  const ol=(p.templates||[]).find(x=>x.id==='t_pull');
+  if(ol)['p1','p5'].forEach(eid=>{const e=(ol.entries||[]).find(x=>x.exId===eid);if(e){if(e.enabled!==false)e.enabled=false;const c=fcue(ftl,eid);if(c!=null)e.cue=c}});
+  const op=(p.templates||[]).find(x=>x.id==='t_push');
+  if(op){const e=(op.entries||[]).find(x=>x.exId==='s1'),c=fcue(ftp,'s1');if(e&&c!=null)e.cue=c}
+  const oc=(p.templates||[]).find(x=>x.id==='t_cardio');
+  if(oc){const mb=(oc.checks||[]).find(x=>x.id==='mbt');if(mb&&mb.enabled!==false)mb.enabled=false}
+ });
+ cr=11;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
