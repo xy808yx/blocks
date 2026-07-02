@@ -250,6 +250,9 @@ a{color:var(--ember);text-decoration:none}
 .seg{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:3px;gap:3px;box-shadow:inset 0 1px 2px rgba(0,0,0,.2)}
 .sgb{flex:1;min-height:40px;border-radius:8px;font-size:14.5px;font-weight:650;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
 .sgb.on{background:var(--border-h);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06)}
+.sgb .sgc{margin-left:7px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sgb.on .sgc{color:var(--dim)}
+.sgb.done .sgc{color:var(--sage)}
 .savedl{display:flex;align-items:center;gap:10px;font-size:15.5px;color:var(--dim);font-variant-numeric:tabular-nums}
 .rxc{background:linear-gradient(180deg,rgba(255,111,46,.10),rgba(255,111,46,.04));border:1px solid var(--ember-line);border-radius:15px;padding:13px 15px;margin-bottom:12px}
 .rxh{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:8px}
@@ -634,12 +637,11 @@ const daily=[
 {id:'d1',name:'R. Posterior Tibial Nerve Floss',detail:'10 oscillations',video:'https://youtu.be/x1AtxQkJCu0'},
 {id:'d2',name:'Ulnar Nerve Floss',detail:'10 / side'},
 {id:'d3',name:'Median Nerve Floss',detail:'10 / side'},
-{id:'d4',name:'R. Popliteus Release',detail:'Per therapist',video:'https://www.youtube.com/watch?v=HGE8_co6Dn0'},
+{id:'d4',name:'90/90s',detail:'10 / side'},
 {id:'d7',name:'Couch Stretch',detail:'30s / side'},
 {id:'d8',name:"World's Greatest Stretch",detail:'5 / side · 5s holds'},
 {id:'d5',name:'Dead Hangs',detail:'1 min',skipOnTraining:true},
 {id:'d6',name:'Chin Tucks',detail:'10 × 5s — daily for FHP'},
-{id:'walk',name:'Walk 30 min',detail:'backward walking + sprint warm-up drills · every day'},
 ];
 const mobility=[
 {group:'Roll / Massage Gun',items:[
@@ -753,7 +755,7 @@ const reference=[
 ];
 return{
 schemaVersion:1,
-contentRev:9,
+contentRev:10,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -761,7 +763,7 @@ activeProgramId:'p_rtt',
 programs:[{id:'p_rtt',name:'Return to Training',subtitle:'Phase IV — rebuilding · Gate 3 next',
  schedule:{0:null,1:'t_pull',2:'t_cardio',3:'t_push',4:'t_pull',5:'t_cardio',6:'t_push'},
  sprintPlan:{focus:'100',phaseKey:'sprint',ceiling:85,repTarget:4,cleanStreak:0,loadedFridays:0,fastWeeks:12},
- templates,checklists:{daily,dailyNote:'Run the full list twice — one set of each per pass.',mobility,therapist},reference}],
+ templates,checklists:{daily,dailyNoteAm:'Morning pass — one set of each. Keep the nerve flosses gentle; tissue and nerves are tighter first thing. Dead hangs skipped on training days.',dailyNotePm:'Evening pass — one set of each. Warm tissue — this is where to push stretch depth. Dead hangs skipped on training days.',mobility,therapist},reference}],
 sessions:[],
 days:{},
 dayOverrides:{},
@@ -770,7 +772,7 @@ dayOverrides:{},
 
 /* ═══════════ STATE & PERSISTENCE ═══════════ */
 let DB=null;
-let S={tab:'today',view:'tabs',sel:null,sid:null,amend:false,backfill:false,det:null,mobFrom:'today',editKey:null,edT:null,edE:0,edX:null,edRef:0,trEx:null,calM:0,e1:false,pick:null,histAll:false,libQ:''};
+let S={tab:'today',view:'tabs',sel:null,sid:null,amend:false,backfill:false,det:null,mobFrom:'today',editKey:null,edT:null,edE:0,edX:null,edRef:0,trEx:null,calM:0,e1:false,pick:null,histAll:false,libQ:'',dailyTab:null};
 let PV={},CV=null,CE={spr:false,aer:false},EXTRA={};
 let T=null,TINT=null,EINT=null,WL=null,AC=null,UPD=null,IMPORTED=null,PRC=null,IMPCSV=null,RSC=null;
 const DY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -793,7 +795,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=9)return;
+let cr=DB.contentRev||0;if(cr>=10)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -847,6 +849,17 @@ if(cr<9){
   if(have.has(e.id)||haveN.has(n))return;
   (DB.library=DB.library||[]).push(JSON.parse(JSON.stringify(e)));have.add(e.id);haveN.add(n)});
  cr=9;
+}
+if(cr<10){
+ /* Daily Block split into tabbed Morning/Evening passes. d4 popliteus → 90/90s; walk becomes a standing note (not a check); per-pass notes replace dailyNote. Non-destructive: existing day checks keep their ids (read as morning-pass history); evening uses 'pm:'-prefixed ids that simply didn't exist before. */
+ (DB.programs||[]).forEach(p=>{const c=p.checklists;if(!c)return;
+  const d4=(c.daily||[]).find(x=>x.id==='d4');
+  if(d4&&/popliteus/i.test(d4.name||'')){d4.name='90/90s';d4.detail='10 / side';delete d4.video}
+  if(c.daily)c.daily=c.daily.filter(x=>x.id!=='walk');
+  if(c.dailyNoteAm==null)c.dailyNoteAm='Morning pass — one set of each. Keep the nerve flosses gentle; tissue and nerves are tighter first thing. Dead hangs skipped on training days.';
+  if(c.dailyNotePm==null)c.dailyNotePm='Evening pass — one set of each. Warm tissue — this is where to push stretch depth. Dead hangs skipped on training days.';
+  delete c.dailyNote});
+ cr=10;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
@@ -1093,7 +1106,7 @@ if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  total+=1;if(cs&&(cs.sprints||cs.aerobic))done++;
  (t.checks||[]).filter(c=>c.enabled&&(c.id!=='mbt'||cardioIsSprint(dk,cs))).forEach(c=>{total++;if(checks.includes(c.id))done++})}
-const di=dailyItems(dk);total+=di.length;di.forEach(d=>{if(checks.includes(d.id))done++});
+const di=dailyItems(dk);total+=di.length*2;di.forEach(d=>{if(checks.includes(d.id))done++;if(checks.includes('pm:'+d.id))done++});
 return{done,total}}
 
 /* ═══════════ PR ENGINE ═══════════ */
@@ -1236,8 +1249,8 @@ if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  wt+=1;if(cs&&(cs.sprints||cs.aerobic))wd++;
  (t.checks||[]).filter(c=>c.enabled&&(c.id!=='mbt'||cardioIsSprint(dk,cs))).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
-let dd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))dd++});
-return{wd,wt,dd,dt:di.length}}
+let ad=0,pd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))ad++;if(checks.includes('pm:'+d.id))pd++});
+return{wd,wt,dd:ad+pd,dt:di.length*2,ad,pd,ppt:di.length}}
 function workoutDone(dk,t){const sess=sessionsFor(dk);
 if(t&&t.kind==='cardio'){const s=sess.find(x=>x.kind==='cardio');return!!(s&&(s.sprints||s.aerobic))}
 if(t&&t.kind==='lift'){const s=sess.find(x=>x.kind!=='cardio'&&x.templateId===t.id);return!!(s&&s.sets.some(st=>!st.warmup))}
@@ -1255,7 +1268,11 @@ const hs=document.getElementById('heroSub');if(hs&&pct===100&&tot>0)hs.innerHTML
 const cw=document.getElementById('cnt-work');if(cw)cw.textContent=p.wd+'/'+p.wt;
 const sw=document.getElementById('sl-work');if(sw)sw.classList.toggle('done',wDn===1);
 const cd=document.getElementById('cnt-daily');if(cd)cd.textContent=p.dd+'/'+p.dt;
-const sd=document.getElementById('sl-daily');if(sd)sd.classList.toggle('done',p.dt>0&&p.dd>=p.dt)}
+const sd=document.getElementById('sl-daily');if(sd)sd.classList.toggle('done',p.dt>0&&p.dd>=p.dt);
+const ca=document.getElementById('cnt-am');if(ca)ca.textContent=p.ad+'/'+p.ppt;
+const cp=document.getElementById('cnt-pm');if(cp)cp.textContent=p.pd+'/'+p.ppt;
+const ta=document.getElementById('dtab-am');if(ta)ta.classList.toggle('done',p.ppt>0&&p.ad>=p.ppt);
+const tb=document.getElementById('dtab-pm');if(tb)tb.classList.toggle('done',p.ppt>0&&p.pd>=p.ppt)}
 
 /* ═══════════ TODAY ═══════════ */
 function selDay(d){const dow=dowOf(tk());S.sel=(d===dow||d===S.sel)?null:d;rn()}
@@ -1333,7 +1350,7 @@ h+='<header class="hero"><div class="rw"><svg width="72" height="72" viewBox="0 
 h+=weekStrip(dk);
 if(t&&t.kind==='lift')h+=liftArea(dk,t);
 else if(t&&t.kind==='cardio')h+=cardioArea(dk,t,null);
-else h+='<div class="sl first" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div><div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="font-size:20px">☾</span><div><div class="scard-t" style="font-size:16px">Full recovery</div><div class="ckr" style="margin-top:2px">Daily block + 30 min walk. That\'s it.</div></div></div>';
+else h+='<div class="sl first" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div><div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="font-size:20px">☾</span><div><div class="scard-t" style="font-size:16px">Full recovery</div><div class="ckr" style="margin-top:2px">Morning + evening blocks + 30 min walk. That\'s it.</div></div></div>';
 h+=extraArea(dk,t);
 h+=dailySection(dk,t);
 h+=habitsStrip();
@@ -1390,11 +1407,20 @@ if(s){const idx=DB.sessions.findIndex(x=>x.id===s.id),removed=DB.sessions[idx];D
 else rn()}
 function rmExtraLift(sid){const idx=DB.sessions.findIndex(x=>x.id===sid);if(idx<0)return;const removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==sid);if(S.sid===sid)S.sid=null;sv();rn();toastUndo('Workout removed',()=>{DB.sessions.splice(idx,0,removed);sv()})}
 function dailySection(dk,t){
-const checks=dayChecks(dk),items=dailyItems(dk),training=isTrainingDay(t);
+const checks=dayChecks(dk),items=dailyItems(dk),c=prog().checklists;
+if(S.dailyTab==null)S.dailyTab=new Date().getHours()<15?'am':'pm';
+const am=S.dailyTab==='am',n=items.length;
+const nDone=pfx=>items.filter(it=>checks.includes(pfx+it.id)).length;
+const ad=nDone(''),pd=nDone('pm:');
 let h='<div class="sl" id="sl-daily"><span class="lt">Daily Block</span><span class="rule"></span><span class="cnt num" id="cnt-daily"></span></div>';
-h+='<div class="note">'+esc(prog().checklists.dailyNote||'')+(training?' Dead hangs skipped on training days — hang work covers it.':'')+'</div>';
-items.forEach(it=>{h+=ckRow(it,checks)});
+h+='<div class="seg" style="margin:0 0 12px">'
++'<button class="sgb'+(am?' on':'')+(n&&ad>=n?' done':'')+'" id="dtab-am" onclick="setDailyTab(\'am\')">Morning<span class="sgc num" id="cnt-am">'+ad+'/'+n+'</span></button>'
++'<button class="sgb'+(!am?' on':'')+(n&&pd>=n?' done':'')+'" id="dtab-pm" onclick="setDailyTab(\'pm\')">Evening<span class="sgc num" id="cnt-pm">'+pd+'/'+n+'</span></button></div>';
+h+='<div class="note">'+esc(am?c.dailyNoteAm||'':c.dailyNotePm||'')+'</div>';
+items.forEach(it=>{h+=ckRow(am?it:Object.assign({},it,{id:'pm:'+it.id}),checks)});
+h+='<div class="note" style="margin:10px 0 0">Walk 30 min every day — backward walking + sprint warm-up drills.</div>';
 return h}
+function setDailyTab(x){if(S.dailyTab===x)return;S.dailyTab=x;rn()}
 function vPreview(dk,dow){
 const d=S.sel,tid=prog().schedule[d],t=tid?tpl(tid):null;
 const ord=[1,2,3,4,5,6,0],ti=ord.indexOf(dow),[Y,M,D]=dk.split('-').map(Number);
@@ -1417,7 +1443,7 @@ if(isPast){const done=sessionsFor(selDk).some(s=>s.finishedAt);
  else h+='<button class="btn btn-p" style="margin-top:4px" onclick="startPastSession(\''+selDk+'\',\''+t.id+'\')">Log '+DAB[d]+' · '+fmtDk(selDk)+'</button>'}
 const canSwap=!activeSession()&&!sessionsFor(dk).length&&!DB.dayOverrides[dk];
 if(canSwap)h+='<button class="btn btn-o" style="margin-top:4px" onclick="swapTo('+d+')">Do this session today instead</button>';
-}else h+='<div class="card"><div class="ckr">Rest — daily block + 30 min walk only.</div></div>';
+}else h+='<div class="card"><div class="ckr">Rest — morning + evening blocks + 30 min walk only.</div></div>';
 return h}
 
 /* ═══════════ SWAP ═══════════ */
@@ -1835,7 +1861,7 @@ if(t.note)b+='<p style="font-size:13.5px;color:var(--muted);line-height:1.55;mar
 b+='<button class="lnk" onclick="openEdT(\''+t.id+'\')">Edit template →</button>';
 h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled).length+' moves':(function(){const pl=prog().sprintPlan,rx=pl?sprintRx(pl):null;return rx?'Phase '+(rx.idx+1)+'/'+rx.total:'sprint · cardio'})()),b)});
 h+='<div class="sl"><span class="lt">Checklists</span><span class="rule"></span></div>';
-h+=det('Daily Block',p.checklists.daily.length+' items',p.checklists.daily.map(d=>'<div class="tpe"><span class="tpen">'+esc(d.name)+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'eddaily\')">Edit →</button>');
+h+=det('Daily Block',p.checklists.daily.length+' items · morning + evening',p.checklists.daily.map(d=>'<div class="tpe"><span class="tpen">'+esc(d.name)+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'eddaily\')">Edit →</button>');
 h+=det('Mobility',p.checklists.mobility.reduce((a,g)=>a+g.items.length,0)+' items',p.checklists.mobility.map(g=>'<p style="margin:10px 0 4px"><strong style="color:var(--text);font-size:13px;letter-spacing:.06em;text-transform:uppercase">'+esc(g.group)+'</strong></p>'+g.items.map(i=>'<div class="tpe"><span class="tpen" style="font-weight:500;color:var(--dim)">'+esc(i.name)+'</span></div>').join('')).join('')+'<button class="lnk" onclick="openMobility(\'program\')">Open today\'s checklist →</button> <button class="lnk" onclick="openEd(\'edmob\')">Edit →</button>');
 h+=det('Therapist Nerve Flossing','',p.checklists.therapist.map(t=>'<div class="tpe"><span class="tpen">'+esc(t.name)+(t.video?' <a class="vl" href="'+t.video+'" target="_blank">▶</a>':'')+'</span><span class="tpes">'+esc(t.note)+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'edther\')">Edit →</button>');
 h+='<div class="sl"><span class="lt">Reference</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="openEd(\'edref\')">Edit</button></div>';
@@ -1870,7 +1896,7 @@ Object.keys(c.schedule||{}).forEach(d=>{const v=c.schedule[d];if(v&&map[v])c.sch
 DB.programs.push(c);DB.activeProgramId=c.id;sv();closeOv();rn();toast('Duplicated — now active')}
 function newProg(){
 const np={id:id('p'),name:'New Program',subtitle:'',schedule:{0:null,1:null,2:null,3:null,4:null,5:null,6:null},
-templates:[],checklists:{daily:[],dailyNote:'',mobility:[],therapist:[]},reference:[]};
+templates:[],checklists:{daily:[],dailyNoteAm:'',dailyNotePm:'',mobility:[],therapist:[]},reference:[]};
 DB.programs.push(np);DB.activeProgramId=np.id;sv();closeOv();rn();toast('New program — build it from here')}
 function archProg(){
 const p=prog();p.archived=true;
@@ -2065,9 +2091,10 @@ function delEx(){DB.library=DB.library.filter(e=>e.id!==S.edX);sv();closeOv();S.
 function dl(){return prog().checklists}
 function vEdDaily(){
 const c=dl();
-let h=edHdr('Daily Block',c.daily.length+' items','goProg()');
+let h=edHdr('Daily Block',c.daily.length+' items · ×2 passes','goProg()');
 h+='<div class="co">';
-h+='<div class="flab" style="margin-top:0">Note</div><input class="tin" value="'+esc(c.dailyNote||'')+'" onchange="dl().dailyNote=this.value;sv()">';
+h+='<div class="flab" style="margin-top:0">Morning note</div><input class="tin" value="'+esc(c.dailyNoteAm||'')+'" onchange="dl().dailyNoteAm=this.value;sv()">';
+h+='<div class="flab">Evening note</div><input class="tin" value="'+esc(c.dailyNotePm||'')+'" onchange="dl().dailyNotePm=this.value;sv()">';
 h+='<div class="sl"><span class="lt">Items</span><span class="rule"></span></div>';
 c.daily.forEach((it,i)=>{
 h+='<div class="card" style="padding:12px">'
