@@ -1676,6 +1676,7 @@ const type=(sp&&!ae)?'aerobic':(ae&&!sp)?'sprint':sp?'sprint':effDow(dk)===5?'sp
 const _rx=sprintRx(prog().sprintPlan);
 CV={dk,type,reps:sp?sp.reps:(_rx?_rx.reps:t.sprD.reps),dist:sp?sp.distM:(_rx?_rx.distM:t.sprD.distM),eff:sp?sp.effortPct:(_rx?_rx.ceiling:t.sprD.eff),
 quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',ready:sp&&sp.ready?sp.ready:'',fallback:sp&&sp.fallback?1:0,
+spMode:sp&&sp.legs&&sp.legs.length?'ladder':'even',legsRaw:sp&&sp.legs?sp.legs.join(', '):'',
 mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:t.aerD.durMin,zone:ae?ae.zone:t.aerD.zone};
 CE={spr:!sp,aer:!ae}}
 function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
@@ -1691,14 +1692,23 @@ s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t?t.name:'Cardio',tem
 DB.sessions.push(s)}
 return s}
 function saveSprints(dk){const s=getCardioSess(dk,true);const _new=!s.sprints;
-s.sprints={reps:CV.reps,distM:CV.dist,effortPct:CV.eff,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,phaseKey:(prog().sprintPlan||{}).phaseKey||null};
+let legs=null,reps=CV.reps,distM=CV.dist;
+if(CV.spMode==='ladder'&&!CV.fallback){const L=parseLegs(CV.legsRaw);if(!L.length){toast('Enter at least one distance');return}legs=L;reps=L.length;distM=Math.max.apply(null,L)}
+s.sprints={reps,distM,effortPct:CV.eff,legs,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,phaseKey:(prog().sprintPlan||{}).phaseKey||null};
 if(!s.finishedAt)s.finishedAt=Date.now();
 if(_new)advanceSprintPlan(prog().sprintPlan,s);
-CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':'Sprints logged')}
+CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':(legs?'Ladder logged':'Sprints logged'))}
 function sprFallback(dk){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=6;CV.dist=50;CV.eff=70}else{const rx=sprintRx(prog().sprintPlan);if(rx){CV.reps=rx.reps;CV.dist=rx.distM;CV.eff=rx.ceiling}}rn()}
 function saveAerobic(dk){const s=getCardioSess(dk,true);
 s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();toast(CV.mode==='bike'?'Ride logged':CV.mode==='run'?'Run logged':'Swim logged')}
+/* Sprint ladder (variable-distance pyramid, e.g. 25/50/100/150/200) — stored as sprints.legs[]; reps/distM stay populated so progression + older views keep working. */
+function parseLegs(s){return String(s||'').split(/[^0-9.]+/).map(x=>parseFloat(x)).filter(x=>x>0&&x<=2000).map(x=>Math.round(x))}
+function sprLegs(sp){return sp&&sp.legs&&sp.legs.length?sp.legs:null}
+function sprDist(sp){const L=sprLegs(sp);return L?L.join(' / ')+' m':sp.reps+' × '+sp.distM+' m'}
+function sprDistC(sp){const L=sprLegs(sp);return L?L.join('/')+'m':sp.reps+'×'+sp.distM+'m'}
+function ladderInfo(raw){const L=parseLegs(raw);if(!L.length)return'<span style="color:var(--muted)">type distances separated by commas</span>';return'<b class="num" style="color:var(--text);font-weight:650">'+L.join(' · ')+' m</b> &nbsp;·&nbsp; '+L.length+' rep'+(L.length>1?'s':'')+' · '+L.reduce((a,b)=>a+b,0)+' m total'}
+function ladderPrev(el){if(CV)CV.legsRaw=el.value;const p=document.getElementById('ladderPrev');if(p)p.innerHTML=ladderInfo(el.value)}
 function sprintPhases(plan){return SPRINTPLAN[(plan&&plan.focus)||'100']||SPRINTPLAN['100']}
 function sprintPhaseIx(plan){const ph=sprintPhases(plan),ix=ph.findIndex(p=>p.key===plan.phaseKey);return ix<0?1:ix}
 function sprintDeloadEvery(plan){return (plan.fastWeeks||0)<SPRINT_FLOOR_WEEKS?2:4}
@@ -1752,14 +1762,19 @@ if(!xtra)(t.checks||[]).filter(c=>c.enabled&&c.id==='mbt').forEach(c=>{h+=ckRow(
 if(_rx){
 if(_fb)h+='<div class="rxc"><div class="rxh"><span class="rxp">Easy day · Run-Throughs</span></div><div class="rxt">6 × 50m <span class="rxe">@ ~70%</span></div><div class="rxr">flat day — bank easy clean reps · gradual float-down · no near-max</div></div>';
 else{const _cap=CV.ready==='flat'?Math.min(_rx.ceiling,85):_rx.ceiling;
-h+='<div class="rxc"><div class="rxh"><span class="rxp">Phase '+(_rx.idx+1)+'/'+_rx.total+' · '+esc(_rx.phase.name)+'</span>'+(_rx.deload?'<span class="chip sg">deload</span>':'')+'</div><div class="rxt">'+_rx.reps+' × '+_rx.distM+'m <span class="rxe">@ up to '+_cap+'%</span></div><div class="rxr">'+esc(_rx.dist)+'</div><div class="rxr">ramp in (70→80→top) · rest till springy · stop when form breaks · float down, never brake</div>'+(_rx.floorBlocked?'<div class="rxr" style="color:var(--ember-hot)">near-max held until ~8 wks of fast running are banked</div>':'')+(_last?'<div class="rxl">Last: '+_last.reps+'×'+_last.distM+'m @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>':'')+'</div>';}
+h+='<div class="rxc"><div class="rxh"><span class="rxp">Phase '+(_rx.idx+1)+'/'+_rx.total+' · '+esc(_rx.phase.name)+'</span>'+(_rx.deload?'<span class="chip sg">deload</span>':'')+'</div><div class="rxt">'+_rx.reps+' × '+_rx.distM+'m <span class="rxe">@ up to '+_cap+'%</span></div><div class="rxr">'+esc(_rx.dist)+'</div><div class="rxr">ramp in (70→80→top) · rest till springy · stop when form breaks · float down, never brake</div>'+(_rx.floorBlocked?'<div class="rxr" style="color:var(--ember-hot)">near-max held until ~8 wks of fast running are banked</div>':'')+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>':'')+'</div>';}
 }
 }
 h+='<div class="exc"><div class="exh"><div class="exn">Sprint Run-Throughs</div><span class="chip bl">Sprint</span></div><div class="exs">'+esc(t.sprCue||'')+'</div>';
-if(sprSaved){const _s=sess.sprints;h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+_s.reps+' × '+_s.distM+' m</b> @ '+_s.effortPct+'%'+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+(_s.fallback?' · easy':'')+'<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';}
+if(sprSaved){const _s=sess.sprints;h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+sprDist(_s)+'</b> @ '+_s.effortPct+'%'+(sprLegs(_s)?' · '+sprLegs(_s).reduce((a,b)=>a+b,0)+' m':'')+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+(_s.fallback?' · easy':'')+'<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';}
 else{
 if(!_fb)h+='<div class="flab">Readiness</div><div class="seg">'+[['Springy','springy'],['Normal','normal'],['Flat','flat']].map(r=>'<button class="sgb'+(CV.ready===r[1]?' on':'')+'" onclick="cseg(\'ready\',\''+r[1]+'\')">'+r[0]+'</button>').join('')+'</div>';
-h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div>';
+if(!_fb)h+='<div class="flab">Format</div><div class="seg" style="margin-bottom:4px">'+[['Even','even'],['Ladder','ladder']].map(m=>'<button class="sgb'+(CV.spMode===m[1]?' on':'')+'" onclick="cseg(\'spMode\',\''+m[1]+'\')">'+m[0]+'</button>').join('')+'</div>';
+if(!_fb&&CV.spMode==='ladder'){
+h+='<div class="flab">Distances (m)</div><input class="tin" inputmode="numeric" placeholder="25, 50, 100, 150, 200" value="'+esc(CV.legsRaw||'')+'" oninput="ladderPrev(this)">';
+h+='<div id="ladderPrev" style="font-size:14px;color:var(--dim);margin-top:8px;line-height:1.5;font-variant-numeric:tabular-nums">'+ladderInfo(CV.legsRaw)+'</div>';
+h+='<div class="fgrid" style="grid-template-columns:1fr;margin-top:12px">'+cfld('Effort %','eff',5,10,100)+'</div>';}
+else h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div>';
 h+='<div class="flab">How did it feel?</div><div class="seg">'+['fresh','solid','faded'].map(q=>'<button class="sgb'+(CV.quality===q?' on':'')+'" onclick="cseg(\'quality\',\''+q+'\')">'+q.charAt(0).toUpperCase()+q.slice(1)+'</button>').join('')+'</div>';
 h+='<div class="flab">Calf · pain</div><div class="seg">'+[['none',0],['≤2',2],['>2',3]].map(p=>'<button class="sgb'+(CV.pain===p[1]?' on':'')+'" onclick="cseg(\'pain\','+p[1]+')">'+p[0]+'</button>').join('')+'</div>';
 h+='<button class="btn btn-o" style="min-height:46px;margin-top:14px" onclick="saveSprints(\''+dk+'\')">'+(_fb?'Save easy day':'Save sprints')+'</button>';
@@ -1807,7 +1822,7 @@ const[y,mo]=s.date.split('-');const mk=MN[+mo-1]+' '+y;
 if(mk!==lastM){h+='<div class="mlab">'+mk+'</div>';lastM=mk}
 let sub='';
 if(s.kind==='cardio'){const p=[];
- if(s.sprints)p.push(s.sprints.reps+'×'+s.sprints.distM+'m @'+s.sprints.effortPct+'%');
+ if(s.sprints)p.push(sprDistC(s.sprints)+' @'+s.sprints.effortPct+'%');
  if(s.aerobic)p.push(s.aerobic.mode+' '+s.aerobic.durMin+'m');
  sub=p.join(' · ')||'—'}
 else{const w=s.sets.filter(x=>!x.warmup).length;
