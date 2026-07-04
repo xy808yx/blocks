@@ -350,6 +350,9 @@ a{color:var(--ember);text-decoration:none}
 .legchip:active{background:var(--surface)}
 .legsum{font-size:14px;color:var(--dim);margin-top:10px;font-variant-numeric:tabular-nums}
 .legsum b{color:var(--text);font-weight:650}
+.prsl{cursor:pointer;-webkit-user-select:none;user-select:none}
+.prtog{color:var(--muted);font-size:12px;margin-left:9px;font-weight:800}
+.prmin{color:var(--muted);font-size:13px;padding:2px 2px 6px;cursor:pointer}
 .erow{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:10px 12px;margin-bottom:7px;min-height:56px}
 .erow:active{background:var(--surface2)}
 .erow .em2{flex:1;min-width:0}
@@ -2240,8 +2243,10 @@ let h='<header class="hero"><div><div class="eyebrow">Trends</div><h1 class="tit
 h+='<div class="sl first"><span class="lt">Consistency</span><span class="rule"></span></div>';
 h+=calCard();
 h+=bedStat();
-h+='<div class="sl"><span class="lt">Recent PRs</span><span class="rule"></span><span class="cnt num">'+pr.feed.length+'</span></div>';
-if(!pr.feed.length)h+='<div class="card"><div class="ckr">PRs appear when you beat your own history. Log sessions — the baseline builds itself.</div></div>';
+const prMin=!!(DB.settings&&DB.settings.prMin);
+h+='<div class="sl prsl" onclick="togglePR()"><span class="lt">Recent PRs</span><span class="rule"></span><span class="cnt num">'+pr.feed.length+'</span><span class="prtog">'+(prMin?'▸':'▾')+'</span></div>';
+if(prMin)h+='<div class="prmin" onclick="togglePR()">'+(pr.feed.length?pr.feed.length+' PR'+(pr.feed.length>1?'s':'')+' on record · tap to show':'no PRs yet')+'</div>';
+else if(!pr.feed.length)h+='<div class="card"><div class="ckr">PRs appear when you beat your own history. Log sessions — the baseline builds itself.</div></div>';
 else h+='<div class="card" style="padding:4px 14px">'+pr.feed.slice(0,12).map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div><div class="prd num">'+fmtDk(f.date)+(f.date.slice(0,4)!==tk().slice(0,4)?' ’'+f.date.slice(2,4):'')+'</div></div>').join('')+'</div>';
 h+='<div class="sl"><span class="lt">Strength Trends</span><span class="rule"></span></div>';
 const exs=trendExs();
@@ -2252,6 +2257,7 @@ h+='<div class="fl">Blocks · Stage 3</div>';
 return h}
 function initials(n){const p=String(n).replace(/\(.*?\)/g,'').trim().split(/\s+/);return((p[0]||'?')[0]+(p[1]?p[1][0]:(p[0]||'  ')[1]||'')).toUpperCase()}
 function openTrend(exId){S.trEx=exId;S.e1=false;S.view='trend';rn()}
+function togglePR(){if(!DB.settings)DB.settings={};DB.settings.prMin=!DB.settings.prMin;vibe(8);sv();rn()}
 function trendChart(ser,useReps){
 const W=520,H=232,L=42,R=16,Tp=24,B=28;
 const pts=ser.map(p=>({t:p.t,v:useReps?p.mxR:rndDisp(toU(p.topW,'lb',unit()),unit()),e1:p.e1?rndDisp(toU(p.e1,'lb',unit()),unit()):0}));
