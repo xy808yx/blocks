@@ -342,6 +342,14 @@ a{color:var(--ember);text-decoration:none}
 .tarea{width:100%;min-height:110px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:var(--f);font-size:15px;line-height:1.6;padding:12px 13px;resize:vertical;-webkit-appearance:none;transition:border-color .2s,box-shadow .2s}
 .tarea:focus{outline:none;border-color:var(--ember-line);box-shadow:0 0 0 3px rgba(255,111,46,.07)}
 .flab{font-size:10.5px;font-weight:700;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin:14px 0 5px}
+.legadd{display:flex;gap:8px;align-items:stretch;margin-top:2px}
+.legaddb{width:auto;min-width:84px;flex:0 0 auto;padding:0 16px;min-height:0;font-size:15.5px}
+.legchips{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 10px}
+.legchip{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border-h);color:var(--text);border-radius:11px;padding:9px 13px;font-size:15.5px;font-weight:600;min-height:42px;font-variant-numeric:tabular-nums}
+.legchip .lx{color:var(--muted);font-size:12px;font-weight:800}
+.legchip:active{background:var(--surface)}
+.legsum{font-size:14px;color:var(--dim);margin-top:10px;font-variant-numeric:tabular-nums}
+.legsum b{color:var(--text);font-weight:650}
 .erow{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:10px 12px;margin-bottom:7px;min-height:56px}
 .erow:active{background:var(--surface2)}
 .erow .em2{flex:1;min-width:0}
@@ -1676,7 +1684,7 @@ const type=(sp&&!ae)?'aerobic':(ae&&!sp)?'sprint':sp?'sprint':effDow(dk)===5?'sp
 const _rx=sprintRx(prog().sprintPlan);
 CV={dk,type,reps:sp?sp.reps:(_rx?_rx.reps:t.sprD.reps),dist:sp?sp.distM:(_rx?_rx.distM:t.sprD.distM),eff:sp?sp.effortPct:(_rx?_rx.ceiling:t.sprD.eff),
 quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',ready:sp&&sp.ready?sp.ready:'',fallback:sp&&sp.fallback?1:0,
-spMode:sp&&sp.legs&&sp.legs.length?'ladder':'even',legsRaw:sp&&sp.legs?sp.legs.join(', '):'',
+spMode:sp&&sp.legs&&sp.legs.length?'ladder':'even',legsArr:sp&&sp.legs?sp.legs.slice():[],legPend:'',
 mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:t.aerD.durMin,zone:ae?ae.zone:t.aerD.zone};
 CE={spr:!sp,aer:!ae}}
 function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
@@ -1693,7 +1701,7 @@ DB.sessions.push(s)}
 return s}
 function saveSprints(dk){const s=getCardioSess(dk,true);const _new=!s.sprints;
 let legs=null,reps=CV.reps,distM=CV.dist;
-if(CV.spMode==='ladder'&&!CV.fallback){const L=parseLegs(CV.legsRaw);if(!L.length){toast('Enter at least one distance');return}legs=L;reps=L.length;distM=Math.max.apply(null,L)}
+if(CV.spMode==='ladder'&&!CV.fallback){const L=(CV.legsArr||[]).slice();if(!L.length){toast('Add at least one distance');return}legs=L;reps=L.length;distM=Math.max.apply(null,L)}
 s.sprints={reps,distM,effortPct:CV.eff,legs,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,phaseKey:(prog().sprintPlan||{}).phaseKey||null};
 if(!s.finishedAt)s.finishedAt=Date.now();
 if(_new)advanceSprintPlan(prog().sprintPlan,s);
@@ -1707,8 +1715,9 @@ function parseLegs(s){return String(s||'').split(/[^0-9.]+/).map(x=>parseFloat(x
 function sprLegs(sp){return sp&&sp.legs&&sp.legs.length?sp.legs:null}
 function sprDist(sp){const L=sprLegs(sp);return L?L.join(' / ')+' m':sp.reps+' × '+sp.distM+' m'}
 function sprDistC(sp){const L=sprLegs(sp);return L?L.join('/')+'m':sp.reps+'×'+sp.distM+'m'}
-function ladderInfo(raw){const L=parseLegs(raw);if(!L.length)return'<span style="color:var(--muted)">type distances separated by commas</span>';return'<b class="num" style="color:var(--text);font-weight:650">'+L.join(' · ')+' m</b> &nbsp;·&nbsp; '+L.length+' rep'+(L.length>1?'s':'')+' · '+L.reduce((a,b)=>a+b,0)+' m total'}
-function ladderPrev(el){if(CV)CV.legsRaw=el.value;const p=document.getElementById('ladderPrev');if(p)p.innerHTML=ladderInfo(el.value)}
+function addLeg(dk){if(!CV)return;const L=parseLegs(CV.legPend);if(!L.length)return;CV.legsArr=(CV.legsArr||[]).concat(L);CV.legPend='';vibe(8);rn();const el=document.getElementById('legIn');if(el)el.focus()}
+function rmLeg(i){if(!CV||!CV.legsArr)return;CV.legsArr.splice(i,1);vibe(6);rn()}
+function legTotal(){return((CV&&CV.legsArr)||[]).reduce(function(a,b){return a+b},0)}
 function sprintPhases(plan){return SPRINTPLAN[(plan&&plan.focus)||'100']||SPRINTPLAN['100']}
 function sprintPhaseIx(plan){const ph=sprintPhases(plan),ix=ph.findIndex(p=>p.key===plan.phaseKey);return ix<0?1:ix}
 function sprintDeloadEvery(plan){return (plan.fastWeeks||0)<SPRINT_FLOOR_WEEKS?2:4}
@@ -1771,8 +1780,11 @@ else{
 if(!_fb)h+='<div class="flab">Readiness</div><div class="seg">'+[['Springy','springy'],['Normal','normal'],['Flat','flat']].map(r=>'<button class="sgb'+(CV.ready===r[1]?' on':'')+'" onclick="cseg(\'ready\',\''+r[1]+'\')">'+r[0]+'</button>').join('')+'</div>';
 if(!_fb)h+='<div class="flab">Format</div><div class="seg" style="margin-bottom:4px">'+[['Even','even'],['Ladder','ladder']].map(m=>'<button class="sgb'+(CV.spMode===m[1]?' on':'')+'" onclick="cseg(\'spMode\',\''+m[1]+'\')">'+m[0]+'</button>').join('')+'</div>';
 if(!_fb&&CV.spMode==='ladder'){
-h+='<div class="flab">Distances (m)</div><input class="tin" inputmode="numeric" placeholder="25, 50, 100, 150, 200" value="'+esc(CV.legsRaw||'')+'" oninput="ladderPrev(this)">';
-h+='<div id="ladderPrev" style="font-size:14px;color:var(--dim);margin-top:8px;line-height:1.5;font-variant-numeric:tabular-nums">'+ladderInfo(CV.legsRaw)+'</div>';
+const _legs=CV.legsArr||[];
+h+='<div class="flab">Distances (m) · add one rep at a time</div>';
+if(_legs.length)h+='<div class="legchips">'+_legs.map(function(d,i){return'<button class="legchip num" onclick="rmLeg('+i+')">'+d+' m<span class="lx">✕</span></button>'}).join('')+'</div>';
+h+='<div class="legadd"><input id="legIn" class="tin fx" inputmode="numeric" placeholder="e.g. 50" value="'+esc(CV.legPend||'')+'" oninput="CV.legPend=this.value"><button class="btn btn-o legaddb" onclick="addLeg(\''+dk+'\')">+ Add</button></div>';
+h+='<div class="legsum">'+(_legs.length?'<b>'+_legs.length+' rep'+(_legs.length>1?'s':'')+'</b> · '+legTotal()+' m total':'add each distance, then Save')+'</div>';
 h+='<div class="fgrid" style="grid-template-columns:1fr;margin-top:12px">'+cfld('Effort %','eff',5,10,100)+'</div>';}
 else h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div>';
 h+='<div class="flab">How did it feel?</div><div class="seg">'+['fresh','solid','faded'].map(q=>'<button class="sgb'+(CV.quality===q?' on':'')+'" onclick="cseg(\'quality\',\''+q+'\')">'+q.charAt(0).toUpperCase()+q.slice(1)+'</button>').join('')+'</div>';
