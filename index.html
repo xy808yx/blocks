@@ -1180,6 +1180,10 @@ if(r.reps>mxR)mxR=r.reps;
 const v=w*(1+r.reps/30);if(v>e1)e1=v});
 out.push({date:s.date,t:s.startedAt,topW,topWr,mxR,e1})});
 return out}
+function sprintSeries(){const out=[];
+DB.sessions.filter(function(s){return s.finishedAt&&s.sprints}).sort(function(a,b){return a.startedAt-b.startedAt}).forEach(function(s){
+out.push({date:s.date,t:s.startedAt,mxR:s.sprints.effortPct||0,topW:0,topWr:0,e1:0,_sp:s.sprints})});
+return out}
 function trendExs(){
 const m={};
 DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
@@ -2243,6 +2247,16 @@ let h='<header class="hero"><div><div class="eyebrow">Trends</div><h1 class="tit
 h+='<div class="sl first"><span class="lt">Consistency</span><span class="rule"></span></div>';
 h+=calCard();
 h+=bedStat();
+h+='<div class="sl"><span class="lt">Sprint progression</span><span class="rule"></span></div>';
+const _ss=sprintSeries();
+if(!_ss.length)h+='<div class="card"><div class="ckr">Log a sprint day and your speed progression charts here — the metric that matters most for you.</div></div>';
+else{const _spl=prog().sprintPlan,_srx=_spl?sprintRx(_spl):null,_lsp=_ss[_ss.length-1]._sp;
+h+='<div class="card">';
+if(_srx)h+='<div class="tpe"><span class="tpen" style="color:var(--ember)">Phase '+(_srx.idx+1)+'/'+_srx.total+' · '+esc(_srx.phase.name)+'</span><span class="tpes num">up to '+_srx.ceiling+'%</span></div>';
+h+='<div class="exs" style="padding:2px 2px 4px">Effort % across '+_ss.length+' sprint session'+(_ss.length>1?'s':'')+'</div>';
+h+=trendChart(_ss,true);
+h+='<div class="exs" style="padding:8px 2px 2px">Last: '+sprDistC(_lsp)+' @'+_lsp.effortPct+'%'+(_lsp.quality?' · '+esc(_lsp.quality):'')+(_lsp.pain!=null?' · pain '+_lsp.pain:'')+'</div>';
+h+='</div>';}
 const prMin=!!(DB.settings&&DB.settings.prMin);
 h+='<div class="sl prsl" onclick="togglePR()"><span class="lt">Recent PRs</span><span class="rule"></span><span class="cnt num">'+pr.feed.length+'</span><span class="prtog">'+(prMin?'▸':'▾')+'</span></div>';
 if(prMin)h+='<div class="prmin" onclick="togglePR()">'+(pr.feed.length?pr.feed.length+' PR'+(pr.feed.length>1?'s':'')+' on record · tap to show':'no PRs yet')+'</div>';
