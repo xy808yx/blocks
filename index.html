@@ -353,6 +353,18 @@ a{color:var(--ember);text-decoration:none}
 .prsl{cursor:pointer;-webkit-user-select:none;user-select:none}
 .prtog{color:var(--muted);font-size:12px;margin-left:9px;font-weight:800}
 .prmin{color:var(--muted);font-size:13px;padding:2px 2px 6px;cursor:pointer}
+.rpescale{display:flex;gap:5px;margin-top:4px}
+.rpb{flex:1;min-width:0;height:46px;border:1px solid var(--border-h);border-radius:9px;background:var(--surface2);color:var(--dim);font-weight:650;font-size:15px}
+.rpb.on{background:linear-gradient(180deg,#ff8445,#f96526);color:#1a0d05;border-color:transparent}
+.rpehint{font-size:12.5px;color:var(--muted);margin-top:8px}
+.hsrow{display:flex;align-items:center;gap:10px;padding:5px 0}
+.hsn{flex:0 0 32%;font-size:13.5px;color:var(--dim);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hsbar{flex:1;height:8px;background:var(--surface2);border-radius:5px;overflow:hidden}
+.hsfill{display:block;height:100%;border-radius:5px}
+.hsfill.in{background:var(--sage)}
+.hsfill.lo{background:var(--border-h)}
+.hsfill.hi{background:var(--ember)}
+.hsc{flex:0 0 auto;font-size:13.5px;color:var(--text);font-weight:650;min-width:18px;text-align:right}
 .erow{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:10px 12px;margin-bottom:7px;min-height:56px}
 .erow:active{background:var(--surface2)}
 .erow .em2{flex:1;min-width:0}
@@ -1180,6 +1192,18 @@ if(r.reps>mxR)mxR=r.reps;
 const v=w*(1+r.reps/30);if(v>e1)e1=v});
 out.push({date:s.date,t:s.startedAt,topW,topWr,mxR,e1})});
 return out}
+function sessMins(s){return Math.max(1,Math.round(((s.finishedAt||s.startedAt)-s.startedAt)/60000))}
+function sessRpe(s){if(s.rpe)return s.rpe;if(s.sprints)return Math.round((s.sprints.effortPct||70)/10);if(s.aerobic)return {'1':3,'1-2':4,'2':5}[s.aerobic.zone]||4;return null}
+function sessLoad(s){const r=sessRpe(s);return r?r*sessMins(s):0}
+function weekMon(dk){return shiftDk(dk,-((dowOf(dk)+6)%7))}
+function weeklyLoad(){const m={};
+DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){const wk=weekMon(s.date),L=sessLoad(s);if(!L)return;if(!m[wk])m[wk]={wk:wk,load:0,sessions:0};m[wk].load+=L;m[wk].sessions++});
+const arr=Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return a.wk<b.wk?-1:1});
+arr.forEach(function(w){var p=w.wk.split('-').map(Number);w.t=new Date(p[0],p[1]-1,p[2]).getTime();w.date=w.wk;w.mxR=Math.round(w.load);w.topW=0;w.topWr=0;w.e1=0});
+return arr}
+function weekSets(){const wk=weekMon(tk()),cnt={};
+DB.sessions.filter(function(s){return s.date>=wk&&s.kind==='lift'}).forEach(function(s){(s.sets||[]).forEach(function(st){if(st.warmup)return;var ex=exOf(st.exId),ms=(ex&&ex.muscles&&ex.muscles.length)?ex.muscles:['(untagged)'];ms.forEach(function(mu){cnt[mu]=(cnt[mu]||0)+1})})});
+return cnt}
 function sprintSeries(){const out=[];
 DB.sessions.filter(function(s){return s.finishedAt&&s.sprints}).sort(function(a,b){return a.startedAt-b.startedAt}).forEach(function(s){
 out.push({date:s.date,t:s.startedAt,mxR:s.sprints.effortPct||0,topW:0,topWr:0,e1:0,_sp:s.sprints})});
@@ -1537,16 +1561,25 @@ ovConfirm('Finish session?','<b>'+s.sets.length+' sets</b> · '+mins+' min',
 [{label:'Finish session',click:'finishSession()',kind:'p'},{label:'Keep going',click:'closeOv()',kind:'o'},{label:'Discard session',click:'discardAsk()',kind:'d'}])}
 function finishSession(){const s=sessById(S.sid);if(!s)return;
 s.finishedAt=Date.now();sv();vibe([0,40,30,80]);killRest();lockOff();closeOv();S.view='tabs';S.tab='today';rn();
-const prs=sessionPRs(s.id);
-if(prs.length)sheet('Session saved','<b style="color:var(--sage)">'+s.sets.length+' sets · '+Math.max(1,Math.round((s.finishedAt-s.startedAt)/60000))+' min</b> — and '+prs.length+' PR'+(prs.length>1?'s':'')+' set:',
-'<div style="padding:0 2px 4px">'+prs.map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div></div>').join('')+'</div><div class="shbtns"><button class="btn btn-p" onclick="closeOv()">Done</button></div>');
-else toast('Session saved')}
+finishSheet(s.id)}
 function finishQuick(sid){const s=sessById(sid);if(!s)return;
 const last=s.sets.length?Math.max.apply(null,s.sets.map(x=>x.ts)):s.startedAt;
-s.finishedAt=last;sv();rn();toast('Session ended')}
+s.finishedAt=last;sv();rn();finishSheet(sid)}
 function finishQuickAsk(sid){const s=sessById(sid);if(!s)return;const mins=Math.max(1,Math.round((Date.now()-s.startedAt)/60000));
 ovConfirm('End session?','<b>'+s.sets.length+' sets</b> · '+mins+' min',[{label:'End session',click:'finishQuickGo(\''+sid+'\')',kind:'p'},{label:'Keep going',click:'closeOv()',kind:'o'}])}
 function finishQuickGo(sid){closeOv();finishQuick(sid)}
+function finishSheet(sid){const s=sessById(sid);if(!s)return;
+const mins=Math.max(1,Math.round(((s.finishedAt||Date.now())-s.startedAt)/60000));
+if(s.kind!=='lift'){toast('Session saved');return}
+const prs=sessionPRs(sid);
+let b='<div class="flab" style="margin-top:2px">How hard overall?</div><div class="rpescale">';
+for(let n=1;n<=10;n++)b+='<button class="rpb'+(s.rpe===n?' on':'')+'" onclick="setRpe(\''+sid+'\','+n+')">'+n+'</button>';
+b+='</div><div class="rpehint">easy 1 → all-out 10 · powers your weekly load (optional)</div>';
+if(prs.length)b+='<div class="sl" style="margin:15px 0 2px"><span class="lt">PRs</span><span class="rule"></span></div><div style="padding:0 2px">'+prs.map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div></div>').join('')+'</div>';
+b+='<div class="shbtns"><button class="btn btn-p" onclick="closeOv()">Done</button></div>';
+sheet('Nice work · '+s.sets.length+' sets, '+mins+' min','',b)}
+function setRpe(sid,n){const s=sessById(sid);if(!s)return;s.rpe=s.rpe===n?null:n;vibe(8);sv();
+const btns=document.querySelectorAll('.rpb');for(let i=0;i<btns.length;i++)btns[i].classList.toggle('on',(i+1)===s.rpe)}
 function discardAsk(){ovConfirm('Discard this session?','All sets logged in it will be deleted.',
 [{label:'Discard',click:'discardSession()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
 function discardSession(){DB.sessions=DB.sessions.filter(x=>x.id!==S.sid);sv();killRest();lockOff();closeOv();S.view='tabs';S.tab='today';rn()}
@@ -2256,6 +2289,17 @@ if(_srx)h+='<div class="tpe"><span class="tpen" style="color:var(--ember)">Phase
 h+='<div class="exs" style="padding:2px 2px 4px">Effort % across '+_ss.length+' sprint session'+(_ss.length>1?'s':'')+'</div>';
 h+=trendChart(_ss,true);
 h+='<div class="exs" style="padding:8px 2px 2px">Last: '+sprDistC(_lsp)+' @'+_lsp.effortPct+'%'+(_lsp.quality?' · '+esc(_lsp.quality):'')+(_lsp.pain!=null?' · pain '+_lsp.pain:'')+'</div>';
+h+='</div>';}
+h+='<div class="sl"><span class="lt">Weekly load</span><span class="rule"></span></div>';
+const _wl=weeklyLoad(),_twk=weekMon(tk()),_curW=_wl.filter(function(w){return w.wk===_twk})[0],_swk=DB.sessions.filter(function(s){return s.date>=_twk}).length,_hs=weekSets(),_hk=Object.keys(_hs).sort(function(a,b){return _hs[b]-_hs[a]});
+if(!_swk&&!_wl.length)h+='<div class="card"><div class="ckr">Finish a session and rate how hard it felt — your weekly training load and hard-set volume build here.</div></div>';
+else{h+='<div class="card">';
+var _prior=_wl.filter(function(w){return w.wk<_twk}).slice(-4),_avg=_prior.length?_prior.reduce(function(a,b){return a+b.load},0)/_prior.length:0,_spike=_curW&&_prior.length>=2&&_curW.load>_avg*1.4;
+h+='<div class="tpe"><span class="tpen">This week</span><span class="tpes num">'+_swk+' session'+(_swk!==1?'s':'')+(_curW?' · load '+Math.round(_curW.load):'')+'</span></div>';
+if(_spike)h+='<div class="rxr" style="color:var(--ember-hot)">Big jump vs your recent weeks — watch recovery</div>';
+if(_wl.length>1)h+='<div class="exs" style="padding:6px 2px 2px">Training load (effort × min) by week</div>'+trendChart(_wl,true);
+if(_hk.length){h+='<div class="exs" style="padding:'+(_wl.length>1?'12':'4')+'px 2px 4px">Hard sets this week · aim ~10-20 per muscle</div>';
+h+=_hk.slice(0,8).map(function(mu){var n=_hs[mu],band=n>=10&&n<=20?'in':(n<10?'lo':'hi'),pct=Math.min(100,Math.round(n/20*100));return'<div class="hsrow"><div class="hsn">'+esc(mu)+'</div><div class="hsbar"><i class="hsfill '+band+'" style="width:'+pct+'%"></i></div><div class="hsc num">'+n+'</div></div>'}).join('');}
 h+='</div>';}
 const prMin=!!(DB.settings&&DB.settings.prMin);
 h+='<div class="sl prsl" onclick="togglePR()"><span class="lt">Recent PRs</span><span class="rule"></span><span class="cnt num">'+pr.feed.length+'</span><span class="prtog">'+(prMin?'▸':'▾')+'</span></div>';
