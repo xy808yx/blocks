@@ -355,9 +355,7 @@ a{color:var(--ember);text-decoration:none}
 .prsl{cursor:pointer;-webkit-user-select:none;user-select:none}
 .prtog{color:var(--muted);font-size:12px;margin-left:9px;font-weight:800}
 .prmin{color:var(--muted);font-size:13px;padding:2px 2px 6px;cursor:pointer}
-.rpescale{display:flex;gap:5px;margin-top:4px}
-.rpb{flex:1;min-width:0;height:46px;border:1px solid var(--border-h);border-radius:9px;background:var(--surface2);color:var(--dim);font-weight:650;font-size:15px}
-.rpb.on{background:linear-gradient(180deg,#ff8445,#f96526);color:#1a0d05;border-color:transparent}
+.seg.tight .sgb{font-size:13px}
 .rpehint{font-size:12.5px;color:var(--muted);margin-top:8px}
 .hsrow{display:flex;align-items:center;gap:10px;padding:5px 0}
 .hsn{flex:0 0 32%;font-size:13.5px;color:var(--dim);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -780,13 +778,14 @@ const reference=[
 ];
 return{
 schemaVersion:1,
-contentRev:11,
+contentRev:12,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
 activeProgramId:'p_rtt',
 programs:[{id:'p_rtt',name:'Return to Training',subtitle:'Phase IV — rebuilding · Gate 3 next',
  schedule:{0:null,1:'t_pull',2:'t_cardio',3:'t_push',4:'t_pull',5:'t_cardio',6:'t_push'},
+ season:'reset',
  sprintPlan:{focus:'100',phaseKey:'sprint',ceiling:85,repTarget:4,cleanStreak:0,loadedFridays:0,fastWeeks:12},
  templates,checklists:{daily,dailyNoteAm:'Morning pass — one set of each. Keep the nerve flosses gentle; tissue and nerves are tighter first thing. Dead hangs skipped on training days.',dailyNotePm:'Evening pass — one set of each. Warm tissue — this is where to push stretch depth. Dead hangs skipped on training days.',mobility,therapist},reference}],
 sessions:[],
@@ -812,6 +811,10 @@ const SPRINTPLAN={'100':[
 {key:'extend',name:'Extend',type:'speed-endurance',dist:'40-60m / 7-10s held-speed reps',distM:60,repFloor:3,repCap:5,cFloor:90,cCap:95}
 ]};
 const SPRINT_FLOOR_WEEKS=8; /* no true near-max (>90%) until this many weeks of fast running are banked (calf peak-recurrence window) */
+/* ── Training engine · seasons + day-tap load map. Season is the one quarterly dial (manual pick · no thermal winter in Hua Hin). LOAD_MAP turns the day post-tap into a session-RPE for the weekly load metric. ── */
+const SEASONS={build:{name:'Build',cal:'Spring',ds:'heavier resistance, legs included · 3 hard days'},speed:{name:'Speed',cal:'Summer',ds:'sprint peak · legs light'},reset:{name:'Reset',cal:'Fall',ds:'built-in deload · movement quality'},lean:{name:'Lean',cal:'Winter',ds:'pool volume up · stay lean'}};
+const LOAD_MAP={springy:7,normal:6,flat:5,stop:4};
+const SPRINT_NOMINAL_MIN=40; /* a sprint day counts these minutes in the load metric regardless of wall-clock */
 
 let FRESH=false;
 function ld(){try{DB=JSON.parse(localStorage.getItem('blocks_v1')||'null')}catch(e){DB=null}
@@ -820,7 +823,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=11)return;
+let cr=DB.contentRev||0;if(cr>=12)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -900,6 +903,11 @@ if(cr<11){
   if(oc){const mb=(oc.checks||[]).find(x=>x.id==='mbt');if(mb&&mb.enabled!==false)mb.enabled=false}
  });
  cr=11;
+}
+if(cr<12){
+ /* Training-engine E1 · program.season sibling (the quarterly dial). Existing installs land in Speed (mid-summer, sprint-focused); fresh seeds default to Reset. Additive only; history untouched. */
+ (DB.programs||[]).forEach(p=>{if(!p.season)p.season='speed'});
+ cr=12;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
@@ -1197,8 +1205,16 @@ const v=w*(1+r.reps/30);if(v>e1)e1=v});
 out.push({date:s.date,t:s.startedAt,topW,topWr,mxR,e1})});
 return out}
 function sessMins(s){return Math.max(1,Math.round(((s.finishedAt||s.startedAt)-s.startedAt)/60000))}
-function sessRpe(s){if(s.rpe)return s.rpe;if(s.sprints)return Math.round((s.sprints.effortPct||70)/10);if(s.aerobic)return {'1':3,'1-2':4,'2':5}[s.aerobic.zone]||4;return null}
-function sessLoad(s){const r=sessRpe(s);return r?r*sessMins(s):0}
+function dayPost(dk){return(DB.days[dk]&&DB.days[dk].post)||null}
+/* Post-tap era load: lift = LOAD_MAP[day post-tap] × session minutes (legacy 0-10 rating still read for old sessions);
+   cardio auto-derives · bike/swim/run use their real logged minutes, a sprint day counts SPRINT_NOMINAL_MIN. */
+function sessLoad(s){
+if(s.sprints||s.aerobic){let L=0;
+if(s.sprints)L+=Math.round((s.sprints.effortPct||70)/10)*SPRINT_NOMINAL_MIN;
+if(s.aerobic)L+=({'1':3,'1-2':4,'2':5}[s.aerobic.zone]||4)*(s.aerobic.durMin||0);
+return L}
+const p=dayPost(s.date),r=p?LOAD_MAP[p]:s.rpe;
+return r?r*sessMins(s):0}
 function weekMon(dk){return shiftDk(dk,-((dowOf(dk)+6)%7))}
 function weeklyLoad(){const m={};
 DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){const wk=weekMon(s.date),L=sessLoad(s);if(!L)return;if(!m[wk])m[wk]={wk:wk,load:0,sessions:0};m[wk].load+=L;m[wk].sessions++});
@@ -1367,11 +1383,18 @@ function habitToday(key){return habitOn(habitDate(key),key)}
 function tgHabit(key,el){const dk=habitDate(key),d=DB.days[dk]=DB.days[dk]||{c:[]};
 const on=!d[key];if(on)d[key]=true;else delete d[key];sv();vibe(10);
 if(el){el.classList.toggle('on',on);const s=el.querySelector('.hbs');if(s)s.innerHTML=habitInner(key)}}
-function habitStreak(key){let n=0,d=habitDate(key);if(!habitOn(d,key))d=shiftDk(d,-1);
-while(habitOn(d,key)){n++;d=shiftDk(d,-1)}return n}
-function habitBest(key){const ks=Object.keys(DB.days).filter(dk=>DB.days[dk][key]).sort();
+/* Sundays are sacred: untracked by default, and never break a streak. A record is Sunday-neutral
+   when the day you'd naturally tap it lands on a Sunday (bed logs the previous night, so Saturday
+   nights are tappable only on Sunday) — absent neutral records are skipped, not counted as misses. */
+function sunNeutral(dk,off){return dowOf(shiftDk(dk,-(off||0)))===0}
+function sunTracked(dk){return dowOf(dk)!==0||!!(DB.days[dk]&&DB.days[dk].sunOn)||sessionsFor(dk).length>0}
+function sunOverride(dk){const d=DB.days[dk]=DB.days[dk]||{c:[]};d.sunOn=true;sv();vibe(10);rn()}
+function sunRest(dk){const d=DB.days[dk];if(d)delete d.sunOn;sv();rn()}
+function habitStreak(key){const off=habitDef(key).off||0;let n=0,d=habitDate(key);if(!habitOn(d,key))d=shiftDk(d,-1);
+while(true){if(habitOn(d,key)){n++;d=shiftDk(d,-1)}else if(sunNeutral(d,off)){d=shiftDk(d,-1)}else break}return n}
+function habitBest(key){const off=habitDef(key).off||0;const ks=Object.keys(DB.days).filter(dk=>DB.days[dk][key]).sort();
 if(!ks.length)return 0;let best=0,run=0,d=ks[0],end=ks[ks.length-1];
-while(d<=end){if(habitOn(d,key)){if(++run>best)best=run}else run=0;d=shiftDk(d,1)}return best}
+while(d<=end){if(habitOn(d,key)){if(++run>best)best=run}else if(!sunNeutral(d,off))run=0;d=shiftDk(d,1)}return best}
 function habitInner(key){const def=habitDef(key);
 if(def.streak){const n=habitStreak(key);
  if(n>0)return'🔥&nbsp;<b>'+n+'</b>&nbsp;night'+(n>1?'s':'');
@@ -1392,6 +1415,12 @@ function bedStat(){const n=habitStreak('bed'),best=habitBest('bed');
 const head=n>0?'<b>'+n+'</b> night'+(n>1?'s':'')+' in a row':'Sleep by 10 tonight';
 const sub=best>0?bedFull()+' · best '+best+' night'+(best>1?'s':''):bedFull()+' · logged each morning';
 return'<div class="card bedstat"><span class="bsf"'+(n>0?'':' style="filter:grayscale(1);opacity:.55"')+'>🔥</span><div class="bsm"><div class="bsn">'+head+'</div><div class="bss">'+sub+'</div></div></div>'}
+/* ── Day pre-tap (readiness) · the first of the two daily taps. E1 records it; later stages drive the easy-day swap and trend guard off it. ── */
+function preTap(dk){return(DB.days[dk]&&DB.days[dk].pre)||null}
+function setPre(dk,v){const d=DB.days[dk]=DB.days[dk]||{c:[]};if(d.pre===v)delete d.pre;else d.pre=v;sv();vibe(8);rn()}
+function preTapRow(dk){const cur=preTap(dk);
+return'<div class="flab" style="margin:14px 2px 6px">How do you feel today?</div><div class="seg" style="margin-bottom:14px">'
++[['springy','Springy'],['normal','Normal'],['flat','Flat']].map(o=>'<button class="sgb'+(cur===o[0]?' on':'')+'" onclick="setPre(\''+dk+'\',\''+o[0]+'\')">'+o[1]+'</button>').join('')+'</div>'}
 function vToday(){
 const dk=tk(),dow=dowOf(dk);
 let h='';
@@ -1400,12 +1429,21 @@ if(n)h+='<div class="ban em"><span>🛟</span><span><b>'+n+' session'+(n>1?'s':'
 const act=activeSession();
 if(act&&!(S.sel!=null&&S.sel!==dow))h+='<div class="ban"><span><b>'+esc(act.name)+'</b> in progress'+(act.date!==dk?' · '+fmtDk(act.date):'')+'</span><span class="bba"><button class="bbtn" onclick="resumeSession(\''+act.id+'\')">Resume</button><button class="bbtn q" onclick="finishQuickAsk(\''+act.id+'\')">End</button></span></div>';
 if(S.sel!=null&&S.sel!==dow)return h+vPreview(dk,dow);
-const t=tplForDate(dk),ov=DB.dayOverrides[dk]!=null;
+if(dow===0&&!sunTracked(dk)){
+h+='<header class="hero"><div class="rw" style="display:grid;place-items:center"><span style="font-size:32px;opacity:.65">☾</span></div>'
++'<div><div class="eyebrow"><b>'+DY[dow]+'</b> · '+fmtDk(dk)+'</div><h1 class="title">Sacred Rest</h1><div class="hsub">Untracked by design</div></div></header>';
+h+=weekStrip(dk);
+h+='<div class="sl first"><span class="lt">Rest</span><span class="rule"></span></div>'
++'<div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="font-size:20px">☾</span><div><div class="scard-t" style="font-size:16px">Fully off, maybe a walk</div><div class="ckr" style="margin-top:2px">Nothing to check, nothing counts as missed. Streaks skip Sundays.</div></div></div>'
++'<button class="lnk" style="display:block;margin:10px 2px" onclick="sunOverride(\''+dk+'\')">Track today anyway</button>';
+return h}
+const t=tplForDate(dk),ov=DB.dayOverrides[dk]!=null,sunOv=dow===0&&!!(DB.days[dk]&&DB.days[dk].sunOn);
 const title=t?t.name:'Rest Day';
 h+='<header class="hero"><div class="rw"><svg width="72" height="72" viewBox="0 0 72 72"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffa14d"/><stop offset="1" stop-color="#ff5f1f"/></linearGradient></defs><circle class="rt" cx="36" cy="36" r="31"/><circle class="rf" id="ringF" cx="36" cy="36" r="31" pathLength="100" stroke="url(#rg)" transform="rotate(-90 36 36)"/></svg><div class="rn num" id="ringN"></div></div>'
 +'<div><div class="eyebrow"><b>'+DY[dow]+'</b> · '+fmtDk(dk)+'</div><h1 class="title">'+esc(title)+'</h1>'
-+'<div class="hsub" id="heroSub">'+(ov?'Swapped in · <a href="#" onclick="event.preventDefault();unswap()">undo</a>':'')+'</div></div></header>';
++'<div class="hsub" id="heroSub">'+(ov?'Swapped in · <a href="#" onclick="event.preventDefault();unswap()">undo</a>':sunOv?'Tracking today · <a href="#" onclick="event.preventDefault();sunRest(\''+dk+'\')">make it a rest day</a>':'')+'</div></div></header>';
 h+=weekStrip(dk);
+if(t)h+=preTapRow(dk);
 if(t&&t.kind==='lift')h+=liftArea(dk,t);
 else if(t&&t.kind==='cardio')h+=cardioArea(dk,t,null);
 else h+='<div class="sl first" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div><div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="font-size:20px">☾</span><div><div class="scard-t" style="font-size:16px">Full recovery</div><div class="ckr" style="margin-top:2px">Morning + evening blocks + 30 min walk. That\'s it.</div></div></div>';
@@ -1504,7 +1542,7 @@ if(isPast){const done=sessionsFor(selDk).some(s=>s.finishedAt);
  else h+='<button class="btn btn-p" style="margin-top:4px" onclick="startPastSession(\''+selDk+'\',\''+t.id+'\')">Log '+DAB[d]+' · '+fmtDk(selDk)+'</button>'}
 const canSwap=!activeSession()&&!sessionsFor(dk).length&&!DB.dayOverrides[dk];
 if(canSwap)h+='<button class="btn btn-o" style="margin-top:4px" onclick="swapTo('+d+')">Do this session today instead</button>';
-}else h+='<div class="card"><div class="ckr">Rest — morning + evening blocks + 30 min walk only.</div></div>';
+}else h+='<div class="card"><div class="ckr">'+(d===0?'Sacred rest. Untracked: no checks, nothing to miss, streaks skip it.':'Rest — morning + evening blocks + 30 min walk only.')+'</div></div>';
 return h}
 
 /* ═══════════ SWAP ═══════════ */
@@ -1579,14 +1617,16 @@ function finishSheet(sid){const s=sessById(sid);if(!s)return;
 const mins=Math.max(1,Math.round(((s.finishedAt||Date.now())-s.startedAt)/60000));
 if(s.kind!=='lift'){toast('Session saved');return}
 const prs=sessionPRs(sid);
-let b='<div class="flab" style="margin-top:2px">How hard overall?</div><div class="rpescale">';
-for(let n=1;n<=10;n++)b+='<button class="rpb'+(s.rpe===n?' on':'')+'" onclick="setRpe(\''+sid+'\','+n+')">'+n+'</button>';
-b+='</div><div class="rpehint">easy 1 → all-out 10 · powers your weekly load (optional)</div>';
+const cur=dayPost(s.date);
+let b='<div class="flab" style="margin-top:2px">How was it?</div><div class="seg tight">'
++[['springy','Springy'],['normal','Normal'],['flat','Flat · sore'],['stop','Stop']].map(o=>'<button class="sgb ptb'+(cur===o[0]?' on':'')+'" data-v="'+o[0]+'" onclick="setPost(\''+s.date+'\',\''+o[0]+'\')">'+o[1]+'</button>').join('')
++'</div><div class="rpehint">one tap · powers your weekly load (optional)</div>';
 if(prs.length)b+='<div class="sl" style="margin:15px 0 2px"><span class="lt">PRs</span><span class="rule"></span></div><div style="padding:0 2px">'+prs.map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div></div>').join('')+'</div>';
 b+='<div class="shbtns"><button class="btn btn-p" onclick="closeOv()">Done</button></div>';
 sheet('Nice work · '+s.sets.length+' sets, '+mins+' min','',b)}
-function setRpe(sid,n){const s=sessById(sid);if(!s)return;s.rpe=s.rpe===n?null:n;vibe(8);sv();
-const btns=document.querySelectorAll('.rpb');for(let i=0;i<btns.length;i++)btns[i].classList.toggle('on',(i+1)===s.rpe)}
+function setPost(dk,v){const d=DB.days[dk]=DB.days[dk]||{c:[]};
+if(d.post===v)delete d.post;else d.post=v;vibe(8);sv();
+const on=d.post||null;document.querySelectorAll('.ptb').forEach(b=>b.classList.toggle('on',b.dataset.v===on))}
 function discardAsk(){ovConfirm('Discard this session?','All sets logged in it will be deleted.',
 [{label:'Discard',click:'discardSession()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
 function discardSession(){DB.sessions=DB.sessions.filter(x=>x.id!==S.sid);sv();killRest();lockOff();closeOv();S.view='tabs';S.tab='today';rn()}
@@ -1934,7 +1974,10 @@ function vProgram(){
 const p=prog();
 let h='<header class="hero" style="align-items:flex-start"><div style="flex:1;min-width:0"><div class="eyebrow">Program</div><h1 class="title">'+esc(p.name)+'</h1>'
 +(p.subtitle?'<div class="hsub">'+esc(p.subtitle)+'</div>':'')+'</div><button class="bbtn" style="margin-top:6px;flex-shrink:0" onclick="progSheet()">Edit</button></header>';
-h+='<div class="sl first"><span class="lt">Week</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="openEd(\'edsched\')">Edit</button></div>';
+const _sk=p.season||'reset',_sn=SEASONS[_sk]||SEASONS.reset;
+h+='<div class="sl first"><span class="lt">Season</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="seasonSheet()">Change</button></div>';
+h+='<div class="card" style="display:flex;align-items:baseline;gap:10px;padding:14px 16px;margin-bottom:18px"><b>'+esc(_sn.name)+'</b><span class="exs" style="padding:0">'+esc(_sn.cal+' · '+_sn.ds)+'</span></div>';
+h+='<div class="sl"><span class="lt">Week</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="openEd(\'edsched\')">Edit</button></div>';
 h+='<div class="week" style="margin-bottom:18px">'+[1,2,3,4,5,6,0].map(d=>{
 const tid=p.schedule[d],t=tid?tpl(tid):null;
 return'<div class="day '+(t?t.kind:'off')+'" style="cursor:default"><div class="dl">'+DAB[d]+'</div><div class="dw">'+(t?esc(t.name.split(' ')[0]):'Off')+'</div></div>'}).join('')+'</div>';
@@ -1960,6 +2003,13 @@ h+='<div class="sl"><span class="lt">Library</span><span class="rule"></span></d
 h+=det('Exercises',DB.library.filter(e=>!e.archived).length+'',DB.library.filter(e=>!e.archived).map(e=>'<div class="tpe"><span class="tpen">'+esc(e.name)+(e.bw?' <span class="chip off">bw</span>':'')+'</span><span class="tpes num">'+(e.rest?e.rest+'s · ':'')+esc((e.muscles||[]).join(', '))+'</span></div>').join('')+'<button class="lnk" onclick="S.libQ=\'\';openEd(\'edlib\')">Manage library →</button>');
 h+='<div class="fl">Blocks · Stage 3</div>';
 return h}
+
+/* Season · the one quarterly dial. E1 stores it; E2 keys the volume bands and re-anchor off it. */
+function seasonSheet(){const cur=prog().season||'reset';
+let b='<div class="shbtns">'+Object.keys(SEASONS).map(k=>{const s=SEASONS[k];
+return'<button class="btn '+(cur===k?'btn-p':'btn-o')+'" onclick="setSeason(\''+k+'\')">'+s.name+' · '+s.cal+'<span style="display:block;font-size:12.5px;font-weight:500;opacity:.75;margin-top:2px">'+s.ds+'</span></button>'}).join('')+'</div>';
+sheet('Season','the one quarterly dial · sprint stays the spine',b)}
+function setSeason(k){if(!SEASONS[k])return;prog().season=k;sv();vibe(10);closeOv();rn();toast('Season · '+SEASONS[k].name)}
 
 /* ═══════════ STAGE 2 — PROGRAM MANAGER ═══════════ */
 function edHdr(t,s,fn){return'<div class="shd"><div class="shdi"><button class="bk" onclick="'+fn+'">'+I_BACK+'</button><div class="shm"><div class="sht">'+t+'</div>'+(s?'<div class="shs">'+s+'</div>':'')+'</div></div></div>'}
@@ -2300,7 +2350,7 @@ h+='<div class="exs" style="padding:8px 2px 2px">Last: '+sprDistC(_lsp)+' @'+_ls
 h+='</div>';}
 h+='<div class="sl"><span class="lt">Weekly load</span><span class="rule"></span></div>';
 const _wl=weeklyLoad(),_twk=weekMon(tk()),_curW=_wl.filter(function(w){return w.wk===_twk})[0],_swk=DB.sessions.filter(function(s){return s.date>=_twk}).length,_hs=weekSets(),_hk=Object.keys(_hs).sort(function(a,b){return _hs[b]-_hs[a]});
-if(!_swk&&!_wl.length)h+='<div class="card"><div class="ckr">Finish a session and rate how hard it felt — your weekly training load and hard-set volume build here.</div></div>';
+if(!_swk&&!_wl.length)h+='<div class="card"><div class="ckr">Finish a session and tap how it went. Your weekly training load and hard-set volume build here.</div></div>';
 else{h+='<div class="card">';
 var _prior=_wl.filter(function(w){return w.wk<_twk}).slice(-4),_avg=_prior.length?_prior.reduce(function(a,b){return a+b.load},0)/_prior.length:0,_spike=_curW&&_prior.length>=2&&_curW.load>_avg*1.4;
 h+='<div class="tpe"><span class="tpen">This week</span><span class="tpes num">'+_swk+' session'+(_swk!==1?'s':'')+(_curW?' · load '+Math.round(_curW.load):'')+'</span></div>';
