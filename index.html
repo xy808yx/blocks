@@ -226,6 +226,8 @@ a{color:var(--ember);text-decoration:none}
 .rowx{font-size:13px;font-weight:600;color:var(--danger);padding:8px 10px}
 .exf{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .exrm{font-size:13px;font-weight:600;color:var(--muted);padding:9px 6px 4px}
+.exmv{font-size:17px;font-weight:700;color:var(--muted);min-width:36px;min-height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:var(--surface2);border:1px solid var(--border)}
+.exmv:disabled{opacity:.3;pointer-events:none}
 .exrm:active{color:var(--danger)}
 
 /* ── rest chip ── */
@@ -938,6 +940,8 @@ const known={};ent.forEach(e=>known[e.exId]=1);
  ent.push({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false,synth:true,addon:true})}});
 sess.sets.forEach(st=>{if(!known[st.exId]){known[st.exId]=1;
  ent=ent.concat([{exId:st.exId,warmups:0,sets:0,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false,synth:true}])}});
+if(sess.order&&sess.order.length){const pos={};sess.order.forEach((idv,i)=>pos[idv]=i);
+ ent=ent.map((e,i)=>[e,i]).sort((a,b)=>{const va=pos[a[0].exId]==null?1e6+a[1]:pos[a[0].exId],vb=pos[b[0].exId]==null?1e6+b[1]:pos[b[0].exId];return va-vb}).map(x=>x[0])}
 return ent}
 function entryFor(sess,exId){return entriesOf(sess).find(e=>e.exId===exId)||null}
 
@@ -1418,8 +1422,11 @@ let h='<div class="sl" id="'+(xtra?'sl-xlift':'sl-work')+'"><span class="lt">'+e
 if(t.note&&!xtra)h+='<div class="note">'+esc(t.note)+'</div>';
 h+='<div class="card">';
 if(act)h+='<div class="scard-t">Session in progress</div><div class="scard-m num">'+act.sets.length+' sets logged · started '+mmss(Date.now()-act.startedAt)+' ago</div><button class="btn btn-p" onclick="resumeSession(\''+act.id+'\')">Continue session</button>';
-else if(fin.length){const s=fin[fin.length-1];
-h+='<div class="scard-t" style="color:var(--sage)">✓ Session complete</div><div class="scard-m num">'+s.sets.length+' sets · '+Math.round((s.finishedAt-s.startedAt)/60000)+' min</div><button class="btn btn-o" onclick="openDetail(\''+s.id+'\')">View / amend</button>';}
+else if(fin.length){const multi=fin.length>1,totSets=fin.reduce((a,s)=>a+s.sets.length,0),totMin=fin.reduce((a,s)=>a+sessMins(s),0);
+h+='<div class="scard-t" style="color:var(--sage)">✓ '+(multi?fin.length+' sessions done':'Session complete')+'</div><div class="scard-m num">'+totSets+' sets · '+totMin+' min'+(multi?' total':'')+'</div>';
+if(multi)fin.forEach((s,i)=>{h+='<button class="btn btn-o" style="margin-top:6px" onclick="openDetail(\''+s.id+'\')">Session '+(i+1)+' · '+s.sets.length+' sets, '+sessMins(s)+' min</button>';});
+else h+='<button class="btn btn-o" onclick="openDetail(\''+fin[0].id+'\')">View / amend</button>';
+if(!activeSession())h+='<button class="lnk" style="display:block;margin-top:8px" onclick="startSession(\''+t.id+'\')">+ Add another session</button>';}
 else{h+='<div class="scard-t">'+esc(t.name)+'</div><div class="scard-m num">'+cnt+' exercises · '+setsN+' sets'+(activeSession()?' · finish the open session first':'')+'</div>'
 +(activeSession()?'':'<button class="btn btn-p" onclick="startSession(\''+t.id+'\')">Start session</button>');
 if(!xtra&&!activeSession()&&!DB.dayOverrides[tk()])h+='<button class="lnk" style="margin-top:6px" onclick="swapSheet()">Swap day…</button>'}
@@ -1624,7 +1631,7 @@ const sess=sessById(S.sid);
 if(!sess){S.view='tabs';return vTabs()}
 const entries=entriesOf(sess);
 let body='';
-entries.forEach(entry=>{
+entries.forEach((entry,ei)=>{
 const ex=exOf(entry.exId),logged=workingSets(sess,entry.exId).sort((a,b)=>a.n-b.n);
 const maxN=logged.length?logged[logged.length-1].n:0;
 const total=Math.max(entry.warmups+entry.sets+(EXTRA[entry.exId]||0),maxN);
@@ -1644,7 +1651,7 @@ body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+e
 +ghostLine(ex,sess)
 +'<div class="cols"><span>Set</span><span>'+(ex.bw?'Load':unit())+'</span><span>Reps</span><span></span></div>'
 +rows
-+'<div class="exf"><button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button>'+((EXTRA[entry.exId]||0)>0&&logged.length<total?'<button class="adds" onclick="rmRow(\''+entry.exId+'\')">− Remove set</button>':'')+'<button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div>'});
++'<div class="exf"><div style="display:flex;align-items:center;gap:2px"><button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button>'+((EXTRA[entry.exId]||0)>0&&logged.length<total?'<button class="adds" onclick="rmRow(\''+entry.exId+'\')">− Remove set</button>':'')+'</div><div style="display:flex;align-items:center;gap:5px">'+(entries.length>1?'<button class="exmv" onclick="moveEx(\''+entry.exId+'\',-1)"'+(ei===0?' disabled':'')+' aria-label="Move up">↑</button><button class="exmv" onclick="moveEx(\''+entry.exId+'\',1)"'+(ei===entries.length-1?' disabled':'')+' aria-label="Move down">↓</button>':'')+'<button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div></div>'});
 body+='<button class="addb" onclick="pickExFor(\'session\')">+ Add exercise</button>';
 const elapsed=S.amend?fmtDk(sess.date):'<span id="elap">'+mmss(Date.now()-sess.startedAt)+'</span>';
 const hd='<div class="shd"><div class="shdi"><button class="bk" onclick="exitSession()">'+I_BACK+'</button>'
@@ -1698,6 +1705,7 @@ sess.sets=sess.sets.filter(x=>!(x.exId===exId&&x.n===n));
 sess.sets.forEach(x=>{if(x.exId===exId&&x.n>n)x.n--});
 S.editKey=null;delete PV['e_'+exId+'_'+n];sv();rn();toastUndo('Set removed',()=>{sess.sets=before;sv()})}
 function addRow(exId){EXTRA[exId]=(EXTRA[exId]||0)+1;rn()}
+function moveEx(exId,dir){const s=sessById(S.sid);if(!s)return;const order=entriesOf(s).map(e=>e.exId),i=order.indexOf(exId),j=i+dir;if(i<0||j<0||j>=order.length)return;order.splice(j,0,order.splice(i,1)[0]);s.order=order;sv();rn()}
 function rmRow(exId){const n=EXTRA[exId]||0;if(n<=0)return;
 const sess=sessById(S.sid),entry=sess?entryFor(sess,exId):null;
 if(entry)delete PV[exId+'_'+(entry.warmups+entry.sets+n-1)];
