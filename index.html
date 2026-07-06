@@ -1223,9 +1223,11 @@ DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){const w
 const arr=Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return a.wk<b.wk?-1:1});
 arr.forEach(function(w){var p=w.wk.split('-').map(Number);w.t=new Date(p[0],p[1]-1,p[2]).getTime();w.date=w.wk;w.mxR=Math.round(w.load);w.topW=0;w.topWr=0;w.e1=0});
 return arr}
-function weekSets(){const wk=weekMon(tk()),cnt={};
-/* Governed tags roll up to their muscle group (one count per mapped group); ungoverned sibling tags (biceps, triceps...) still count as themselves. */
-DB.sessions.filter(function(s){return s.date>=wk&&s.kind==='lift'}).forEach(function(s){(s.sets||[]).forEach(function(st){if(st.warmup)return;var ex=exOf(st.exId),gs=groupsOf(ex),ms=(ex&&ex.muscles)||[];
+function weekSets(){const wk=weekMon(tk()),cnt={},eng=engineOn();
+/* Engine on · governed tags roll up to their muscle group (one count per mapped group), ungoverned siblings still count as themselves. Dormant · the pre-E2 raw-tag count. */
+DB.sessions.filter(function(s){return s.date>=wk&&s.kind==='lift'}).forEach(function(s){(s.sets||[]).forEach(function(st){if(st.warmup)return;var ex=exOf(st.exId);
+if(!eng){var m0=(ex&&ex.muscles&&ex.muscles.length)?ex.muscles:['(untagged)'];m0.forEach(function(mu){cnt[mu]=(cnt[mu]||0)+1});return}
+var gs=groupsOf(ex),ms=(ex&&ex.muscles)||[];
 gs.forEach(function(g){var k=GROUP_NAME[g];cnt[k]=(cnt[k]||0)+1});
 if(!gs.length&&!ms.length){cnt['(untagged)']=(cnt['(untagged)']||0)+1;return}
 ms.forEach(function(mu){if(!MUSCLE_MAP[String(mu).toLowerCase().trim()])cnt[mu]=(cnt[mu]||0)+1})})});
@@ -1424,7 +1426,7 @@ return'<div class="card bedstat"><span class="bsf"'+(n>0?'':' style="filter:gray
 /* ── Day pre-tap (readiness) · the first of the two daily taps. E1 records it; later stages drive the easy-day swap and trend guard off it. ── */
 function preTap(dk){return(DB.days[dk]&&DB.days[dk].pre)||null}
 function setPre(dk,v){const d=DB.days[dk]=DB.days[dk]||{c:[]};if(d.pre===v)delete d.pre;else d.pre=v;sv();vibe(8);
-if(d.pre==='flat'&&checkDeloadDue()==='flat')toast('Three flat mornings · next week runs as a deload');
+if(engineOn()&&d.pre==='flat'&&checkDeloadDue()==='flat')toast('Three flat mornings · next week runs as a deload');
 rn()}
 function preTapRow(dk){const cur=preTap(dk);
 return'<div class="flab" style="margin:14px 2px 6px">How do you feel today?</div><div class="seg" style="margin-bottom:14px">'
@@ -1453,7 +1455,7 @@ h+='<header class="hero"><div class="rw"><svg width="72" height="72" viewBox="0 
 +'<div class="hsub" id="heroSub">'+(ov?'Swapped in · <a href="#" onclick="event.preventDefault();unswap()">undo</a>':sunOv?'Tracking today · <a href="#" onclick="event.preventDefault();sunRest(\''+dk+'\')">make it a rest day</a>':'')+'</div></div></header>';
 h+=weekStrip(dk);
 if(t)h+=preTapRow(dk);
-if(t&&inDeloadWeek(dk))h+='<div class="note">Deload week · sets halved, sprints easy · normal service resumes Monday</div>';
+if(t&&engineOn()&&inDeloadWeek(dk))h+='<div class="note">Deload week · sets halved, sprints easy · normal service resumes Monday</div>';
 if(t&&t.kind==='lift')h+=liftArea(dk,t);
 else if(t&&t.kind==='cardio')h+=cardioArea(dk,t,null);
 else h+='<div class="sl first" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div><div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="font-size:20px">☾</span><div><div class="scard-t" style="font-size:16px">Full recovery</div><div class="ckr" style="margin-top:2px">Morning + evening blocks + 30 min walk. That\'s it.</div></div></div>';
@@ -1464,8 +1466,8 @@ return h}
 function liftArea(dk,t,opts){
 opts=opts||{};const xtra=!!opts.extra;
 const sess=sessionsFor(dk).filter(s=>s.templateId===t.id),fin=sess.filter(s=>s.finishedAt),act=sess.find(s=>!s.finishedAt);
-const _slot=lpSlot(t.id);
-const cnt=t.entries.filter(e=>e.enabled).length,setsN=t.entries.filter(e=>e.enabled).reduce((a,e)=>{const _r=e.amrap?null:_slot.ex[e.exId];return a+e.warmups+(_r?prescSets(_r,dk):e.sets)},0);
+const _slot=engineOn()?lpSlot(t.id):null; /* dormant · never create slot state; count the template sets */
+const cnt=t.entries.filter(e=>e.enabled).length,setsN=t.entries.filter(e=>e.enabled).reduce((a,e)=>{const _r=(_slot&&!e.amrap)?_slot.ex[e.exId]:null;return a+e.warmups+(_r?prescSets(_r,dk):e.sets)},0);
 const _rid=(act||fin[fin.length-1]||{}).id||'';
 let h='<div class="sl" id="'+(xtra?'sl-xlift':'sl-work')+'"><span class="lt">'+esc(t.name)+'</span><span class="rule"></span>'+(xtra?'<button class="xrm" onclick="rmExtraLift(\''+_rid+'\')" aria-label="Remove" style="background:none;border:none;color:var(--muted);font-size:18px;line-height:1;padding:0 4px;cursor:pointer">×</button>':'<span class="cnt num" id="cnt-work"></span>')+'</div>';
 if(t.note&&!xtra)h+='<div class="note">'+esc(t.note)+'</div>';
@@ -1782,7 +1784,7 @@ if(CV&&CV.dk===dk)return;
 const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null;
 const type=(sp&&!ae)?'aerobic':(ae&&!sp)?'sprint':sp?'sprint':effDow(dk)===5?'sprint':'aerobic';
 const _rx=sprintRx(prog().sprintPlan);
-const _easy=!sp&&(inDeloadWeek(dk)||trendCapped(dk)); /* deload week or the fatigue guard · sprints default to the easy day (toggle stays live) */
+const _easy=engineOn()&&!sp&&(inDeloadWeek(dk)||trendCapped(dk)); /* deload week or the fatigue guard · sprints default to the easy day (toggle stays live) · dormant leaves the v32 Rx */
 CV={dk,type,reps:sp?sp.reps:(_easy?6:(_rx?_rx.reps:t.sprD.reps)),dist:sp?sp.distM:(_easy?50:(_rx?_rx.distM:t.sprD.distM)),eff:sp?sp.effortPct:(_easy?70:(_rx?_rx.ceiling:t.sprD.eff)),
 quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',ready:sp&&sp.ready?sp.ready:'',fallback:sp?(sp.fallback?1:0):(_easy?1:0),
 spMode:sp&&sp.legs&&sp.legs.length?'ladder':'even',legsArr:sp&&sp.legs?sp.legs.slice():[],legPend:'',
@@ -1871,6 +1873,9 @@ const PRIORITY_G=['sideDelt','rearDelt','upperBack']; /* delts + back fire first
 const MUSCLE_MAP={'side delts':'sideDelt','rear delts':'rearDelt','upper back':'upperBack','back':'upperBack','lats':'upperBack','traps':'upperBack','hamstrings':'hams','quads':'quadsGlutes','glutes':'quadsGlutes','legs':'quadsGlutes','calves':'calves','core':'core','abs':'core','obliques':'core'};
 const GROUP_NAME={sideDelt:'side delts',rearDelt:'rear delts',upperBack:'upper back',hams:'hamstrings',quadsGlutes:'quads + glutes',calves:'calves',core:'core'};
 let ENG_DIRTY=false;
+/* Master switch · OFF by default (held until J is cleared). Reads the flag WITHOUT creating engine state,
+   so a dormant install never folds a verdict, fires a deload, or shows an engine number. */
+function engineOn(){const p=(DB&&DB.programs)?prog():null;return!!(p&&p.engine&&p.engine.on)}
 function engine(){const p=prog();if(!p.engine){p.engine={dial:1,start:tk()};ENG_DIRTY=true}return p.engine}
 function dial(){return Math.min(1.4,Math.max(.6,engine().dial||1))}
 function greenGate(){return Math.min(4,Math.round(2/dial()))}
@@ -1889,7 +1894,8 @@ if(!slot){slot=lp.slots[tid]={applied:shiftDk(tk(),-1),red:0,defer:false,ex:{}};
 const t=tpl(tid);
 if(t)t.entries.forEach(e=>{if(e.enabled&&!e.amrap&&e.sets>0&&!slot.ex[e.exId]){slot.ex[e.exId]=lpInit(e);ENG_DIRTY=true}});
 return slot}
-function engRec(sess,entry){if(!sess||sess.kind!=='lift'||entry.synth||entry.amrap)return null;
+function engRec(sess,entry){if(!engineOn())return null; /* dormant · the session view falls back to the plain template prescription */
+if(!sess||sess.kind!=='lift'||entry.synth||entry.amrap)return null;
 const t=tpl(sess.templateId);if(!t||t.kind!=='lift'||!t.entries.some(e=>e.exId===entry.exId))return null;
 return lpSlot(t.id).ex[entry.exId]||null}
 function prescSets(rec,dk){return inDeloadWeek(dk)?Math.max(1,Math.ceil(rec.sets/2)):rec.sets} /* deload week · sets halve, rounded up */
@@ -2005,7 +2011,7 @@ if(e.deload&&e.deload.weekOf>=weekMon(tk()))return null;
 if(chronicFlat(tk()))return fireDeload('flat')?'flat':null;
 if(trainedWeeks()>=deloadEvery())return fireDeload('backstop')?'backstop':null;
 return null}
-function engTick(){if(!DB)return;const p=prog();
+function engTick(){if(!DB||!engineOn())return;const p=prog(); /* dormant · no fold, no deload, no slot state created */
 if(!(p.templates||[]).some(t=>t.kind==='lift'))return;
 syncLiftPlan();
 const fired=checkDeloadDue();
@@ -2051,7 +2057,7 @@ const _rx=sprintRx(prog().sprintPlan),_last=lastSprint(dk),_fb=CV.fallback;
 if(showSpr){
 if(!xtra)(t.checks||[]).filter(c=>c.enabled&&c.id==='mbt').forEach(c=>{h+=ckRow(c,checks)});
 if(_rx){
-if(_fb){const _why=inDeloadWeek(dk)?'deload week · easy by design':trendCapped(dk)?'fatigue guard · two flat mornings inside four days':'flat day · bank easy clean reps';
+if(_fb){const _why=!engineOn()?'flat day · bank easy clean reps':inDeloadWeek(dk)?'deload week · easy by design':trendCapped(dk)?'fatigue guard · two flat mornings inside four days':'flat day · bank easy clean reps';
 h+='<div class="rxc"><div class="rxh"><span class="rxp">Easy day · Run-Throughs</span></div><div class="rxt">6 × 50m <span class="rxe">@ ~70%</span></div><div class="rxr">'+_why+' · gradual float-down · no near-max</div></div>';}
 else{const _cap=CV.ready==='flat'?Math.min(_rx.ceiling,85):_rx.ceiling;
 h+='<div class="rxc"><div class="rxh"><span class="rxp">Phase '+(_rx.idx+1)+'/'+_rx.total+' · '+esc(_rx.phase.name)+'</span>'+(_rx.deload?'<span class="chip sg">deload</span>':'')+'</div><div class="rxt">'+_rx.reps+' × '+_rx.distM+'m <span class="rxe">@ up to '+_cap+'%</span></div><div class="rxr">'+esc(_rx.dist)+'</div><div class="rxr">ramp in (70→80→top) · rest till springy · stop when form breaks · float down, never brake</div>'+(_rx.floorBlocked?'<div class="rxr" style="color:var(--ember-hot)">near-max held until ~8 wks of fast running are banked</div>':'')+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>':'')+'</div>';}
@@ -2169,12 +2175,11 @@ function vProgram(){
 const p=prog();
 let h='<header class="hero" style="align-items:flex-start"><div style="flex:1;min-width:0"><div class="eyebrow">Program</div><h1 class="title">'+esc(p.name)+'</h1>'
 +(p.subtitle?'<div class="hsub">'+esc(p.subtitle)+'</div>':'')+'</div><button class="bbtn" style="margin-top:6px;flex-shrink:0" onclick="progSheet()">Edit</button></header>';
-engTick();
-const _sk=p.season||'reset',_sn=SEASONS[_sk]||SEASONS.reset,_bd=seasonBand();
-const _dl=deloadWk(),_dlOn=_dl&&_dl>=weekMon(tk());
-const _dlTxt=_dlOn?(inDeloadWeek(tk())?'Deload · this week':'Deload · week of '+fmtDk(_dl)):'Deload backstop · '+trainedWeeks()+' of '+deloadEvery()+' trained weeks';
+const _eng=engineOn();
+if(_eng)engTick();
+const _sk=p.season||'reset',_sn=SEASONS[_sk]||SEASONS.reset;
 h+='<div class="sl first"><span class="lt">Season</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="seasonSheet()">Change</button></div>';
-h+='<div class="card" style="display:flex;align-items:baseline;gap:10px;padding:14px 16px;margin-bottom:18px;flex-wrap:wrap"><b>'+esc(_sn.name)+'</b><span class="exs" style="padding:0">'+esc(_sn.cal+' · '+_sn.ds)+'</span><span class="exs" style="padding:0;width:100%">'+_bd[0]+'-'+_bd[1]+' sets per governed muscle · '+esc(_dlTxt)+'</span></div>';
+h+='<div class="card" style="display:flex;align-items:baseline;gap:10px;padding:14px 16px;margin-bottom:18px;flex-wrap:wrap"><b>'+esc(_sn.name)+'</b><span class="exs" style="padding:0">'+esc(_sn.cal+' · '+_sn.ds)+'</span>'+(_eng?(function(){const _bd=seasonBand(),_dl=deloadWk(),_dlOn=_dl&&_dl>=weekMon(tk()),_dlTxt=_dlOn?(inDeloadWeek(tk())?'Deload · this week':'Deload · week of '+fmtDk(_dl)):'Deload backstop · '+trainedWeeks()+' of '+deloadEvery()+' trained weeks';return'<span class="exs" style="padding:0;width:100%">'+_bd[0]+'-'+_bd[1]+' sets per governed muscle · '+esc(_dlTxt)+'</span>'})():'')+'</div>';
 h+='<div class="sl"><span class="lt">Week</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="openEd(\'edsched\')">Edit</button></div>';
 h+='<div class="week" style="margin-bottom:18px">'+[1,2,3,4,5,6,0].map(d=>{
 const tid=p.schedule[d],t=tid?tpl(tid):null;
@@ -2209,6 +2214,7 @@ return'<button class="btn '+(cur===k?'btn-p':'btn-o')+'" onclick="setSeason(\''+
 sheet('Season','the one quarterly dial · sprint stays the spine',b)}
 function setSeason(k){if(!SEASONS[k])return;const p=prog();
 if((p.season||'reset')===k){closeOv();return}
+if(!engineOn()){p.season=k;sv();vibe(10);closeOv();rn();toast('Season · '+SEASONS[k].name);return} /* dormant · season is just a label, no engine re-anchor */
 engTick(); /* the boundary tap applies to the old-season state first */
 const e=engine(),oldTop=seasonBand()[1];
 p.season=k;e.seasonSetAt=tk();
@@ -2567,7 +2573,7 @@ var _prior=_wl.filter(function(w){return w.wk<_twk}).slice(-4),_avg=_prior.lengt
 h+='<div class="tpe"><span class="tpen">This week</span><span class="tpes num">'+_swk+' session'+(_swk!==1?'s':'')+(_curW?' · load '+Math.round(_curW.load):'')+'</span></div>';
 if(_spike)h+='<div class="rxr" style="color:var(--ember-hot)">Big jump vs your recent weeks — watch recovery</div>';
 if(_wl.length>1)h+='<div class="exs" style="padding:6px 2px 2px">Training load (effort × min) by week</div>'+trendChart(_wl,true);
-if(_hk.length){var _sb=seasonBand();h+='<div class="exs" style="padding:'+(_wl.length>1?'12':'4')+'px 2px 4px">Hard sets this week · season band '+_sb[0]+'-'+_sb[1]+' per governed muscle</div>';
+if(_hk.length){var _sb=engineOn()?seasonBand():[10,20],_hdr=engineOn()?'season band '+_sb[0]+'-'+_sb[1]+' per governed muscle':'aim ~10-20 per muscle';h+='<div class="exs" style="padding:'+(_wl.length>1?'12':'4')+'px 2px 4px">Hard sets this week · '+_hdr+'</div>';
 h+=_hk.slice(0,8).map(function(mu){var n=_hs[mu],band=n>=_sb[0]&&n<=_sb[1]?'in':(n<_sb[0]?'lo':'hi'),pct=Math.min(100,Math.round(n/_sb[1]*100));return'<div class="hsrow"><div class="hsn">'+esc(mu)+'</div><div class="hsbar"><i class="hsfill '+band+'" style="width:'+pct+'%"></i></div><div class="hsc num">'+n+'</div></div>'}).join('');}
 h+='</div>';}
 const prMin=!!(DB.settings&&DB.settings.prMin);
@@ -2697,7 +2703,8 @@ const body=
 +'<div class="strow"><div class="stn">Timer chime<small>visual flash always on</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.sound?'1':'0','setSound')+'</div>'
 +'<div class="strow"><div class="stn">Haptics<small>buzz on logged sets &amp; rest end</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.haptics===false?'0':'1','setHaptics')+'</div>'
 +'<div class="strow"><div class="stn">Default rest<small>when nothing more specific is set</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sRest" data-args="[-15]">−</button><div class="stv num" id="sRestV">'+rD()+'s</div><button class="stb" data-hold data-fn="sRest" data-args="[15]">+</button></div></div>'
-+'<div class="strow"><div class="stn">Recovery dial<small>scales the advance gate, deload cadence, and volume tops · glance at it each season</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sDial" data-args="[-0.1]">−</button><div class="stv num" id="sDialV">'+dial().toFixed(1)+'</div><button class="stb" data-hold data-fn="sDial" data-args="[0.1]">+</button></div></div>'
++'<div class="strow"><div class="stn">Auto-progression engine<small>'+(engineOn()?'on · the by-feel autopilot drives your lifts':'off until you are cleared · your program stays exactly as you set it')+'</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],engineOn()?'1':'0','setEngineOn')+'</div>'
++(engineOn()?'<div class="strow"><div class="stn">Recovery dial<small>scales the advance gate, deload cadence, and volume tops · glance at it each season</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sDial" data-args="[-0.1]">−</button><div class="stv num" id="sDialV">'+dial().toFixed(1)+'</div><button class="stb" data-hold data-fn="sDial" data-args="[0.1]">+</button></div></div>':'')
 +'<div class="strow"><div class="stn">Bedtime target<small>what “bed by” aims for</small></div><div class="stp" style="width:158px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sBed" data-args="[-15]">−</button><div class="stv num" id="sBedV" style="font-size:14px">'+fmtTime12(bedTime())+'</div><button class="stb" data-hold data-fn="sBed" data-args="[15]">+</button></div></div>'
 +'<div class="shbtns">'
 +'<button class="btn btn-p" onclick="doExport()">Export data</button>'
@@ -2711,6 +2718,7 @@ sheet('Settings','',body)}
 function setUnit(u){DB.settings.unit=u;PV={};CV=null;sv();rn();gear()}
 function sRest(d){DB.settings.restDefault=Math.min(600,Math.max(15,rD()+d));sv();setV(document.getElementById('sRestV'),rD()+'s')}
 function sDial(d){const e=engine();e.dial=Math.round(Math.min(1.4,Math.max(.6,dial()+d))*10)/10;ENG_DIRTY=false;sv();setV(document.getElementById('sDialV'),dial().toFixed(1))}
+function setEngineOn(v){const on=v==='1';if(on)engine().on=true;else if(prog().engine)prog().engine.on=false;ENG_DIRTY=false;sv();rn();gear();toast(on?'Auto-progression on':'Auto-progression off · program held as-is')}
 function sBed(d){const[h,m]=bedTime().split(':').map(Number);const t=Math.max(1080,Math.min(1425,h*60+m+d));DB.settings.bedtime=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');sv();setV(document.getElementById('sBedV'),fmtTime12(bedTime()));rn()}
 function setWake(v){DB.settings.wake=v==='1';sv();gear()}
 function setSound(v){DB.settings.sound=v==='1';sv();gear()}
