@@ -3,19 +3,27 @@
 This document records **how the training engine's logic was arrived at**: the research campaign behind it, the decisions and why they were made, the evidence base, the figures we caught and threw out, and how the four build stages map to the code. It is the "why" companion to the code in [`index.html`](index.html).
 
 - **Design source of truth (the "what"):** the design-foundation artifact - <https://claude.ai/code/artifact/f01568bf-a6bc-48e6-80db-e0a4a628f029>. That page is the current, audited spec (sections: 06 progression controller, 09 guardrails, 10 constants, 11 decisions, 13 evidence). This file is the "how we got there" narrative around it.
-- **Raw research on disk:** `~/.claude/plans/blocks-autopilot-engine-research-raw.json` (218 KB, the design pass with all facets + critiques + citations), `~/.claude/plans/blocks-autopilot-engine-design.md` (85 KB, the pre-pivot draft, superseded), and the taper synthesis at `scratchpad/taper/` (`FINAL.md`, `VERIFIED.json`, `FABAUDIT.json`, `COMPLETENESS.json`).
+- **Raw research on disk:** `~/.claude/plans/blocks-autopilot-engine-research-raw.json` (218 KB, the design pass with all facets + critiques + citations), `~/.claude/plans/blocks-autopilot-engine-design.md` (85 KB, the pre-pivot draft, superseded), and the taper synthesis at `~/.claude/plans/blocks-taper-synthesis/` (`FINAL.md`, `VERIFIED.json`, `SYNTH.json`, `FABAUDIT.json`, `COMPLETENESS.json`).
 - **Status:** the engine ships **dormant** behind a master off-switch (Settings → "Auto-progression engine", default Off). It drives nothing until turned on. See [The dormant hold](#the-dormant-hold) at the bottom.
 
 ---
 
 ## 1. The goal it was built to serve
 
-One priority, then a ranked set of qualities, stated by J:
+**Re-ranked Jul 7 2026 - this supersedes the original "Speed #1" framing below.** Walking the priorities back with J revealed that the original ranking was an *assumption the design started from*, not one he handed it: he talks about speed most and loves it, so "the session I anchor my week on" got encoded as "the outcome I most want to improve." Those are two different axes. His actual priorities, in his words:
 
-1. **Speed** (masters 100 m, working toward 200 m and 400 m later)
-2. then **lean**, **capped 3D delts**, **great posture**, **elite mobility**, and **durability to feel great for decades**
+1. **Mobility + posture** (one goal, at the top) - trained as a real, progressed thread, not warmup filler.
+2. **Speed** - kept as the immovable weekly **anchor for enjoyment and adherence** (he will always show up for a sprint day), NOT because it is the top outcome. It still gets the freshest slot and is protected last on a bad day.
+3. **Muscle retention** (the resistance work) - serves body composition and durability; progresses by reps / tempo / range / density, never load.
+4. **Durability, to feel great for decades** - the always-on background (guardrails, tendon work, longevity).
 
-Explicitly **not** strength, **not** PRs. Legs are already over-built and sprints carry most of their load, so resistance is sculpt / posture / durability work, and progression comes from reps, tempo, range, and density - never ever-heavier load, with one exception (tendon work).
+**Dropped as workout goals (Jul 7 2026):** *capped 3D delts* (never a real target - it meant "do not overbuild"; rear-delt and upper-back work survives anyway *as posture muscles*) and *lean* (leanness is ~80% diet, the only training lever is holding muscle, which #3 already does - so the engine will not pretend to progress it).
+
+Still true and unchanged: **not** strength, **not** PRs. Legs are already over-built and sprints carry most of their load, so resistance is posture / durability / muscle-retention work, and progression comes from reps, tempo, range, and density - never ever-heavier load, with one exception (tendon work).
+
+**Engine consequence** (to apply when the engine is next turned on - it is dormant now): the advance-budget priority "delts + back first" flips to **posture / back first, delts dropped**, and the mobility layer's loaded end-range holds get promoted from background filler to a first-class progressed thread with their own dial.
+
+> *Original framing, kept for history:* one priority - Speed (masters 100 m, working toward 200/400) - then a ranked set of qualities (lean, capped 3D delts, great posture, elite mobility, durability). The whole engine below was calibrated against this; the Jul 7 re-rank above corrects it and is the current intent.
 
 The endgame is a **fully automated, goal-driven, by-feel training autopilot**: show up, read one line, execute. Everything below is the research that turned that ambition into a defensible state machine.
 
@@ -82,7 +90,7 @@ From the artifact's decisions log (section 11), the questions that were actually
 | # | Question | Decision |
 |---|---|---|
 | **Pivot** | How much injury machinery to carry? | **Strip it all**, no comeback toggle. Keep only durability guardrails. |
-| **Goals** | What is resistance *for*? | Sculpt, not strength. Lean, capped delts, posture, mobility, longevity. Four seasons: Build / Speed / Reset / Lean. |
+| **Goals** | What is resistance *for*? | **Re-ranked Jul 7 2026 (see §1):** posture + mobility first, then muscle-retention, then durability. NOT strength. Capped delts and lean **dropped** as workout goals (delts = never a real target; lean = ~80% diet). Speed stays the enjoyment *anchor*, not the top outcome. Four seasons: Build / Speed / Reset / Lean. |
 | **Q1** | Return-flag RIR decay threshold? | Answered 4, then **moot** - retired with the injury strip. |
 | **Q2** | Throws/slams re-entry? | Manual unlock; a one-time August reminder (snoozeable to September) names every parked move, no auto-arm. |
 | **Q3** | Fixed VO2 cadence? | No. Swimming is the primary aerobic/VO2 (home pool); an occasional track session is opportunistic. |
