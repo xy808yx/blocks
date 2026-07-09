@@ -263,6 +263,17 @@ a{color:var(--ember);text-decoration:none}
 .rxe{font-size:14px;font-weight:600;color:var(--dim)}
 .rxr{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.45}
 .rxl{font-size:13px;color:var(--dim);margin-top:9px;padding-top:9px;border-top:1px solid var(--border)}
+.smenu{margin-bottom:12px}
+.smh{font-family:var(--fd);font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ember);margin-bottom:9px}
+.schip{display:block;width:100%;text-align:left;background:var(--surface2);border:1px solid var(--border-h);border-radius:13px;padding:11px 13px;margin-bottom:8px;transition:background .15s,border-color .15s}
+.schip:active{background:var(--surface)}
+.schip.on{border-color:var(--ember-line);background:var(--ember-soft)}
+.schip.lk{opacity:.55}
+.schn{display:flex;align-items:baseline;gap:8px}
+.scht{font-size:15.5px;font-weight:650;color:var(--text);flex:1}
+.schd{font-size:13px;color:var(--dim);white-space:nowrap}
+.schr{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+.schp{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.4;padding-left:2px}
 .savedl b{color:var(--text);font-weight:650}
 .savedl .ed{margin-left:auto;font-size:14px;font-weight:650;color:var(--ember);padding:8px 4px}
 
@@ -721,27 +732,24 @@ const reference=[
 - True max sprint — full send. Block starts resume LAST.
 - Keep loading the calf even after performance returns — stopping is the other leading recurrence cause.
 - 1 week full training per 2 weeks missed.`},
-{t:'Sprint Program',b:`**By feel · 1×/week (Friday) · build top speed first, extend later · 100m now → 200 → 400 (track available).**
-| Phase | Distance | Reps | Effort |
-| Run-Throughs | 40-60m build-ups, float down | 6-8 (most volume) | ≤80% |
-| Sprint | accel 10-30m + flying 10-20m | 3-6 | ceiling 80→95% |
-| Extend | 40-60m / 7-10s held speed | 3-5 | 90-95% (dial=rest) |
-| 200 → 400m | later · track | — | — |
-**How it climbs — one dial at a time**
-- Grow clean reps at the current effort cap FIRST, then raise the ceiling and reset reps low. Never both in one week.
+{t:'Sprint Program',b:`**By feel · 1×/week (Friday) · build top speed first, extend later · 100m now, 200 later (track available).**
+Speed is the anchor you enjoy, not a number to chase. Your **season** (the quarterly dial in Program) sets the mood; on a sprint day you pick one option from that season's short menu. Nothing auto-advances, you choose what fits the day.
+**The seasons**
+- **Build**: legs are heavy in the gym, so sprint stays low-CNS. Run-throughs, short accels, extensive tempo. Nothing over 80%.
+- **Speed**: legs light, sprint peaks. Sub-max fly is the always-open pick; max-velocity fly, acceleration, and Special Endurance I are near-max and gated (one hard pick a week). 95% working ceiling; true all-out is a rare in-taper time-trial only.
+- **Reset**: deload. Movement-quality flow, easy run-throughs. All sub-75%.
+- **Lean**: pool-forward maintenance. One light accel to hold fast-twitch; the rest optional.
+**The calf gate (the one hard rule)**
+- No true near-max (>90%) until ~8 weeks of fast running are banked; the near-max picks stay locked until then. The clock counts weeks you actually ran fast, easy days don't count.
+- Clean = 0/10 pain during fast reps, settled in 24h, calf normal next morning. Pain or a "faded" day drops you to an easier pick or the easy fallback.
 - Most meters when slow, fewest at top speed.
-- Clean = 0/10 pain during fast (≥90%) reps, settled in 24h, calf normal next morning.
-- Pain or a "faded" rating holds you and drops a rep.
-- No true near-max until ~8 weeks of fast running are banked.
-- Auto-deload every 3rd-4th Friday (recovery — it doesn't advance the dials).
 **Every Friday**
 - Sprint-only through the calf window (heavy lower lift sits on Monday).
-- Warm up → readiness check (flat caps today's ceiling) → ramp in (70→80→top).
+- Warm up, readiness check, ramp in (70→80→top).
 - Full recovery (rest till springy) · stop when form breaks · float down, never brake hard.
-- Flat day? Log the easy run-through fallback — the trip's never wasted.
-**Later — 200m / 400m**
-- Speed first; you can't hold a speed you haven't built. Defer until Sprint is months-clean and a bent-knee (soleus) capacity check passes.
-- 200m = tighten rest on familiar reps. 400m = small, optional, late — a real push likely earns a 2nd easy speed day.`},
+- Flat day? Tap the easy run-through fallback, the trip's never wasted.
+**Later, 200m**
+- Speed first; you can't hold a speed you haven't built. Special Endurance I (in Speed) is the 200 bridge: controlled, gated, optional. Defer a real 200 push until Sprint work is months-clean and a bent-knee (soleus) capacity check passes.`},
 {t:'Sprint Rationale & Sources',b:`**Short-to-long; build max velocity then extend it; polarize intensity — fast (≥95%) or easy (<70%), not chronic medium tempo.** Haugen et al., elite sprint development review. [Sports Med Open](https://pmc.ncbi.nlm.nih.gov/articles/PMC6872694/)
 **Volume before intensity — most meters at low effort, fewer as speed rises; progress on soreness, not rep counts** (50%/1:3 → 75%/1:5 → 90-100%/1:7). [Return to sprinting after injury](https://pmc.ncbi.nlm.nih.gov/articles/PMC7134353/)
 **~8-week floor before near-max** — calf recurrence risk is highest the first ~8 weeks; ~20% of repeats happen before full recovery; ~13-21% recur over 2 years. [Calf strains review](https://link.springer.com/article/10.1186/s40798-025-00960-4) · [AFL recurrence](https://pmc.ncbi.nlm.nih.gov/articles/PMC12410626/)
@@ -780,7 +788,7 @@ const reference=[
 ];
 return{
 schemaVersion:1,
-contentRev:13,
+contentRev:14,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -788,7 +796,7 @@ activeProgramId:'p_rtt',
 programs:[{id:'p_rtt',name:'Return to Training',subtitle:'Phase IV — rebuilding · Gate 3 next',
  schedule:{0:null,1:'t_pull',2:'t_cardio',3:'t_push',4:'t_pull',5:'t_cardio',6:'t_push'},
  season:'reset',
- sprintPlan:{focus:'100',phaseKey:'sprint',ceiling:85,repTarget:4,cleanStreak:0,loadedFridays:0,fastWeeks:12},
+ sprintPlan:{fastWeeks:0},
  templates,checklists:{daily,dailyNoteAm:'Morning pass — one set of each. Keep the nerve flosses gentle; tissue and nerves are tighter first thing. Dead hangs skipped on training days.',dailyNotePm:'Evening pass — one set of each. Warm tissue — this is where to push stretch depth. Dead hangs skipped on training days.',mobility,therapist},reference}],
 sessions:[],
 days:{},
@@ -806,13 +814,7 @@ const DAB=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/></svg>';
 const KG=0.45359237;
-/* Sprint plan v2 — 3 phases per event focus; intensity ceiling and rep target are SEPARATE dials (advance one at a time, volume before intensity). Generic so 200/400 add as new focus keys later. */
-const SPRINTPLAN={'100':[
-{key:'reentry',name:'Run-Throughs',type:'re-entry',dist:'40-60m build-ups · gradual float-down',distM:50,repFloor:6,repCap:8,cFloor:70,cCap:80},
-{key:'sprint',name:'Sprint',type:'accel / max-V',dist:'accel 10-30m (rolling) + flying 10-20m',distM:30,repFloor:4,repCap:6,cFloor:80,cCap:100},
-{key:'extend',name:'Extend',type:'speed-endurance',dist:'40-60m / 7-10s held-speed reps',distM:60,repFloor:3,repCap:5,cFloor:90,cCap:95}
-]};
-const SPRINT_FLOOR_WEEKS=8; /* no true near-max (>90%) until this many weeks of fast running are banked (calf peak-recurrence window) */
+const SPRINT_FLOOR_WEEKS=8; /* no true near-max (>90%) until this many weeks of fast running are banked (calf peak-recurrence window) — read by sprintGateOpen() */
 /* ── Training engine · seasons + day-tap load map. Season is the one quarterly dial (manual pick · no thermal winter in Hua Hin). LOAD_MAP turns the day post-tap into a session-RPE for the weekly load metric. ── */
 const SEASONS={build:{name:'Build',cal:'Spring',ds:'heavier resistance, legs included · 3 hard days'},speed:{name:'Speed',cal:'Summer',ds:'sprint peak · legs light'},reset:{name:'Reset',cal:'Fall',ds:'built-in deload · movement quality'},lean:{name:'Lean',cal:'Winter',ds:'pool volume up · stay lean'}};
 const LOAD_MAP={springy:7,normal:6,flat:5,stop:4};
@@ -825,7 +827,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=13)return;
+let cr=DB.contentRev||0;if(cr>=14)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -917,6 +919,12 @@ if(cr<13){
  const P=(DB.programs||[])[0],ct=P&&(P.templates||[]).find(x=>x.kind==='cardio');
  if(ct)DB.sessions.forEach(s=>{if(s.kind==='cardio'&&!cardioIds.has(s.templateId)){s.name=ct.name;s.templateId=ct.id}});
  cr=13;
+}
+if(cr<14){
+ /* Sprint reshape · the auto-progression ratchet (phase/ceiling/repTarget/cleanStreak/loadedFridays) is retired; season now drives a by-vibe menu. Collapse each sprintPlan to the calf clock only, PRESERVING any banked fastWeeks so an already-earned near-max gate stays open. Refresh the Sprint Program reference card (the old "one dial / auto-deload" coaching is now false). Non-destructive: logged sprint history untouched; works with engineOn() false. */
+ patchRef('Sprint Program');
+ (DB.programs||[]).forEach(p=>{const sp=p.sprintPlan||{};p.sprintPlan={fastWeeks:(sp.fastWeeks==null?12:sp.fastWeeks)}});
+ cr=14;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
@@ -1792,21 +1800,20 @@ function ensureCV(dk,t,sess){
 if(CV&&CV.dk===dk)return;
 const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null;
 const type=(sp&&!ae)?'aerobic':(ae&&!sp)?'sprint':sp?'sprint':effDow(dk)===5?'sprint':'aerobic';
-const _rx=sprintRx(prog().sprintPlan);
 const _ts=engineOn()&&!sp?taperState(dk):null; /* E4 · taper holds quality, scales volume — not an easy day */
 const _force=engineOn()&&!sp&&!_ts&&((engine().sprintFb)||(inOnramp()&&onrampWk()===0)); /* E3/E4 · a systemic Stop or on-ramp week one forces the easy day */
-const _easy=engineOn()&&!sp&&!_ts&&(inDeloadWeek(dk)||trendCapped(dk)||_force); /* deload / fatigue guard / forced · dormant leaves the v32 Rx */
-let _reps=_rx?_rx.reps:t.sprD.reps,_eff=_rx?_rx.ceiling:t.sprD.eff,_dist=_rx?_rx.distM:t.sprD.distM;
+const _easy=engineOn()&&!sp&&!_ts&&(inDeloadWeek(dk)||trendCapped(dk)||_force); /* deload / fatigue guard / forced · dormant leaves the easy-day fallback */
+let _reps=t.sprD.reps,_eff=t.sprD.eff,_dist=t.sprD.distM; /* sprD is the pre-pick default; a season-menu tap seeds the steppers */
 if(_ts){_reps=Math.max(2,Math.round(_reps*_ts.scale));if(preTap(dk)==='flat')_reps=Math.max(2,Math.round(_reps*TAPER.FLATMULT))} /* taper volume curve + a flat-day ease, ceiling held */
 const _cr=engineOn()&&!ae?cardioRx(dk):null; /* E3 · swim duration from the plan */
 CV={dk,type,reps:sp?sp.reps:(_easy?6:_reps),dist:sp?sp.distM:(_easy?50:_dist),eff:sp?sp.effortPct:(_easy?70:_eff),
-quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',ready:sp&&sp.ready?sp.ready:'',fallback:sp?(sp.fallback?1:0):(_easy?1:0),
+quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',ready:sp&&sp.ready?sp.ready:'',fallback:sp?(sp.fallback?1:0):(_easy?1:0),menuId:sp&&sp.menuId?sp.menuId:null,season:sp&&sp.season?sp.season:(prog().season||'reset'),
 spMode:sp&&sp.legs&&sp.legs.length?'ladder':'even',legsArr:sp&&sp.legs?sp.legs.slice():[],legPend:'',
 mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:(_cr?_cr.dur:t.aerD.durMin),zone:ae?ae.zone:t.aerD.zone};
 CE={spr:!sp,aer:!ae}}
 function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
 setV(document.getElementById('cv-'+f),CV[f])}
-function cseg(f,v){if(!CV)return;CV[f]=v;vibe(8);rn()}
+function cseg(f,v){if(!CV)return;CV[f]=v;if(f==='ready'&&v==='flat'&&(+CV.eff||0)>85)CV.eff=85;vibe(8);rn()} /* a Flat feel-day eases the hardest picks back to 85% */
 function cedit(which){CE[which]=true;rn()}
 function cfld(label,f,step,min,max){
 return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="cstep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="cv-'+f+'">'+CV[f]+'</div><button class="stb" data-hold data-fn="cstep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
@@ -1816,15 +1823,14 @@ if(!s&&create){const sd=tplForDate(dk),ct=(sd&&sd.kind==='cardio')?sd:prog().tem
 s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:ct?ct.name:'Cardio',templateId:ct?ct.id:'t_cardio',kind:'cardio',startedAt:Date.now(),finishedAt:Date.now(),sets:[]};
 DB.sessions.push(s)}
 return s}
-function saveSprints(dk){const s=getCardioSess(dk,true);const _new=!s.sprints;
+function saveSprints(dk){const s=getCardioSess(dk,true);
 let legs=null,reps=CV.reps,distM=CV.dist;
 if(CV.spMode==='ladder'&&!CV.fallback){const L=(CV.legsArr||[]).slice();if(!L.length){toast('Add at least one distance');return}legs=L;reps=L.length;distM=Math.max.apply(null,L)}
-s.sprints={reps,distM,effortPct:CV.eff,legs,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,phaseKey:(prog().sprintPlan||{}).phaseKey||null};
+s.sprints={reps,distM,effortPct:CV.eff,legs,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,menuId:CV.menuId||null,season:CV.season||prog().season||null};
 if(!s.finishedAt)s.finishedAt=Date.now();
-if(_new&&!(engineOn()&&taperState(dk)))advanceSprintPlan(prog().sprintPlan,s); /* E4 · in taper the wrapper never calls the engine; the curve owns volume */
 if(engineOn()&&engine().sprintFb){delete engine().sprintFb} /* the forced-easy sprint was honored · clear it */
 CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':(legs?'Ladder logged':'Sprints logged'))}
-function sprFallback(dk){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=6;CV.dist=50;CV.eff=70}else{const rx=sprintRx(prog().sprintPlan);if(rx){CV.reps=rx.reps;CV.dist=rx.distM;CV.eff=rx.ceiling}}rn()}
+function sprFallback(dk){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=6;CV.dist=50;CV.eff=70}else{const it=menuItem(CV.season||prog().season||'reset',CV.menuId),ct=prog().templates.find(x=>x.kind==='cardio');if(it){CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff}else if(ct&&ct.sprD){CV.reps=ct.sprD.reps;CV.dist=ct.sprD.distM;CV.eff=ct.sprD.eff}else{CV.reps=3;CV.dist=50;CV.eff=55}if(CV.ready==='flat'&&(+CV.eff||0)>85)CV.eff=85}rn()}
 function saveAerobic(dk){const s=getCardioSess(dk,true);
 s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();
@@ -1838,40 +1844,48 @@ function sprDistC(sp){const L=sprLegs(sp);return L?L.join('/')+'m':sp.reps+'×'+
 function addLeg(dk){if(!CV)return;const L=parseLegs(CV.legPend);if(!L.length)return;CV.legsArr=(CV.legsArr||[]).concat(L);CV.legPend='';vibe(8);rn();const el=document.getElementById('legIn');if(el)el.focus()}
 function rmLeg(i){if(!CV||!CV.legsArr)return;CV.legsArr.splice(i,1);vibe(6);rn()}
 function legTotal(){return((CV&&CV.legsArr)||[]).reduce(function(a,b){return a+b},0)}
-function sprintPhases(plan){return SPRINTPLAN[(plan&&plan.focus)||'100']||SPRINTPLAN['100']}
-function sprintPhaseIx(plan){const ph=sprintPhases(plan),ix=ph.findIndex(p=>p.key===plan.phaseKey);return ix<0?1:ix}
-function sprintDeloadEvery(plan){return (plan.fastWeeks||0)<SPRINT_FLOOR_WEEKS?2:4}
-function sprintRx(plan){if(!plan)return null;const ph=sprintPhases(plan),ix=sprintPhaseIx(plan),phase=ph[ix];
-const every=sprintDeloadEvery(plan);
-const deload=(plan.loadedFridays||0)>0&&((plan.loadedFridays||0)%every)===(every-1);
-let ceiling=Math.max(phase.cFloor,Math.min(phase.cCap,plan.ceiling||phase.cFloor));
-const floorBlocked=(plan.fastWeeks||0)<SPRINT_FLOOR_WEEKS;
-if(floorBlocked)ceiling=Math.min(ceiling,90);
-let reps=Math.max(phase.repFloor,Math.min(phase.repCap,plan.repTarget||phase.repFloor));
-if(deload){reps=Math.max(2,Math.round(reps*0.6));ceiling=Math.min(ceiling,phase.cFloor+5)}
-return{phase,idx:ix,total:ph.length,reps,ceiling,distM:phase.distM,dist:phase.dist,type:phase.type,deload,floorBlocked}}
+/* Season sprint menus · each season shows a short by-vibe list (all chips equal · no highlighted default). Numbers seed the steppers on tap; J overrides. gated = near-max, only offered once the calf floor is banked (sprintGateOpen). */
+const SPRINT_MENUS={
+build:{items:[
+ {id:'b_rt',name:'Run-throughs',disp:'6 × 60m · 80%',note:'Float up and shut it off, full walk-back.',reps:6,distM:60,eff:80},
+ {id:'b_acc',name:'Short technical acceleration',disp:'4 × 20m · 80%',note:'Crisp patient push, freshness first.',reps:4,distM:20,eff:80},
+ {id:'b_tempo',name:'Extensive tempo',disp:'6 × 100m · 70%',note:'Relaxed rhythm, the pool owns aerobic.',reps:6,distM:100,eff:70},
+ {id:'b_drills',name:'Drills + easy strides',disp:'3 rounds · submax',note:'No bounding or throws, stop while springy.',reps:3,distM:40,eff:70}
+]},
+speed:{items:[
+ {id:'s_subfly',name:'Sub-max fly & build-ups',disp:'3-4 × 20m fly · 85%',note:'Sub-90, never reach for it. The bridge and easy-day fallback.',reps:4,distM:20,eff:85},
+ {id:'s_maxfly',name:'Max-velocity fly',disp:'3-4 × 20m fly · 95%',note:'Tall, patient, let it run. One hard pick a week.',gated:true,reps:4,distM:20,eff:95},
+ {id:'s_acc',name:'Acceleration',disp:'4-5 × 30m · 95%',note:'Smooth progressive push, not a max-out.',gated:true,reps:5,distM:30,eff:95},
+ {id:'s_se1',name:'Special Endurance I',disp:'2-3 × 150m · 90%',note:'Controlled speed you can hold, not a time trial. 200 only.',gated:true,opt:true,reps:3,distM:150,eff:90}
+],primer:'Optional reactive primer before a fly or accel: light pogos / ankle hops, low contacts.'},
+reset:{items:[
+ {id:'r_flow',name:'Movement-quality flow',disp:'3 rounds · easy',note:'Easy skips + hip / ankle CARs.',reps:3,distM:30,eff:60},
+ {id:'r_rt',name:'Easy run-throughs',disp:'4 × 60m · 75%',note:'Loose and light, nothing to prove.',reps:4,distM:60,eff:75},
+ {id:'r_tempo',name:'Easy extensive tempo',disp:'4 × 100m · 65%',note:'The lightest pick.',opt:true,reps:4,distM:100,eff:65}
+]},
+lean:{items:[
+ {id:'l_acc',name:'Maintenance acceleration',disp:'4 × 20m · 80%',note:"Hold fast-twitch, don't chase.",reps:4,distM:20,eff:80},
+ {id:'l_drills',name:'Sprint drills',disp:'3 rounds · easy',note:'Skips, A / B, dribbles. Crisp and short.',reps:3,distM:30,eff:60},
+ {id:'l_tempo',name:'Light tempo flush',disp:'4-6 × 100m · 70%',note:'Instead of a swim, never on top.',opt:true,reps:6,distM:100,eff:70}
+]}};
+function fastWeeksLogged(){const wk={};DB.sessions.forEach(s=>{const sp=s.sprints;if(sp&&!sp.fallback&&(sp.effortPct||0)>=80)wk[weekMon(s.date)]=1});return Object.keys(wk).length} /* distinct calendar weeks that carry a real (>=80%, non-fallback) sprint · easy/deload picks don't count */
+function fastWeeksTotal(plan){return Math.max(((plan&&plan.fastWeeks)||0),fastWeeksLogged())} /* migrated banked baseline OR weeks actually logged, whichever is higher · derived from history so out-of-order logging or a delete can't drift it */
+function sprintGateOpen(plan){return fastWeeksTotal(plan)>=SPRINT_FLOOR_WEEKS} /* near-max unlocks once the calf fast-running floor is banked */
+function menuItem(season,idv){if(!idv)return null;const M=SPRINT_MENUS[season]||SPRINT_MENUS.reset;return(M.items||[]).find(x=>x.id===idv)||null}
+function sprintMenuHtml(season,dk){const M=SPRINT_MENUS[season]||SPRINT_MENUS.reset,P=prog(),open=sprintGateOpen(P.sprintPlan),tot=fastWeeksTotal(P.sprintPlan),tap=!!dk,sn=SEASONS[season]||SEASONS.reset,hasGated=(M.items||[]).some(it=>it.gated);
+let h='<div class="smenu"><div class="smh">'+esc(sn.name)+(tap?' · pick your day':' · sprint menu')+'</div>';
+(M.items||[]).forEach(it=>{const locked=it.gated&&!open,sel=tap&&CV&&CV.menuId===it.id,
+ tag=locked?'<span class="chip off">locked</span>':(it.opt?'<span class="chip off">optional</span>':''),
+ el=tap?'button':'div',att=tap?' onclick="pickSprintMenu(\''+it.id+'\')"':'';
+ h+='<'+el+' class="schip'+(sel?' on':'')+(locked?' lk':'')+'"'+att+'><div class="schn"><span class="scht">'+esc(it.name)+'</span>'+tag+'<span class="schd num">'+esc(it.disp)+'</span></div>'+(it.note?'<div class="schr">'+esc(it.note)+'</div>':'')+'</'+el+'>'});
+if(M.primer&&open)h+='<div class="schp">'+esc(M.primer)+'</div>';
+if(tap&&!open&&hasGated)h+='<div class="schp">Near-max picks unlock after ~'+SPRINT_FLOOR_WEEKS+' weeks of fast running ('+tot+'/'+SPRINT_FLOOR_WEEKS+' banked).</div>';
+return h+'</div>'}
+function pickSprintMenu(idv){if(!CV)return;const it=menuItem(CV.season||prog().season||'reset',idv);if(!it)return;
+if(it.gated&&!sprintGateOpen(prog().sprintPlan)){toast('Banking fast-running weeks first · near-max opens at ~8 weeks');return}
+CV.menuId=idv;CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff;CV.spMode='even';if(CV.fallback)CV.fallback=0;if(CV.ready==='flat'&&CV.eff>85)CV.eff=85;vibe(8);rn()}
 function lastSprint(dk){let best=null;DB.sessions.forEach(s=>{if(s.sprints&&s.date<dk&&(!best||s.date>best.date))best=s});return best?best.sprints:null}
-/* One dial at a time: clean -> grow reps to cap, THEN raise the effort ceiling and reset reps, THEN advance phase. Fast reps (>=90%) demand pain 0. Calendar floor holds near-max. Fallback/easy days don't progress. */
-function advanceSprintPlan(plan,sess){if(!plan)return;const sp=sess.sprints||{};
-plan.fastWeeks=(plan.fastWeeks||0)+1;
-if(sp.fallback)return;
-const _every=sprintDeloadEvery(plan),_wasDeload=(plan.loadedFridays||0)>0&&((plan.loadedFridays||0)%_every)===(_every-1);
-plan.loadedFridays=(plan.loadedFridays||0)+1;
-if(_wasDeload)return;
-const ph=sprintPhases(plan),ix=sprintPhaseIx(plan),phase=ph[ix];
-const fast=(sp.effortPct||0)>=90;
-const clean=(fast?(sp.pain==null||sp.pain===0):(sp.pain==null||sp.pain<=2))&&sp.quality!=='faded';
-if(!clean){plan.cleanStreak=0;plan.repTarget=Math.max(phase.repFloor,(plan.repTarget||phase.repFloor)-1);return}
-plan.cleanStreak=(plan.cleanStreak||0)+1;
-const rt=plan.repTarget||phase.repFloor,cl=plan.ceiling||phase.cFloor;
-if(rt<phase.repCap){plan.repTarget=rt+1;return}
-if(cl<phase.cCap){const nc=Math.min(phase.cCap,cl+5);if(nc>90&&(plan.fastWeeks||0)<SPRINT_FLOOR_WEEKS)return;plan.ceiling=nc;plan.repTarget=phase.repFloor;plan.cleanStreak=0;return}
-if(ix<ph.length-1){const nx=ph[ix+1];plan.phaseKey=nx.key;plan.ceiling=nx.cFloor;plan.repTarget=nx.repFloor;plan.cleanStreak=0}}
-function sprintMapHtml(plan){if(!plan)return'';const ph=sprintPhases(plan),rx=sprintRx(plan);
-let h='<div class="tpe"><span class="tpen" style="color:var(--ember)">Sprint progression · Phase '+(rx.idx+1)+'/'+ph.length+'</span><span class="tpes num">'+rx.reps+' × '+rx.distM+'m @ up to '+rx.ceiling+'%</span></div>';
-ph.forEach((p,i)=>{const on=i===rx.idx;h+='<div class="tpe"><span class="tpen" style="color:'+(on?'var(--text)':'var(--muted)')+';font-weight:'+(on?'600':'500')+'">'+(on?'▸ ':'&nbsp;&nbsp;')+esc(p.name)+'</span><span class="tpes" style="color:var(--muted);font-weight:500">'+esc(p.dist)+'</span></div>'});
-h+='<div class="tpe"><span class="tpen" style="color:var(--muted);font-weight:500">&nbsp;&nbsp;200m → 400m</span><span class="tpes" style="color:var(--muted)">later · track</span></div>';
-return h}
+/* Calf clock · the near-max gate is DERIVED, not counted: fastWeeksTotal = max(migrated baseline, distinct >=80% non-fallback weeks in history). No per-save bookkeeping, so out-of-order logging and deletes stay honest. plan.fastWeeks is only the migrated baseline (J's banked credit); logging adds nothing to it. */
 
 /* ═══════════ TRAINING ENGINE E2 · THE PROGRESSION CONTROLLER ═══════════
    Artifact §06. The day post-tap is one verdict per slot (a slot = a lift template) per day,
@@ -2198,24 +2212,22 @@ const sprOpen=!(sess&&sess.sprints)||CE.spr,aerOpen=!(sess&&sess.aerobic)||CE.ae
 if(sprOpen||aerOpen)h+='<div class="seg" style="margin:4px 0 14px"><button class="sgb'+(CV.type==='sprint'?' on':'')+'" onclick="cseg(\'type\',\'sprint\')">Sprints</button><button class="sgb'+(CV.type==='aerobic'?' on':'')+'" onclick="cseg(\'type\',\'aerobic\')">Bike / Swim / Run</button></div>';
 const showSpr=CV.type==='sprint'&&sprOpen;
 if(sprSaved||showSpr){
-const _rx=sprintRx(prog().sprintPlan),_last=lastSprint(dk),_fb=CV.fallback;
-const _tp=engineOn()&&!_fb?taperState(dk):null; /* E4 · taper prescription overrides the phase card */
+const _last=lastSprint(dk),_fb=CV.fallback;
+const _tp=engineOn()&&!_fb?taperState(dk):null; /* E4 · taper prescription overrides the season menu (engine-gated · dormant for now) */
 if(showSpr){
 if(!xtra)(t.checks||[]).filter(c=>c.enabled&&c.id==='mbt').forEach(c=>{h+=ckRow(c,checks)});
 if(_tp){
 h+='<div class="rxc"><div class="rxh"><span class="rxp">Taper · '+_tp.daysTo+' day'+(_tp.daysTo===1?'':'s')+' to race</span><span class="chip sg">peak</span></div><div class="rxt">'+CV.reps+' × '+CV.dist+'m <span class="rxe">@ '+CV.eff+'%</span></div><div class="rxr">quality held · volume '+Math.round(_tp.scale*100)+'% · stay sharp, bank nothing</div>'+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%</div>':'')+'</div>';
 }
-else if(_rx){
-if(_fb){const _why=!engineOn()?'flat day · bank easy clean reps':inDeloadWeek(dk)?'deload week · easy by design':trendCapped(dk)?'fatigue guard · two flat mornings inside four days':'flat day · bank easy clean reps';
-h+='<div class="rxc"><div class="rxh"><span class="rxp">Easy day · Run-Throughs</span></div><div class="rxt">6 × 50m <span class="rxe">@ ~70%</span></div><div class="rxr">'+_why+' · gradual float-down · no near-max</div></div>';}
-else{const _cap=CV.ready==='flat'?Math.min(_rx.ceiling,85):_rx.ceiling;
-h+='<div class="rxc"><div class="rxh"><span class="rxp">Phase '+(_rx.idx+1)+'/'+_rx.total+' · '+esc(_rx.phase.name)+'</span>'+(_rx.deload?'<span class="chip sg">deload</span>':'')+'</div><div class="rxt">'+_rx.reps+' × '+_rx.distM+'m <span class="rxe">@ up to '+_cap+'%</span></div><div class="rxr">'+esc(_rx.dist)+'</div><div class="rxr">ramp in (70→80→top) · rest till springy · stop when form breaks · float down, never brake</div>'+(_rx.floorBlocked?'<div class="rxr" style="color:var(--ember-hot)">near-max held until ~8 wks of fast running are banked</div>':'')+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>':'')+'</div>';}
-}
+else if(_fb){const _why=!engineOn()?'flat day · bank easy clean reps':inDeloadWeek(dk)?'deload week · easy by design':trendCapped(dk)?'fatigue guard · two flat mornings inside four days':'flat day · bank easy clean reps';
+h+='<div class="rxc"><div class="rxh"><span class="rxp">Easy day · Run-Throughs</span></div><div class="rxt">6 × 50m <span class="rxe">@ ~70%</span></div><div class="rxr">'+_why+' · gradual float-down · no near-max</div>'+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%</div>':'')+'</div>';}
+else{h+=sprintMenuHtml(CV.season||prog().season||'reset',dk);
+if(_last)h+='<div class="rxr" style="margin:-4px 2px 12px">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>';}
 }
 h+='<div class="exc"><div class="exh"><div class="exn">Sprint Run-Throughs</div><span class="chip bl">Sprint</span></div><div class="exs">'+esc(t.sprCue||'')+'</div>';
 if(sprSaved){const _s=sess.sprints;h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+sprDist(_s)+'</b> @ '+_s.effortPct+'%'+(sprLegs(_s)?' · '+sprLegs(_s).reduce((a,b)=>a+b,0)+' m':'')+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+(_s.fallback?' · easy':'')+'<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';}
 else{
-if(!_fb)h+='<div class="flab">Readiness</div><div class="seg">'+[['Springy','springy'],['Normal','normal'],['Flat','flat']].map(r=>'<button class="sgb'+(CV.ready===r[1]?' on':'')+'" onclick="cseg(\'ready\',\''+r[1]+'\')">'+r[0]+'</button>').join('')+'</div>';
+if(!_fb)h+='<div class="flab">Readiness</div><div class="seg">'+[['Springy','springy'],['Normal','normal'],['Flat','flat']].map(r=>'<button class="sgb'+(CV.ready===r[1]?' on':'')+'" onclick="cseg(\'ready\',\''+r[1]+'\')">'+r[0]+'</button>').join('')+'</div>'+(CV.ready==='flat'?'<div class="ckr" style="margin-top:6px">Flat day: hardest picks eased back to 85%.</div>':'');
 if(!_fb)h+='<div class="flab">Format</div><div class="seg" style="margin-bottom:4px">'+[['Even','even'],['Ladder','ladder']].map(m=>'<button class="sgb'+(CV.spMode===m[1]?' on':'')+'" onclick="cseg(\'spMode\',\''+m[1]+'\')">'+m[0]+'</button>').join('')+'</div>';
 if(!_fb&&CV.spMode==='ladder'){
 const _legs=CV.legsArr||[];
@@ -2339,13 +2351,13 @@ p.templates.forEach(t=>{
 let b='';
 if(t.kind==='lift')b=t.entries.map(e=>{const ex=exOf(e.exId);
  return'<div class="tpe'+(e.enabled?'':' offed')+'"><span class="tpen">'+esc(ex.name)+'</span><span class="tpes num">'+esc(schemeOf(e))+(e.enabled?'':' · off')+'</span></div>'}).join('');
-else{b=(prog().sprintPlan?sprintMapHtml(prog().sprintPlan):'<div class="tpe"><span class="tpen">Sprints</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>')
+else{b=sprintMenuHtml(prog().season||'reset')
  +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:12px;letter-spacing:.08em">— or —</div>'
  +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · z'+t.aerD.zone+'</span></div>'
  +(t.checks||[]).map(c=>'<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>').join('')}
 if(t.note)b+='<p style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:10px">'+esc(t.note)+'</p>';
 b+='<button class="lnk" onclick="openEdT(\''+t.id+'\')">Edit template →</button>';
-h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled).length+' moves':(function(){const pl=prog().sprintPlan,rx=pl?sprintRx(pl):null;return rx?'Phase '+(rx.idx+1)+'/'+rx.total:'sprint · cardio'})()),b)});
+h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled).length+' moves':(SEASONS[prog().season||'reset']||SEASONS.reset).name+' · sprint'),b)});
 h+='<div class="sl"><span class="lt">Checklists</span><span class="rule"></span></div>';
 h+=det('Daily Block',p.checklists.daily.length+' items · morning + evening',p.checklists.daily.map(d=>'<div class="tpe"><span class="tpen">'+esc(d.name)+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'eddaily\')">Edit →</button>');
 h+=det('Mobility',p.checklists.mobility.reduce((a,g)=>a+g.items.length,0)+' items',p.checklists.mobility.map(g=>'<p style="margin:10px 0 4px"><strong style="color:var(--text);font-size:13px;letter-spacing:.06em;text-transform:uppercase">'+esc(g.group)+'</strong></p>'+g.items.map(i=>'<div class="tpe"><span class="tpen" style="font-weight:500;color:var(--dim)">'+esc(i.name)+'</span></div>').join('')).join('')+'<button class="lnk" onclick="openMobility(\'program\')">Open today\'s checklist →</button> <button class="lnk" onclick="openEd(\'edmob\')">Edit →</button>');
@@ -2364,6 +2376,7 @@ return'<button class="btn '+(cur===k?'btn-p':'btn-o')+'" onclick="setSeason(\''+
 sheet('Season','the one quarterly dial · sprint stays the spine',b)}
 function setSeason(k){if(!SEASONS[k])return;const p=prog();
 if((p.season||'reset')===k){closeOv();return}
+CV=null; /* a season change invalidates any sprint card CV picked under the old season */
 if(!engineOn()){p.season=k;sv();vibe(10);closeOv();rn();toast('Season · '+SEASONS[k].name);return} /* dormant · season is just a label, no engine re-anchor */
 engTick(); /* the boundary tap applies to the old-season state first */
 const e=engine(),oldTop=seasonBand()[1];
@@ -2708,9 +2721,9 @@ h+=bedStat();
 h+='<div class="sl"><span class="lt">Sprint progression</span><span class="rule"></span></div>';
 const _ss=sprintSeries();
 if(!_ss.length)h+='<div class="card"><div class="ckr">Log a sprint day and your speed progression charts here — the metric that matters most for you.</div></div>';
-else{const _spl=prog().sprintPlan,_srx=_spl?sprintRx(_spl):null,_lsp=_ss[_ss.length-1]._sp;
+else{const _lsp=_ss[_ss.length-1]._sp,_sn=SEASONS[prog().season||'reset']||SEASONS.reset,_gp=prog().sprintPlan||{},_ft=fastWeeksTotal(_gp);
 h+='<div class="card">';
-if(_srx)h+='<div class="tpe"><span class="tpen" style="color:var(--ember)">Phase '+(_srx.idx+1)+'/'+_srx.total+' · '+esc(_srx.phase.name)+'</span><span class="tpes num">up to '+_srx.ceiling+'%</span></div>';
+h+='<div class="tpe"><span class="tpen" style="color:var(--ember)">'+esc(_sn.name)+' season</span><span class="tpes num">'+(sprintGateOpen(_gp)?'near-max open':(_ft+' / '+SPRINT_FLOOR_WEEKS+' wk to near-max'))+'</span></div>';
 h+='<div class="exs" style="padding:2px 2px 4px">Effort % across '+_ss.length+' sprint session'+(_ss.length>1?'s':'')+'</div>';
 h+=trendChart(_ss,true);
 h+='<div class="exs" style="padding:8px 2px 2px">Last: '+sprDistC(_lsp)+' @'+_lsp.effortPct+'%'+(_lsp.quality?' · '+esc(_lsp.quality):'')+(_lsp.pain!=null?' · pain '+_lsp.pain:'')+'</div>';
