@@ -2,9 +2,33 @@
 
 This document records **how the training engine's logic was arrived at**: the research campaign behind it, the decisions and why they were made, the evidence base, the figures we caught and threw out, and how the four build stages map to the code. It is the "why" companion to the code in [`index.html`](index.html).
 
-- **Design source of truth (the "what"):** the design-foundation artifact - <https://claude.ai/code/artifact/f01568bf-a6bc-48e6-80db-e0a4a628f029>. That page is the current, audited spec (sections: 06 progression controller, 09 guardrails, 10 constants, 11 decisions, 13 evidence). This file is the "how we got there" narrative around it.
-- **Raw research on disk:** `~/.claude/plans/blocks-autopilot-engine-research-raw.json` (218 KB, the design pass with all facets + critiques + citations), `~/.claude/plans/blocks-autopilot-engine-design.md` (85 KB, the pre-pivot draft, superseded), and the taper synthesis at `~/.claude/plans/blocks-taper-synthesis/` (`FINAL.md`, `VERIFIED.json`, `SYNTH.json`, `FABAUDIT.json`, `COMPLETENESS.json`).
-- **Status:** the engine ships **dormant** behind a master off-switch (Settings → "Auto-progression engine", default Off). It drives nothing until turned on. See [The dormant hold](#the-dormant-hold) at the bottom.
+- **Design source of truth (the "what"):** the design-foundation artifact - <https://claude.ai/code/artifact/f01568bf-a6bc-48e6-80db-e0a4a628f029>. That page is the audited spec for the *autopilot* (sections: 06 progression controller, 09 guardrails, 10 constants, 11 decisions, 13 evidence). **Its §06 progression controller no longer ships** - see [The progression controller was retired](#the-progression-controller-was-retired-jul-9-2026). Everything else it says still holds.
+- **Raw research on disk:** `~/.claude/plans/blocks-autopilot-engine-research-raw.json` (218 KB, the design pass with all facets + critiques + citations), `~/.claude/plans/blocks-autopilot-engine-design.md` (85 KB, the pre-pivot draft, superseded), the taper synthesis at `~/.claude/plans/blocks-taper-synthesis/` (`FINAL.md`, `VERIFIED.json`, `SYNTH.json`, `FABAUDIT.json`, `COMPLETENESS.json`), and the retirement spec at `~/.claude/plans/blocks-guards-only-engine.md`.
+- **Status:** what ships is **three guards**, dormant behind a master off-switch (Settings → "Training guards", default Off). They drive nothing until turned on, and even then they only ever subtract volume. See [The dormant hold](#the-dormant-hold) at the bottom.
+
+---
+
+## 0. The progression controller was retired (Jul 9 2026)
+
+**Read this before anything below.** Sections 3.3, 4, and 7 describe a lift progression controller that **is no longer in the code.** They are kept because the reasoning is still worth having, and because the research that produced them also produced the parts that survived. But the shipped engine is now much smaller.
+
+J reviewed the dormant engine against his re-ranked priorities (§1) and cut it to **guards only**:
+
+- **Lifts and mobility are fully manual.** He builds and adjusts each quarter's blocks himself, by feel. The app shows the template *exactly as written* and logs it. It never sets or suggests a weight. It never increases anything. There is no rung ladder, no advance budget, no green counter, no muscle band, no stall counter, no cold-start on-ramp, no season re-anchor.
+- **Three guards survive**, and they auto-populate rather than nudge (J: *"auto populate is fine, I don't deload nearly enough"* - a nudge he would ignore is worse than a default he will follow):
+  1. **Auto-deload** - a chronic-flat streak or the trained-week backstop books the next full week easy. Lift sets display halved, sprints run easy, cardio minutes ease.
+  2. **Flat-day ease** - a Flat morning pre-tap takes one set off that day's lift, at the bottom of the rep range.
+  3. **Race taper** - Speed season plus a race date eases sprint and cardio volume into the race, quality held. Lifts are untouched.
+- Every guard can only **subtract, temporarily, on volume, and it says so on the card.** Never a weight, never upward, never a write to the saved template. A guard's output is clamped to the template value, so an eased day can never prescribe *more* than the day you wrote.
+- **A Stop post-tap arms the next sprint to run easy.** The old three-way Stop follow-up sheet ("a joint / the muscle / systemic") is gone: two of its three answers only fed the progression ladder, so they would have become promises the code no longer keeps.
+- **Swim auto-progression died too**, for consistency. `cardioRx` now eases *the template's own minutes* instead of substituting a stored plan that started at a hardcoded 30. (That substitution was a real bug: with the engine on, a 45-minute cardio day prescribed 30, and a 20-minute day prescribed 30 - the engine silently overriding the athlete in both directions.)
+- The **recovery dial** now tunes exactly one thing: how many trained weeks pass before an easy week lands.
+
+**Why this is via negativa, not a compromise.** Deleting the progression controller also, for free, moots the calf-load risk (no progression means no tendon auto-load, so there is nothing to gate), moots the delts-first / mobility-invisible misalignment (no advance budget left to point at the wrong muscle), and removes the most bug-prone subsystem in the app.
+
+**Injury insurance does not live in the engine.** It lives in J's exercise menu - movement variety - which is his job in every version. Never merge those two jobs: keep the engine dumb, keep the selection diverse.
+
+Shipped at `contentRev 15` / `sw blocks-v38`. The migration drops `program.liftPlan` and `program.cardioPlan` and the armed `engine.sprintFb`; `schemaVersion` stays 1 and no logged history is touched.
 
 ---
 
@@ -21,7 +45,7 @@ This document records **how the training engine's logic was arrived at**: the re
 
 Still true and unchanged: **not** strength, **not** PRs. Legs are already over-built and sprints carry most of their load, so resistance is posture / durability / muscle-retention work, and progression comes from reps, tempo, range, and density - never ever-heavier load, with one exception (tendon work).
 
-**Engine consequence** (to apply when the engine is next turned on - it is dormant now): the advance-budget priority "delts + back first" flips to **posture / back first, delts dropped**, and the mobility layer's loaded end-range holds get promoted from background filler to a first-class progressed thread with their own dial.
+**Engine consequence, as first written:** the advance-budget priority "delts + back first" flips to posture / back first, delts dropped, and the mobility layer's loaded end-range holds get promoted to a first-class progressed thread with their own dial. **Superseded by §0 (Jul 9 2026):** re-ranking the goals is what exposed the deeper problem. Muscle retention does not need a progression ratchet, and the ratchet was the most bug-prone code in the app. So rather than re-point the advance budget at the right muscle, the advance budget was deleted. Lifts and mobility are now progressed by J, by feel.
 
 > *Original framing, kept for history:* one priority - Speed (masters 100 m, working toward 200/400) - then a ranked set of qualities (lean, capped 3D delts, great posture, elite mobility, durability). The whole engine below was calibrated against this; the Jul 7 re-rank above corrects it and is the current intent.
 
@@ -56,7 +80,9 @@ The first pass established the shape everything else hangs on: a **whole-week au
 ### 3.2 The pivot: strip the injury logic
 The original design (the 85 KB on-disk draft) was built around **active rehab** - calf and shoulder gates, a recurrence lifecycle, return ladders, a dual 0/10-vs-5/10 pain model. J's call (**Q4: "strip it all, no comeback toggle"**): by build time he expects to be fully rehabbed with weekly physio, athletic therapy, and regular massage, so the engine should **design for a healthy athlete** and keep only generic training hygiene. Retired: the calf capability gate, recurrence re-lock, returning-RIR cap, shoulder clearance flag + re-entry ladder + 85% gate, plyo-gated-on-calf. Kept: hard-day cap (3), load ramp cap, flex-down + safe floor, leg-conflict spacing, resistance-before-endurance, sharp-pain stop. This single decision erased about half the later audit's blockers. **The on-disk design doc predates this pivot; the artifact supersedes it.**
 
-### 3.3 The progression controller (the core dial)
+### 3.3 The progression controller (the core dial) - RETIRED, see §0
+*Built, reviewed, shipped dormant, and deleted on Jul 9 2026 without ever having driven a training day. The design below is preserved as history. The one piece of it still in the code is the tendon exception's underlying claim (heavy-slow calf work needs real load), which now lives in J's own programming rather than in an auto-load path.*
+
 The hardest piece: how one post-session tap becomes an up / hold / down per exercise. Designed from three priors (minimal-state, masters-safety, athlete-UX), synthesized, then stress-tested by five adversarial lenses. The result:
 
 - **Two-up / two-down hysteresis** - an advance needs green ≥ 2 (Springy +2, Normal +1, Flat/Stop → 0); a down needs red ≥ 2; the first flat always holds. Anti-thrash. Red resets on any good day and after a fired shed, so a lone bad day months ago can never pair with today's.
@@ -94,7 +120,7 @@ From the artifact's decisions log (section 11), the questions that were actually
 | **Q1** | Return-flag RIR decay threshold? | Answered 4, then **moot** - retired with the injury strip. |
 | **Q2** | Throws/slams re-entry? | Manual unlock; a one-time August reminder (snoozeable to September) names every parked move, no auto-arm. |
 | **Q3** | Fixed VO2 cadence? | No. Swimming is the primary aerobic/VO2 (home pool); an occasional track session is opportunistic. |
-| **Q4** | Promote sRPE-ACWR to binding? | **Advisory only.** The objective ramp cap + hard-day count bind. |
+| **Q4** | Promote sRPE-ACWR to binding? | **Advisory only.** The objective ramp cap + hard-day count bind. *(Moot since §0: the ramp cap only ever gated a rung advance, so it died with the ladder. Nothing binds now, because nothing climbs. The weekly-load trend and its spike flag stay, as a metric you read.)* |
 | **Q5** | Weekly density? | 2 sprints, 2 resistance, 3–5 easy swims, Sunday off. Two hard days most of the year, three in Build. |
 | **Q6** | How to tune the constants? | **One hidden global recovery / training-age dial** [0.6, 1.4] that scales the whole block. No per-constant editor. |
 | **Q7** | Shoulder-clearance re-prompt? | **Moot** - retired with the strip. |
@@ -136,26 +162,29 @@ A running theme across every pass: adversarial fact-checkers removed fabricated 
 
 ---
 
-## 7. The architecture - four stages, mapped to the code
+## 7. The architecture - what actually ships
 
-The engine folds into the app in four stages (E1–E4), all behind the master `engineOn()` switch. Everything is a lazy per-program sibling in the one `blocks_v1` blob - no `schemaVersion` bump, mirroring the sprint-plan pattern.
+Everything is behind the master `engineOn()` switch, and everything is a lazy per-program sibling in the one `blocks_v1` blob - no `schemaVersion` bump, mirroring the sprint-plan pattern. With the switch off, the app behaves exactly as it did before the engine existed and creates no engine state at all.
 
-- **E1 - taps, load, season.** The day-level readiness pre-tap (Springy / Normal / Flat) and the post-session tap (Springy / Normal / Flat·sore / Stop), stored on the day record; the load metric rewired to `LOAD_MAP × minutes`; `program.season` + the four `SEASONS`.
-- **E2 - the lift progression controller.** `advanceLiftPlan` (the two-up/two-down dial, budget, skip-blocked-rung, the load-free ladder), the seven-group muscle layer with season MAV bands, the tendon load path, the season re-anchor, trend guard, chronic-flat and trained-week deloads. Reviewed by a 50-agent adversarial pass (9 bugs fixed).
-- **E3 - bad-day smarts + cardio + rails.** Flex-down on a Flat readiness day (the cascade: bonus swim → swim duration → hypertrophy → heavy → sprint protected last), the Stop follow-up (joint / muscle-fatigue / systemic), `advanceCardioPlan` for swimming (duration → frequency → bonus, intensity capped), the stall counter (increments only on *real* failure against headroom, never a muscle parked at MAV), and the ramp-cap rung blocking. (The **hard-day cap** named in §3.2 / §4-Q4 is enforced *structurally* by the fixed weekly schedule you set, not a runtime block: the engine only modulates volume *within* already-scheduled days and never adds a hard day, and bonus swims are easy work capped per season, so there is nothing for a hard-day counter to police and none ships. The ramp cap — weekly load may not climb past `1 + 0.10·dial` of the last normal week — is the objective load governor that binds.)
-- **E4 - peaking + resets.** The taper (above), the cold-start on-ramp (3-week 0/1/2 budgets after a reset, near-max locked), and the fresh-block reset (`resetDate` marker; offered on open after a 14-day gap, never automatic - the Vancouver→Hua Hin move re-arms it).
+- **The taps, load, and season.** The day-level readiness pre-tap (Springy / Normal / Flat) and the post-session tap (Springy / Normal / Flat·sore / Stop), stored on the day record; the load metric as `LOAD_MAP × minutes`; `program.season` + the four `SEASONS`. The season is now a label plus the taper's eligibility gate: it eases nothing, so it never re-anchors the deload clock.
+- **The three guards.** `prescSets(entry, dk)` and `schemeEng(entry, dk)` read the template and return a set count in `[1, entry.sets]` with a `· deload` or `· easy day` tag. `cardioRx(dk, base)` eases the template's own minutes, clamped so it can never exceed them. `trendCapped` (two flat mornings inside four days) and a Stop-armed `sprintFb` run the sprint easy. Deloads fire on a chronic-flat streak or the trained-week backstop.
+- **Peaking + resets.** The taper (§3.5), and the fresh-block reset (`resetDate` marker; offered on open after a 14-day gap, never automatic - the Vancouver→Hua Hin move re-arms it). A fresh block now only resets the easy-week clock and clears a pending deload, taper, and race date; there is no longer a lift floor to ease back to.
 
-The **recovery dial** [0.6, 1.4] is the one hidden global scalar that moves four things together: the advance gate `green ≥ min(4, round(2/dial))`, deload cadence `max(3, round(5.5·dial))`, the MAV band tops, and the ramp cap `0.10·dial`. Floors never scale.
+**Deleted (Jul 9 2026, see §0):** the whole lift progression controller and its muscle-band layer, the tendon auto-load path, the season re-anchor, the stall counter, the ramp cap, the cold-start on-ramp, the swim auto-progression, and the Stop follow-up sheet.
+
+The **recovery dial** [0.6, 1.4] was the one hidden global scalar behind four things. Three of them are gone. It now moves exactly one: deload cadence `max(3, round(5.5·dial))` - how many trained weeks pass before an easy week lands.
 
 ---
 
 ## The dormant hold
 
-The engine is built but held **dormant** behind a master off-switch (`engineOn()`, default Off). With the switch off, the app behaves exactly as it did before the engine existed - plain template sets/reps/rest, no auto-progression, no engine UI, no engine state created. It drives nothing.
+The guards are built but held **dormant** behind a master off-switch (`engineOn()`, default Off). With the switch off, the app behaves exactly as it did before the engine existed - plain template sets/reps/rest, no auto-progression, no engine UI, no engine state created. It drives nothing.
 
-**Why:** the engine's design assumes a **healthy athlete** - the injury logic was deliberately stripped (§3.2) on the expectation that J would be fully cleared and well-supported by the time it runs. Until then, an injury-logic-free engine must not auto-progress rehab-sensitive lifts or sprint load.
+**Why it was held:** the original engine's design assumed a **healthy athlete** - the injury logic was deliberately stripped (§3.2) on the expectation that J would be fully cleared and well-supported by the time it ran. Until then, an injury-logic-free engine must not auto-progress rehab-sensitive lifts or sprint load.
 
-**Re-enable trigger:** J's own say-so - strict mode, decoupled from any PT appointment. He flips the Settings switch himself, whenever he decides. Before it is ever turned on, one question is settled first: whether the stripped engine needs partial guardrails re-added for anything not 100% cleared, or whether "on" strictly waits for full self-clearance so the healthy-athlete design is safe as-is.
+**Why the hold now costs almost nothing.** That risk lived almost entirely in the progression controller, and the progression controller is gone (§0). Nothing auto-progresses. What remains can only take volume away, temporarily, on a day J already told it he feels flat. The question that used to gate the switch - *does the stripped engine need partial guardrails re-added for anything not fully cleared?* - is mostly answered by subtraction: there is no longer an auto-load path to guard.
+
+**Re-enable trigger:** J's own say-so - strict mode, decoupled from any PT appointment. He flips the Settings switch himself, whenever he decides.
 
 ---
 
