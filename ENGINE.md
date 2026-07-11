@@ -30,6 +30,17 @@ J reviewed the dormant engine against his re-ranked priorities (§1) and cut it 
 
 Shipped at `contentRev 15` / `sw blocks-v38`. The migration drops `program.liftPlan` and `program.cardioPlan` and the armed `engine.sprintFb`; `schemaVersion` stays 1 and no logged history is touched.
 
+### 0.1 The correctability pass (Jul 10 2026, sw blocks-v39)
+
+A 42-agent adversarial review of the guards-only commit surfaced one theme and a set of seams: the old engine read taps lazily at next-day fold time, so correcting a mis-tap always worked; the guards act **instantly at tap time**, and nothing handled retraction. A second 31-agent adversarial pass over the fix itself then caught and fixed its own seams (a zombie card after a post-tap, an unbook that could cancel a deload earned by prior days, a single-slot disarm that lost an older Stop, a post-race edit spending the owed easy day). Final behavior:
+
+- **Corrections now undo what they armed — and only what they armed.** A Stop post-tap arms `sprintFb` with the *day* that armed it; correcting or deselecting that tap re-derives the arm from whatever Stop taps still stand in the last two weeks (so an earlier un-consumed Stop is never lost, and a legacy day-less flag upgrades itself). Only sprints *after* the arming day run easy — a backfilled past day is untouched — and a sprint saved on a taper-owned day never spends the flag, even edited after the race (`taperEndedAt` window). A deload is unbooked only when the corrected tap is the very tap that fired it (`viaTap`): a deload earned by prior days' flats, fired on open before any tap, survives an unrelated flat-then-correct detour; the flat-streak snapshot (`fc0`) is restored on unbook, so a still-real streak simply re-fires.
+- **The card cache rebuilds when guard inputs change.** The per-day cardio/sprint card (`CV`) is invalidated by a pre-tap, post-tap, taper set/start/clear, fresh block, and the guards switch — before, an already-rendered card silently ignored the tap that should have eased it.
+- **The easy-sprint seed is clamped to the template on every axis** (reps, distance, effort), matching the taper branch — an "easy day" can no longer prescribe more than the day J wrote — and the easy card renders the real prescription instead of hardcoded text, with the Stop-armed cause labeled.
+- **The ring counts the eased prescription.** `liftCounts` rides `prescSets` like every other surface, so a completed deload/flat day reaches 100%.
+- **The scheme parser reads only the rep half.** `repBand` strips warmup/set-count/set-range prefixes (accepting a typed `x` for `×`) before parsing, so a rest/tempo/hold range ("· rest 45-60s") can never masquerade as the rep band, and a plain authored rep ("3 × 12") is its own floor — the eased line and the prefilled reps now always agree.
+- **The guards switch preserves the race date.** OFF→ON still resets the easy-week clock but no longer silently wipes `horizonDate` (only the disclosed "Start fresh" does that). `trendCapped` no longer counts deload-week flats (matching `chronicFlat`). The recovery-dial label updates live while stepping.
+
 ---
 
 ## 1. The goal it was built to serve
