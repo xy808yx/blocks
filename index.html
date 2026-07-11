@@ -2751,16 +2751,18 @@ h+='<div class="sl prsl" onclick="togglePR()"><span class="lt">Recent PRs</span>
 if(prMin)h+='<div class="prmin" onclick="togglePR()">'+(pr.feed.length?pr.feed.length+' PR'+(pr.feed.length>1?'s':'')+' on record · tap to show':'no PRs yet')+'</div>';
 else if(!pr.feed.length)h+='<div class="card"><div class="ckr">PRs appear when you beat your own history. Log sessions — the baseline builds itself.</div></div>';
 else h+='<div class="card" style="padding:4px 14px">'+pr.feed.slice(0,12).map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div><div class="prd num">'+fmtDk(f.date)+(f.date.slice(0,4)!==tk().slice(0,4)?' ’'+f.date.slice(2,4):'')+'</div></div>').join('')+'</div>';
-h+='<div class="sl"><span class="lt">Strength Trends</span><span class="rule"></span></div>';
-const exs=trendExs();
-if(!exs.length)h+='<div class="card"><div class="ckr">Charts unlock with your first finished session.</div></div>';
-exs.forEach(x=>{
+const exs=trendExs(),stMin=!!(DB.settings&&DB.settings.stMin);
+h+='<div class="sl prsl" onclick="toggleST()"><span class="lt">Strength Trends</span><span class="rule"></span><span class="cnt num">'+exs.length+'</span><span class="prtog">'+(stMin?'▸':'▾')+'</span></div>';
+if(stMin)h+='<div class="prmin" onclick="toggleST()">'+(exs.length?exs.length+' exercise'+(exs.length>1?'s':'')+' charted · tap to show':'no charts yet')+'</div>';
+else if(!exs.length)h+='<div class="card"><div class="ckr">Charts unlock with your first finished session.</div></div>';
+else exs.forEach(x=>{
 h+='<div class="hrow" onclick="openTrend(\''+x.ex.id+'\')"><div class="hico lift">'+esc(initials(x.ex.name))+'</div><div class="hm"><div class="ht">'+esc(x.ex.name)+'</div><div class="hs num">'+x.n+' session'+(x.n>1?'s':'')+' · last '+esc(x.lastTxt)+'</div></div><div class="hd2 num">'+fmtDk(x.lastDate)+(x.lastDate.slice(0,4)!==tk().slice(0,4)?' ’'+x.lastDate.slice(2,4):'')+'</div></div>'});
 h+='<div class="fl">Blocks · Stage 3</div>';
 return h}
 function initials(n){const p=String(n).replace(/\(.*?\)/g,'').trim().split(/\s+/);return((p[0]||'?')[0]+(p[1]?p[1][0]:(p[0]||'  ')[1]||'')).toUpperCase()}
 function openTrend(exId){S.trEx=exId;S.e1=false;S.view='trend';rn()}
 function togglePR(){if(!DB.settings)DB.settings={};DB.settings.prMin=!DB.settings.prMin;vibe(8);sv();rn()}
+function toggleST(){if(!DB.settings)DB.settings={};DB.settings.stMin=!DB.settings.stMin;vibe(8);sv();rn()}
 function trendChart(ser,useReps){
 const W=520,H=232,L=42,R=16,Tp=24,B=28;
 const pts=ser.map(p=>({t:p.t,v:useReps?p.mxR:rndDisp(toU(p.topW,'lb',unit()),unit()),e1:p.e1?rndDisp(toU(p.e1,'lb',unit()),unit()):0}));
