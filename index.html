@@ -357,14 +357,8 @@ a{color:var(--ember);text-decoration:none}
 .tarea{width:100%;min-height:110px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:var(--f);font-size:15px;line-height:1.6;padding:12px 13px;resize:vertical;-webkit-appearance:none;transition:border-color .2s,box-shadow .2s}
 .tarea:focus{outline:none;border-color:var(--ember-line);box-shadow:0 0 0 3px rgba(255,111,46,.07)}
 .flab{font-size:10.5px;font-weight:700;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin:14px 0 5px}
-.legadd{display:flex;gap:8px;align-items:stretch;margin-top:2px}
-.legaddb{width:auto;min-width:84px;flex:0 0 auto;padding:0 16px;min-height:0;font-size:15.5px}
-.legchips{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 10px}
-.legchip{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border-h);color:var(--text);border-radius:11px;padding:9px 13px;font-size:15.5px;font-weight:600;min-height:42px;font-variant-numeric:tabular-nums}
-.legchip .lx{color:var(--muted);font-size:12px;font-weight:800}
-.legchip:active{background:var(--surface)}
-.legsum{font-size:14px;color:var(--dim);margin-top:10px;font-variant-numeric:tabular-nums}
-.legsum b{color:var(--text);font-weight:650}
+.sr.s3,.cols.s3{grid-template-columns:30px 1fr 58px}
+.sr.s3.done .dtx{grid-column:2/3}
 .prsl{cursor:pointer;-webkit-user-select:none;user-select:none}
 .prtog{color:var(--muted);font-size:12px;margin-left:9px;font-weight:800}
 .prmin{color:var(--muted);font-size:13px;padding:2px 2px 6px;cursor:pointer}
@@ -657,7 +651,7 @@ const templates=[
  en('s4',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'BW → hold plates'}),
 ]},
 {id:'t_cardio',name:'Cardio + Mobility',kind:'cardio',
- note:'One modality per day — sprints OR bike/swim/run, not both. Sprints on Friday; Tuesday is the fasted recovery day (easy aerobic + mobility). Volume before intensity.',
+ note:'Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Volume before intensity.',
  entries:[],
  sprD:{reps:3,distM:50,eff:55},
  aerD:{mode:'bike',durMin:30,zone:'1-2'},
@@ -788,7 +782,7 @@ Speed is the anchor you enjoy, not a number to chase. Your **season** (the quart
 ];
 return{
 schemaVersion:1,
-contentRev:15,
+contentRev:16,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -808,6 +802,7 @@ dayOverrides:{},
 let DB=null;
 let S={tab:'today',view:'tabs',sel:null,sid:null,amend:false,backfill:false,det:null,mobFrom:'today',editKey:null,edT:null,edE:0,edX:null,edRef:0,trEx:null,calM:0,e1:false,pick:null,histAll:false,libQ:'',dailyTab:null};
 let PV={},CV=null,CE={spr:false,aer:false},EXTRA={};
+let SPR=null; /* live sprint window · {dk,startedAt,plan,done,…} mirrored to localStorage blocks_spr so a locked phone at the track loses nothing */
 let T=null,TINT=null,EINT=null,WL=null,AC=null,UPD=null,IMPORTED=null,PRC=null,IMPCSV=null,RSC=null;
 const DY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const DAB=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -827,7 +822,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=15)return;
+let cr=DB.contentRev||0;if(cr>=16)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -930,6 +925,11 @@ if(cr<15){
  /* Guards-only engine · the lift auto-progression controller and the swim auto-progression are retired. What survives only ever subtracts volume, temporarily: the auto-deload week, the flat-day ease, and the race taper. Drop the now-dead per-slot plan blobs and the armed sprint-fallback flag; keep the surviving engine state (deload / taper / dial / on), the season, and the race date. Non-destructive: logged history untouched; never creates engine state on a dormant install. */
  (DB.programs||[]).forEach(p=>{delete p.liftPlan;delete p.cardioPlan;if(p.engine){delete p.engine.sprintFb;delete p.engine.seasonSetAt}});
  cr=15;
+}
+if(cr<16){
+ /* Sprint window · sprints now run from their own workout window and stack beside bike/swim/run, so the old "one modality per day" coaching line is false. Patch only the untouched default note; a note J edited stays his. */
+ (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(x=>{if(x.kind==='cardio'&&/^One modality per day/.test(x.note||''))x.note='Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Volume before intensity.'}));
+ cr=16;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
@@ -1044,7 +1044,7 @@ async function lockOn(){if(!DB.settings.wake||!('wakeLock'in navigator))return;
 try{WL=await navigator.wakeLock.request('screen')}catch(e){}}
 function lockOff(){if(WL){WL.release().catch(()=>{});WL=null}}
 document.addEventListener('visibilitychange',()=>{
-if(document.visibilityState==='visible'&&S.view==='session'&&!S.amend)lockOn();
+if(document.visibilityState==='visible'&&(S.view==='session'&&!S.amend||S.view==='sprint'&&SPR&&!S.sprAmend))lockOn(); /* the browser drops the lock on hide · re-acquire for lift AND live sprint windows */
 if(document.visibilityState==='visible'&&T)tickT()});
 
 /* ═══════════ EXPORT / IMPORT ═══════════ */
@@ -1067,7 +1067,7 @@ r.onload=()=>{try{const obj=JSON.parse(r.result);
  [{label:'Replace everything',fn:'confirmImport',danger:true},{label:'Cancel',fn:'closeOv'}])
 }catch(e){toast('Not a valid BLOCKS backup')}};
 r.readAsText(file)}
-function confirmImport(){if(!IMPORTED)return;DB=IMPORTED;IMPORTED=null;sv();location.reload()}
+function confirmImport(){if(!IMPORTED)return;DB=IMPORTED;IMPORTED=null;sv();try{localStorage.removeItem('blocks_spr')}catch(e){};location.reload()} /* a replaced dataset must not inherit the old install's live sprint */
 function nagDue(){
 const le=DB.meta.lastExport,n=DB.sessions.filter(s=>s.finishedAt&&(!le||s.finishedAt>le)).length;
 if(!n)return 0;
@@ -1303,6 +1303,7 @@ function rn(){
 const y=window.scrollY,a=document.getElementById('app');
 let h='';
 if(S.view==='session')h=vSession();
+else if(S.view==='sprint')h=vSprint();
 else if(S.view==='mobility')h=vMobility();
 else if(S.view==='detail')h=vDetail();
 else if(S.view==='trend')h=vTrend();
@@ -1324,9 +1325,10 @@ const changed=PREVV!==sig;PREVV=sig;
 if(changed)a.querySelectorAll('.co').forEach(c=>c.classList.add('fresh'));
 wire();upd();
 window.scrollTo(0,changed?0:Math.min(y,Math.max(0,document.body.scrollHeight-window.innerHeight)));
-if(S.view==='session'&&!S.amend)lockOn();else lockOff();
+if((S.view==='session'||S.view==='sprint'&&SPR)&&!S.amend&&!S.sprAmend)lockOn();else lockOff();
 clearInterval(EINT);
 if(S.view==='session'&&!S.amend){EINT=setInterval(()=>{const e=document.getElementById('elap'),s=sessById(S.sid);if(e&&s)e.textContent=mmss(Date.now()-s.startedAt)},1000)}
+else if(S.view==='sprint'&&!S.sprAmend&&SPR){EINT=setInterval(()=>{const e=document.getElementById('elap');if(e&&SPR)e.textContent=mmss(Date.now()-SPR.startedAt)},1000)}
 tickT()}
 function vTabs(){
 let inner='';
@@ -1397,8 +1399,26 @@ const vid=item.video?' <a class="vl" href="'+item.video+'" target="_blank" oncli
 const link=item.link?' <a class="vl" href="#" onclick="event.stopPropagation();event.preventDefault();openMobility(\'today\')">Open checklist →</a>':'';
 return'<div class="ck'+(on?' done':'')+'" onclick="tgDay(\''+item.id+'\',this)"><div class="cb">'+CHECK+'</div><div class="ckm"><div class="ckn">'+esc(item.name)+vid+link+'</div>'+(item.detail?'<div class="ckr">'+esc(item.detail)+'</div>':'')+'</div>'+(extra||'')+'</div>'}
 function tgDay(cid,el){const dk=tk(),d=DB.days[dk]=DB.days[dk]||{c:[]};
-const on=!d.c.includes(cid);d.c=on?d.c.concat([cid]):d.c.filter(x=>x!==cid);sv();vibe(10);
+const on=!d.c.includes(cid);d.c=on?d.c.concat([cid]):d.c.filter(x=>x!==cid);
+if(!on&&d.amob)d.amob=d.amob.filter(x=>x!==cid); /* a hand-untick in the routine clears the auto mark too */
+syncMob(dk,d,cid,on);
+sv();vibe(10);
 if(el)el.classList.toggle('done',on);upd()}
+/* ── Daily Block → Full Mobility Routine · a daily item ticked on a mobility day also ticks its routine duplicate (matched by name, dose stripped). Auto-fills live in days[dk].amob so unticking the daily item only retracts what it filled — a hand-ticked routine item stays. ── */
+function normCk(n){return String(n||'').toLowerCase().split('—')[0].split('·')[0].replace(/[^a-z0-9]/g,'')}
+function mobToday(dk){const t=tplForDate(dk);return!!(t&&t.kind==='cardio'&&(t.checks||[]).some(c=>c.enabled&&c.link==='mobility'))}
+function mobMatches(did){const dd=prog().checklists.daily.find(x=>x.id===did);if(!dd)return[];const n=normCk(dd.name);if(!n)return[];
+const out=[];prog().checklists.mobility.forEach(g=>(g.items||[]).forEach(it=>{if(normCk(it.name)===n)out.push(it.id)}));return out}
+function syncMob(dk,d,cid,on){
+const did=cid.indexOf('pm:')===0?cid.slice(3):cid;
+if(!prog().checklists.daily.some(x=>x.id===did))return;
+const ids=mobMatches(did);if(!ids.length)return;
+if(on){if(!mobToday(dk))return; /* fill only on a mobility day · retraction below runs regardless, so a day swap can't strand an auto mark */
+let n=0;ids.forEach(m=>{if(!d.c.includes(m)){d.c.push(m);(d.amob=d.amob||[]).push(m);n++}});
+if(n)toast('Also ticked in the mobility routine')}
+else ids.forEach(m=>{if(!(d.amob||[]).includes(m))return;
+const still=prog().checklists.daily.some(x=>(d.c.includes(x.id)||d.c.includes('pm:'+x.id))&&mobMatches(x.id).includes(m)); /* any still-ticked daily item covering this routine item keeps it */
+if(!still){d.c=d.c.filter(x=>x!==m);d.amob=d.amob.filter(x=>x!==m)}})}
 
 /* ═══════════ DAILY HABITS (fasting · bedtime) ═══════════ */
 function bedTime(){return DB.settings.bedtime||'22:00'}
@@ -1512,33 +1532,38 @@ function extraArea(dk,t){
 let h='';const pk=t?t.kind:'rest';
 if(pk!=='cardio'){
 const cs=getCardioSess(dk,false);
-if(cs||S.addCardio){const ct=prog().templates.find(x=>x.kind==='cardio');if(ct)h+=cardioArea(dk,ct,cs,{extra:true})}}
+if(cs||S.addSpr||S.addAer||(SPR&&SPR.dk===dk)){const ct=prog().templates.find(x=>x.kind==='cardio');if(ct)h+=cardioArea(dk,ct,cs,{extra:true})}}
 if(pk!=='lift'){
 const ls=sessionsFor(dk).find(s=>s.kind!=='cardio');
 if(ls){const lt=tpl(ls.templateId);if(lt)h+=liftArea(dk,lt,{extra:true})}}
 h+=addWorkoutBar(dk,t);
 return h}
+function cardioHave(dk,t){ /* which of the three workout kinds today already shows · sprint and aerobic count separately */
+const pk=t?t.kind:'rest',cs=getCardioSess(dk,false),fri=effDow(dk)===5;
+return{spr:(pk==='cardio'&&fri)||!!(cs&&cs.sprints)||!!(SPR&&SPR.dk===dk)||!!S.addSpr,
+aer:(pk==='cardio'&&!fri)||!!(cs&&cs.aerobic)||!!S.addAer,
+lift:pk==='lift'||sessionsFor(dk).some(s=>s.kind!=='cardio')}}
 function addWorkoutBar(dk,t){
-const pk=t?t.kind:'rest';
-const hasCardio=pk==='cardio'||!!getCardioSess(dk,false)||S.addCardio;
-const hasLift=pk==='lift'||sessionsFor(dk).some(s=>s.kind!=='cardio');
-if(hasCardio&&hasLift)return'';
+const hv=cardioHave(dk,t);
+if(hv.spr&&hv.aer&&hv.lift)return'';
 return'<button class="lnk" style="display:block;margin:12px auto 2px;text-align:center" onclick="addWorkoutSheet()">+ Add workout</button>'}
 function addWorkoutSheet(){
-const dk=tk(),t=tplForDate(dk),pk=t?t.kind:'rest';
-const hasCardio=pk==='cardio'||!!getCardioSess(dk,false)||S.addCardio;
-const hasLift=pk==='lift'||sessionsFor(dk).some(s=>s.kind!=='cardio');
+const dk=tk(),t=tplForDate(dk),hv=cardioHave(dk,t);
 let b='';
-if(!hasLift)prog().templates.filter(x=>x.kind==='lift').forEach(x=>{const isS=t&&t.id===x.id;
+if(!hv.lift)prog().templates.filter(x=>x.kind==='lift').forEach(x=>{const isS=t&&t.id===x.id;
 b+='<button class="btn btn-'+(isS?'p':'o')+'" onclick="addLift(\''+x.id+'\')">'+esc(x.name)+(isS?' · scheduled':'')+'</button>'});
-if(!hasCardio){
-b+='<button class="btn btn-o" onclick="addCardio(\'aerobic\')">Bike / Swim / Run</button>';
-b+='<button class="btn btn-o" onclick="addCardio(\'sprint\')">Sprints</button>'}
+if(!hv.aer)b+='<button class="btn btn-o" onclick="addCardio(\'aerobic\')">Bike / Swim / Run</button>';
+if(!hv.spr)b+='<button class="btn btn-o" onclick="addCardio(\'sprint\')">Sprints</button>';
 b+='<button class="btn" style="color:var(--muted)" onclick="closeOv()">Cancel</button>';
 sheet('Add a workout','Stacks onto today — your scheduled session stays primary.','<div class="shbtns">'+b+'</div>')}
 function addLift(tid){closeOv();startSession(tid)}
-function addCardio(type){S.addCardio=true;const dk=tk(),ct=prog().templates.find(x=>x.kind==='cardio');CV=null;ensureCV(dk,ct,getCardioSess(dk,false));if(type)CV.type=type;closeOv();rn()}
-function rmExtraCardio(){const dk=tk(),s=getCardioSess(dk,false);S.addCardio=false;CV=null;
+function addCardio(type){if(type==='sprint')S.addSpr=true;else S.addAer=true;CV=null;closeOv();rn()}
+function rmExtraCardio(){const dk=tk();
+if(SPR&&SPR.dk===dk&&(SPR.done||0)>0){ovConfirm('Discard the sprints in progress?','The '+SPR.done+' logged rep'+(SPR.done>1?'s':'')+' will be deleted.',
+[{label:'Discard',click:'rmExtraCardioGo()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}]);return} /* the × must never one-tap a live sprint away · same confirm the window itself uses */
+rmExtraCardioGo()}
+function rmExtraCardioGo(){closeOv();const dk=tk(),s=getCardioSess(dk,false);S.addSpr=false;S.addAer=false;CV=null;
+if(SPR&&SPR.dk===dk){SPR=null;sprPersist()}
 if(s){const idx=DB.sessions.findIndex(x=>x.id===s.id),removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==s.id);sv();rn();toastUndo('Cardio removed',()=>{DB.sessions.splice(idx,0,removed);sv()})}
 else rn()}
 function rmExtraLift(sid){const idx=DB.sessions.findIndex(x=>x.id===sid);if(idx<0)return;const removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==sid);if(S.sid===sid)S.sid=null;sv();rn();toastUndo('Workout removed',()=>{DB.sessions.splice(idx,0,removed);sv()})}
@@ -1805,21 +1830,22 @@ function aerLabel(m){return m==='bike'?'Bike':m==='run'?'Run':'Swim'}
 function ensureCV(dk,t,sess){
 if(CV&&CV.dk===dk)return;
 const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null;
-const type=(sp&&!ae)?'aerobic':(ae&&!sp)?'sprint':sp?'sprint':effDow(dk)===5?'sprint':'aerobic';
 const _ts=engineOn()&&!sp?taperState(dk):null; /* E4 · taper holds quality, scales volume — not an easy day */
 const _fb0=engineOn()&&!sp&&!_ts?engine().sprintFb:null,_force=!!_fb0&&(_fb0===true||dk>_fb0); /* a Stop arms only sprints AFTER the day it was tapped · a backfilled past day is untouched */
 const _easy=engineOn()&&!sp&&!_ts&&(inDeloadWeek(dk)||trendCapped(dk)||_force); /* deload / fatigue guard / armed by a Stop · dormant leaves the easy-day fallback */
 let _reps=t.sprD.reps,_eff=t.sprD.eff,_dist=t.sprD.distM; /* sprD is the pre-pick default; a season-menu tap seeds the steppers */
 if(_ts){const _b=_reps;_reps=Math.max(2,Math.round(_reps*_ts.scale));if(preTap(dk)==='flat')_reps=Math.max(2,Math.round(_reps*TAPER.FLATMULT));_reps=Math.min(_b,_reps)} /* taper volume curve + a flat-day ease, ceiling held · never more reps than the template */
 const _cr=engineOn()&&!ae?cardioRx(dk,t.aerD.durMin):null; /* the cardio guard eases the template's own minutes */
-CV={dk,type,reps:sp?sp.reps:(_easy?Math.min(6,_reps):_reps),dist:sp?sp.distM:(_easy?Math.min(50,_dist):_dist),eff:sp?sp.effortPct:(_easy?Math.min(70,_eff):_eff), /* the easy seed clamps to the template on every axis · an eased day can never prescribe more than the day you wrote */
+CV={dk,reps:sp?sp.reps:(_easy?Math.min(6,_reps):_reps),dist:sp?sp.distM:(_easy?Math.min(50,_dist):_dist),eff:sp?sp.effortPct:(_easy?Math.min(70,_eff):_eff), /* the easy seed clamps to the template on every axis · an eased day can never prescribe more than the day you wrote */
 quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',ready:sp&&sp.ready?sp.ready:'',fallback:sp?(sp.fallback?1:0):(_easy?1:0),menuId:sp&&sp.menuId?sp.menuId:null,season:sp&&sp.season?sp.season:(prog().season||'reset'),
-spMode:sp&&sp.legs&&sp.legs.length?'ladder':'even',legsArr:sp&&sp.legs?sp.legs.slice():[],legPend:'',
+plan:null,done:0, /* the sprint window's per-rep rows · seeded on entry, never by the card */
 mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:(_cr!=null?_cr:t.aerD.durMin),zone:ae?ae.zone:t.aerD.zone};
 CE={spr:!sp,aer:!ae}}
 function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
-setV(document.getElementById('cv-'+f),CV[f]);setV(document.getElementById('rxt-'+f),CV[f])} /* the prescription headline (easy/taper card) tracks the steppers live */
-function cseg(f,v){if(!CV)return;CV[f]=v;if(f==='ready'&&v==='flat'&&(+CV.eff||0)>85)CV.eff=85;vibe(8);rn()} /* a Flat feel-day eases the hardest picks back to 85% */
+setV(document.getElementById('cv-'+f),CV[f]);setV(document.getElementById('rxt-'+f),CV[f]); /* the prescription headline (easy/taper card) tracks the steppers live */
+if(S.view==='sprint'&&!S.sprAmend)sprPersist()}
+function cseg(f,v){if(!CV)return;CV[f]=v;if(f==='ready'&&v==='flat'&&(+CV.eff||0)>85)CV.eff=85;vibe(8);
+if(S.view==='sprint'&&!S.sprAmend)sprPersist();rn()} /* a Flat feel-day eases the hardest picks back to 85% */
 function cedit(which){CE[which]=true;rn()}
 function cfld(label,f,step,min,max){
 return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="cstep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="cv-'+f+'">'+CV[f]+'</div><button class="stb" data-hold data-fn="cstep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
@@ -1829,28 +1855,26 @@ if(!s&&create){const sd=tplForDate(dk),ct=(sd&&sd.kind==='cardio')?sd:prog().tem
 s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:ct?ct.name:'Cardio',templateId:ct?ct.id:'t_cardio',kind:'cardio',startedAt:Date.now(),finishedAt:Date.now(),sets:[]};
 DB.sessions.push(s)}
 return s}
-function saveSprints(dk){if(!CV)return;const s=getCardioSess(dk,true);
-let legs=null,reps=CV.reps,distM=CV.dist;
-if(CV.spMode==='ladder'&&!CV.fallback){const L=(CV.legsArr||[]).slice();if(!L.length){toast('Add at least one distance');return}legs=L;reps=L.length;distM=Math.max.apply(null,L)}
-s.sprints={reps,distM,effortPct:CV.eff,legs,quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,menuId:CV.menuId||null,season:CV.season||prog().season||null};
+function saveSprints(dk){if(!CV||!CV.plan)return;
+const L=CV.plan.slice(0,CV.done);if(!L.length){toast('Log at least one rep');return}
+const s=getCardioSess(dk,true);
+if(SPR&&SPR.dk===dk&&SPR.startedAt&&!s.sprints&&!s.aerobic&&!(s.sets&&s.sets.length)){s.startedAt=SPR.startedAt;s.finishedAt=Date.now()} /* a pure sprint session keeps its real wall-clock */
+s.sprints={reps:L.length,distM:Math.max.apply(null,L),effortPct:CV.eff,legs:L.slice(),quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,menuId:CV.menuId||null,season:CV.season||prog().season||null};
 if(!s.finishedAt)s.finishedAt=Date.now();
 if(engineOn()&&engine().sprintFb){const e=engine(),f=e.sprintFb;
  if((f===true||s.date>f)&&!taperState(s.date)&&!(e.taperEndedAt&&s.date<=e.taperEndedAt))delete e.sprintFb} /* consumed by the first sprint after the Stop · a taper day doesn't spend it, even edited after the race (the taper owned that card, so the easy day is still owed), and a backfilled past day never does */
-CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':(legs?'Ladder logged':'Sprints logged'))}
+CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':'Sprints logged')}
 function sprFallback(dk){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=Math.min(6,CV.reps||6);CV.dist=Math.min(50,CV.dist||50);CV.eff=Math.min(70,CV.eff||70)}else{ /* the easy seed clamps to what the card already prescribed · never more than the day you wrote */const it=menuItem(CV.season||prog().season||'reset',CV.menuId),ct=prog().templates.find(x=>x.kind==='cardio');if(it){CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff}else if(ct&&ct.sprD){CV.reps=ct.sprD.reps;CV.dist=ct.sprD.distM;CV.eff=ct.sprD.eff}else{CV.reps=3;CV.dist=50;CV.eff=55}if(CV.ready==='flat'&&(+CV.eff||0)>85)CV.eff=85}rn()}
 function saveAerobic(dk){if(!CV)return;const s=getCardioSess(dk,true);
 s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();
 if(engineOn()&&!dayPost(dk)&&tplForDate(dk)&&tplForDate(dk).kind==='cardio')return cardioPost(dk); /* E3 · a swim-primary day captures the by-feel post-tap */
 toast(CV.mode==='bike'?'Ride logged':CV.mode==='run'?'Run logged':'Swim logged')}
-/* Sprint ladder (variable-distance pyramid, e.g. 25/50/100/150/200) — stored as sprints.legs[]; reps/distM stay populated so progression + older views keep working. */
-function parseLegs(s){return String(s||'').split(/[^0-9.]+/).map(x=>parseFloat(x)).filter(x=>x>0&&x<=2000).map(x=>Math.round(x))}
+/* Per-rep record — every save from the sprint window stores sprints.legs[] (one entry per rep run); reps/distM stay populated so the calf clock + older views keep working. A uniform run collapses back to "N × D m" in display. */
 function sprLegs(sp){return sp&&sp.legs&&sp.legs.length?sp.legs:null}
-function sprDist(sp){const L=sprLegs(sp);return L?L.join(' / ')+' m':sp.reps+' × '+sp.distM+' m'}
-function sprDistC(sp){const L=sprLegs(sp);return L?L.join('/')+'m':sp.reps+'×'+sp.distM+'m'}
-function addLeg(dk){if(!CV)return;const L=parseLegs(CV.legPend);if(!L.length)return;CV.legsArr=(CV.legsArr||[]).concat(L);CV.legPend='';vibe(8);rn();const el=document.getElementById('legIn');if(el)el.focus()}
-function rmLeg(i){if(!CV||!CV.legsArr)return;CV.legsArr.splice(i,1);vibe(6);rn()}
-function legTotal(){return((CV&&CV.legsArr)||[]).reduce(function(a,b){return a+b},0)}
+function sprEven(L){return L.length>0&&L.every(x=>x===L[0])}
+function sprDist(sp){const L=sprLegs(sp);return L?(sprEven(L)?L.length+' × '+L[0]+' m':L.join(' / ')+' m'):sp.reps+' × '+sp.distM+' m'}
+function sprDistC(sp){const L=sprLegs(sp);return L?(sprEven(L)?L.length+'×'+L[0]+'m':L.join('/')+'m'):sp.reps+'×'+sp.distM+'m'}
 /* Season sprint menus · each season shows a short by-vibe list (all chips equal · no highlighted default). Numbers seed the steppers on tap; J overrides. gated = near-max, only offered once the calf floor is banked (sprintGateOpen). */
 const SPRINT_MENUS={
 build:{items:[
@@ -1890,7 +1914,7 @@ if(tap&&!open&&hasGated)h+='<div class="schp">Near-max picks unlock after ~'+SPR
 return h+'</div>'}
 function pickSprintMenu(idv){if(!CV)return;const it=menuItem(CV.season||prog().season||'reset',idv);if(!it)return;
 if(it.gated&&!sprintGateOpen(prog().sprintPlan)){toast('Banking fast-running weeks first · near-max opens at ~8 weeks');return}
-CV.menuId=idv;CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff;CV.spMode='even';if(CV.fallback)CV.fallback=0;if(CV.ready==='flat'&&CV.eff>85)CV.eff=85;vibe(8);rn()}
+CV.menuId=idv;CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff;if(CV.fallback)CV.fallback=0;if(CV.ready==='flat'&&CV.eff>85)CV.eff=85;vibe(8);rn()}
 function lastSprint(dk){let best=null;DB.sessions.forEach(s=>{if(s.sprints&&s.date<dk&&(!best||s.date>best.date))best=s});return best?best.sprints:null}
 /* Calf clock · the near-max gate is DERIVED, not counted: fastWeeksTotal = max(migrated baseline, distinct >=80% non-fallback weeks in history). No per-save bookkeeping, so out-of-order logging and deletes stay honest. plan.fastWeeks is only the migrated baseline (J's banked credit); logging adds nothing to it. */
 
@@ -2074,61 +2098,180 @@ const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//BLOCKS//taper//EN','BEGIN:
 try{const b=new Blob([ics],{type:'text/calendar'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='blocks-race.ics';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000);toast('Calendar file saved')}catch(e){toast('Could not export')}}
 
 function cardioArea(dk,t,sessOverride,opts){
-opts=opts||{};const xtra=!!opts.extra;
+opts=opts||{};const xtra=!!opts.extra,_det=S.view==='detail';
 const sess=sessOverride||getCardioSess(dk,false);
 ensureCV(dk,t,sess);
 const checks=dayChecks(dk);
-let h='<div class="sl" id="'+(xtra?'sl-xcardio':'sl-work')+'"><span class="lt">'+esc(xtra?'Cardio':t.name)+'</span><span class="rule"></span>'+(xtra?'<button class="xrm" onclick="rmExtraCardio()" aria-label="Remove" style="background:none;border:none;color:var(--muted);font-size:18px;line-height:1;padding:0 4px;cursor:pointer">×</button>':'<span class="cnt num" id="cnt-work"></span>')+'</div>';
-if(t.note&&!xtra)h+='<div class="note">'+esc(t.note)+'</div>';
-if(!xtra)(t.checks||[]).filter(c=>c.enabled&&c.id==='cl').forEach(c=>{h+=ckRow(c,checks)});
-const sprSaved=!!(sess&&sess.sprints&&!CE.spr),aerSaved=!!(sess&&sess.aerobic&&!CE.aer);
-const sprOpen=!(sess&&sess.sprints)||CE.spr,aerOpen=!(sess&&sess.aerobic)||CE.aer;
-if(sprOpen||aerOpen)h+='<div class="seg" style="margin:4px 0 14px"><button class="sgb'+(CV.type==='sprint'?' on':'')+'" onclick="cseg(\'type\',\'sprint\')">Sprints</button><button class="sgb'+(CV.type==='aerobic'?' on':'')+'" onclick="cseg(\'type\',\'aerobic\')">Bike / Swim / Run</button></div>';
-const showSpr=CV.type==='sprint'&&sprOpen;
-if(sprSaved||showSpr){
+const sprData=!!(sess&&sess.sprints),aerData=!!(sess&&sess.aerobic);
+const sprLive=!!(SPR&&SPR.dk===dk&&!sprData);
+const fri=effDow(dk)===5;
+const sprShow=_det?true:xtra?(sprData||sprLive||!!S.addSpr):(fri||sprData||sprLive||!!S.addSpr); /* detail always offers both — a past day of either shape stays backfillable, and Today's add-flags can't leak phantom sections into old sessions */
+const aerShow=_det?true:xtra?(aerData||!!S.addAer):(!fri||aerData||!!S.addAer);
+let h='',first=true,xrm=xtra,noted=xtra||_det;
+const head=label=>{const pr=first&&!xtra&&!_det;first=false;let tail='';
+if(xrm){tail='<button class="xrm" onclick="rmExtraCardio()" aria-label="Remove" style="background:none;border:none;color:var(--muted);font-size:18px;line-height:1;padding:0 4px;cursor:pointer">×</button>';xrm=false}
+else if(pr)tail='<span class="cnt num" id="cnt-work"></span>';
+let s2='<div class="sl"'+(pr?' id="sl-work"':'')+'><span class="lt">'+esc(label)+'</span><span class="rule"></span>'+tail+'</div>';
+if(!noted&&t.note){noted=true;s2+='<div class="note">'+esc(t.note)+'</div>'}
+return s2};
+/* ── Sprints · their own workout, logged rep by rep in their own window ── */
+if(sprShow){
+h+=head('Sprints');
+if(!xtra)(t.checks||[]).filter(c=>c.enabled&&(c.id==='cl'||c.id==='mbt')).forEach(c=>{h+=ckRow(c,checks)});
 const _last=lastSprint(dk),_fb=CV.fallback;
 const _tp=engineOn()&&!_fb?taperState(dk):null; /* E4 · taper prescription overrides the season menu (engine-gated · dormant for now) */
-if(showSpr){
-if(!xtra)(t.checks||[]).filter(c=>c.enabled&&c.id==='mbt').forEach(c=>{h+=ckRow(c,checks)});
-if(_tp){
-h+='<div class="rxc"><div class="rxh"><span class="rxp">Taper · '+_tp.daysTo+' day'+(_tp.daysTo===1?'':'s')+' to race</span><span class="chip sg">peak</span></div><div class="rxt"><span id="rxt-reps">'+CV.reps+'</span> × <span id="rxt-dist">'+CV.dist+'</span>m <span class="rxe">@ <span id="rxt-eff">'+CV.eff+'</span>%</span></div><div class="rxr">quality held · volume '+Math.round(_tp.scale*100)+'% · stay sharp, bank nothing</div>'+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%</div>':'')+'</div>';
-}
+h+='<div class="exc"><div class="exh"><div class="exn">Sprints</div><span class="chip bl">Sprint</span></div><div class="exs">'+esc(t.sprCue||'')+'</div>';
+if(sprData){const _s=sess.sprints,_L=sprLegs(_s);
+h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+sprDist(_s)+'</b> @ '+_s.effortPct+'%'+(_L&&!sprEven(_L)?' · '+_L.reduce((a,b)=>a+b,0)+' m':'')+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+(_s.fallback?' · easy':'')+'<button class="ed" onclick="editSprints(\''+dk+'\')">Edit</button></div>';
+if(_L)h+='<div class="dline" style="margin-top:10px">'+_L.map(function(d2,i){return'<span class="dpill num">'+(i+1)+' · '+d2+'m</span>'}).join('')+'</div>';}
+else if(sprLive){const _cv=CV.plan&&CV.dk===dk,_n=_cv?CV.plan.length:((SPR.plan||[]).length),_k=_cv?CV.done:(SPR.done||0);
+h+='<div class="scard-t">Sprints in progress</div><div class="scard-m num">'+_k+' of '+_n+' reps logged</div><button class="btn btn-p" onclick="resumeSprints()">Continue sprints</button>';}
+else{
+if(_tp)h+='<div class="rxc"><div class="rxh"><span class="rxp">Taper · '+_tp.daysTo+' day'+(_tp.daysTo===1?'':'s')+' to race</span><span class="chip sg">peak</span></div><div class="rxt"><span id="rxt-reps">'+CV.reps+'</span> × <span id="rxt-dist">'+CV.dist+'</span>m <span class="rxe">@ <span id="rxt-eff">'+CV.eff+'</span>%</span></div><div class="rxr">quality held · volume '+Math.round(_tp.scale*100)+'% · stay sharp, bank nothing</div>'+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%</div>':'')+'</div>';
 else if(_fb){const _sfb=engineOn()?engine().sprintFb:null,_why=!engineOn()?'flat day · bank easy clean reps':inDeloadWeek(dk)?'deload week · easy by design':trendCapped(dk)?'fatigue guard · two flat mornings inside four days':(_sfb&&(_sfb===true||dk>_sfb))?'after a Stop · bank easy clean reps':'flat day · bank easy clean reps';
 h+='<div class="rxc"><div class="rxh"><span class="rxp">Easy day · Run-Throughs</span></div><div class="rxt"><span id="rxt-reps">'+CV.reps+'</span> × <span id="rxt-dist">'+CV.dist+'</span>m <span class="rxe">@ ~<span id="rxt-eff">'+CV.eff+'</span>%</span></div><div class="rxr">'+_why+' · gradual float-down · no near-max</div>'+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%</div>':'')+'</div>';}
 else{h+=sprintMenuHtml(CV.season||prog().season||'reset',dk);
 if(_last)h+='<div class="rxr" style="margin:-4px 2px 12px">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%'+(_last.quality?' · '+esc(_last.quality):'')+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>';}
-}
-h+='<div class="exc"><div class="exh"><div class="exn">Sprint Run-Throughs</div><span class="chip bl">Sprint</span></div><div class="exs">'+esc(t.sprCue||'')+'</div>';
-if(sprSaved){const _s=sess.sprints;h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+sprDist(_s)+'</b> @ '+_s.effortPct+'%'+(sprLegs(_s)?' · '+sprLegs(_s).reduce((a,b)=>a+b,0)+' m':'')+(_s.quality?' · '+esc(_s.quality):'')+(_s.pain!=null?' · pain '+_s.pain:'')+(_s.fallback?' · easy':'')+'<button class="ed" onclick="cedit(\'spr\')">Edit</button></div>';}
-else{
 if(!_fb)h+='<div class="flab">Readiness</div><div class="seg">'+[['Springy','springy'],['Normal','normal'],['Flat','flat']].map(r=>'<button class="sgb'+(CV.ready===r[1]?' on':'')+'" onclick="cseg(\'ready\',\''+r[1]+'\')">'+r[0]+'</button>').join('')+'</div>'+(CV.ready==='flat'?'<div class="ckr" style="margin-top:6px">Flat day: hardest picks eased back to 85%.</div>':'');
-if(!_fb)h+='<div class="flab">Format</div><div class="seg" style="margin-bottom:4px">'+[['Even','even'],['Ladder','ladder']].map(m=>'<button class="sgb'+(CV.spMode===m[1]?' on':'')+'" onclick="cseg(\'spMode\',\''+m[1]+'\')">'+m[0]+'</button>').join('')+'</div>';
-if(!_fb&&CV.spMode==='ladder'){
-const _legs=CV.legsArr||[];
-h+='<div class="flab">Distances (m) · add one rep at a time</div>';
-if(_legs.length)h+='<div class="legchips">'+_legs.map(function(d,i){return'<button class="legchip num" onclick="rmLeg('+i+')">'+d+' m<span class="lx">✕</span></button>'}).join('')+'</div>';
-h+='<div class="legadd"><input id="legIn" class="tin fx" inputmode="numeric" placeholder="e.g. 50" value="'+esc(CV.legPend||'')+'" oninput="CV.legPend=this.value"><button class="btn btn-o legaddb" onclick="addLeg(\''+dk+'\')">+ Add</button></div>';
-h+='<div class="legsum">'+(_legs.length?'<b>'+_legs.length+' rep'+(_legs.length>1?'s':'')+'</b> · '+legTotal()+' m total':'add each distance, then Save')+'</div>';
-h+='<div class="fgrid" style="grid-template-columns:1fr;margin-top:12px">'+cfld('Effort %','eff',5,10,100)+'</div>';}
-else h+='<div class="fgrid">'+cfld('Reps','reps',1,1,20)+cfld('Dist m','dist',10,10,400)+cfld('Effort %','eff',5,10,100)+'</div>';
-h+='<div class="flab">How did it feel?</div><div class="seg">'+['fresh','solid','faded'].map(q=>'<button class="sgb'+(CV.quality===q?' on':'')+'" onclick="cseg(\'quality\',\''+q+'\')">'+q.charAt(0).toUpperCase()+q.slice(1)+'</button>').join('')+'</div>';
-h+='<div class="flab">Calf · pain</div><div class="seg">'+[['none',0],['≤2',2],['>2',3]].map(p=>'<button class="sgb'+(CV.pain===p[1]?' on':'')+'" onclick="cseg(\'pain\','+p[1]+')">'+p[0]+'</button>').join('')+'</div>';
-h+='<button class="btn btn-o" style="min-height:46px;margin-top:14px" onclick="saveSprints(\''+dk+'\')">'+(_fb?'Save easy day':'Save sprints')+'</button>';
+h+='<button class="btn btn-p" style="min-height:46px;margin-top:14px" onclick="startSprints(\''+dk+'\')">'+(_det?'Log sprints':'Start sprints')+'</button>';
 h+='<button class="lnk" style="display:block;margin-top:10px;text-align:center" onclick="sprFallback(\''+dk+'\')">'+(_fb?'↩ back to today\'s plan':'Flat day? Easy run-throughs instead →')+'</button>';}
 h+='</div>';
 }
-const showAer=CV.type==='aerobic'&&aerOpen;
-if(aerSaved||showAer){
+/* ── Aerobic + the day's remaining checks ── */
+const dayCks=xtra?[]:(t.checks||[]).filter(c=>c.enabled&&c.id!=='mbt'&&(c.id!=='cl'||!sprShow));
+if(aerShow||dayCks.length){
+h+=head(xtra?'Cardio':'Cardio + Mobility');
+if(aerShow){
+const aerSaved=aerData&&!CE.aer;
 h+='<div class="exc"><div class="exh"><div class="exn">Bike / Swim / Run</div><span class="chip bl">Aerobic</span></div><div class="exs">'+esc(t.aerCue||'')+'</div>';
 if(aerSaved)h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+aerLabel(sess.aerobic.mode)+' · '+sess.aerobic.durMin+' min</b> · zone '+sess.aerobic.zone+'<button class="ed" onclick="cedit(\'aer\')">Edit</button></div>';
 else{h+='<div class="seg" style="margin:12px 0 8px">'+['bike','swim','run'].map(m=>'<button class="sgb'+(CV.mode===m?' on':'')+'" onclick="cseg(\'mode\',\''+m+'\')">'+aerLabel(m)+'</button>').join('')+'</div>'
 +'<div class="fgrid" style="grid-template-columns:1fr 1.4fr">'+cfld('Min','dur',5,5,180)
 +'<div class="fld"><div class="fl2">Zone</div><div class="seg" style="height:46px">'+['1','1-2','2'].map(z=>'<button class="sgb'+(CV.zone===z?' on':'')+'" onclick="cseg(\'zone\',\''+z+'\')">'+z+'</button>').join('')+'</div></div></div>'
 +'<button class="btn btn-o" style="min-height:46px" onclick="saveAerobic(\''+dk+'\')">Save cardio</button>'}
-h+='</div>';
+h+='</div>';}
+dayCks.forEach(c=>{h+=ckRow(c,checks)});
 }
-if(!xtra)(t.checks||[]).filter(c=>c.enabled&&c.id!=='cl'&&c.id!=='mbt').forEach(c=>{h+=ckRow(c,checks)});
 return h}
+
+/* ═══════════ SPRINT WINDOW · the sprint day runs like a lift session: one row per rep, tick them off as you run ═══════════ */
+function sprPersist(){try{
+if(SPR&&CV&&CV.plan&&SPR.dk===CV.dk){SPR={dk:SPR.dk,startedAt:SPR.startedAt,plan:CV.plan.slice(),done:CV.done||0,eff:CV.eff,quality:CV.quality||'',pain:CV.pain,ready:CV.ready||'',fallback:CV.fallback?1:0,menuId:CV.menuId||null,season:CV.season||null};
+localStorage.setItem('blocks_spr',JSON.stringify(SPR))}
+else if(!SPR)localStorage.removeItem('blocks_spr')}catch(e){}}
+function restoreSpr(){try{const r=JSON.parse(localStorage.getItem('blocks_spr')||'null');SPR=null;
+if(!(r&&r.plan&&r.plan.length&&r.startedAt)){localStorage.removeItem('blocks_spr');return}
+const s0=getCardioSess(r.dk,false);
+if(s0&&s0.sprints){localStorage.removeItem('blocks_spr');return} /* already saved · the mirror is stale */
+if(r.dk===tk()){SPR=r;return}
+if(r.done>0&&r.dk<tk()){ /* the window crossed midnight (or was never finished) · bank the run reps as that day's session instead of deleting them */
+const L=r.plan.slice(0,r.done),s=getCardioSess(r.dk,true);
+s.startedAt=r.startedAt;s.finishedAt=Math.min(r.startedAt+Math.min(5400000,(r.done+1)*240000),Date.now());
+s.sprints={reps:L.length,distM:Math.max.apply(null,L),effortPct:r.eff,legs:L.slice(),quality:r.quality||null,pain:(r.pain===''||r.pain==null)?null:r.pain,ready:r.ready||null,fallback:r.fallback?1:0,menuId:r.menuId||null,season:r.season||null};
+sv();setTimeout(()=>toast('Sprints from '+fmtDk(r.dk)+' saved · '+L.length+' rep'+(L.length>1?'s':'')),700)}
+localStorage.removeItem('blocks_spr')}catch(e){}}
+function startSprints(dk){
+const ct=prog().templates.find(x=>x.kind==='cardio');if(!ct)return;
+const s=S.view==='detail'?sessById(S.det):getCardioSess(dk,false);
+if(!CV||CV.dk!==dk){CV=null;ensureCV(dk,ct,s)}
+CV.plan=Array(Math.max(1,Math.round(+CV.reps)||1)).fill(Math.min(1000,Math.max(10,Math.round(+CV.dist)||50)));CV.done=0;
+const live=dk===tk()&&S.view!=='detail';
+if(live){SPR={dk,startedAt:Date.now()};sprPersist()}
+S.sprAmend=!live;S.sprFrom=S.view==='detail'?'detail':'today';S.sprEdit=null;S.view='sprint';rn()}
+function resumeSprints(){const dk=tk();if(!SPR||SPR.dk!==dk){rn();return}
+if(!CV||CV.dk!==dk||!CV.plan){const ct=prog().templates.find(x=>x.kind==='cardio');
+CV=null;ensureCV(dk,ct,getCardioSess(dk,false));
+CV.plan=(SPR.plan||[]).slice();CV.done=Math.min(SPR.done||0,CV.plan.length);
+if(SPR.eff!=null)CV.eff=SPR.eff;if(SPR.quality)CV.quality=SPR.quality;if(SPR.pain!=null&&SPR.pain!=='')CV.pain=SPR.pain;if(SPR.ready)CV.ready=SPR.ready;if(SPR.menuId)CV.menuId=SPR.menuId;if(SPR.season)CV.season=SPR.season;CV.fallback=SPR.fallback?1:0}
+S.sprAmend=false;S.sprFrom='today';S.sprEdit=null;S.view='sprint';rn()}
+function editSprints(dk){
+const ct=prog().templates.find(x=>x.kind==='cardio');if(!ct)return;
+const s=S.view==='detail'?sessById(S.det):getCardioSess(dk,false);
+const sp=s&&s.sprints;if(!sp)return;
+CV=null;ensureCV(dk,ct,s); /* seeds eff/quality/pain/menu/season from the saved record */
+CV.plan=sp.legs&&sp.legs.length?sp.legs.slice():Array(Math.max(1,sp.reps||1)).fill(Math.min(1000,Math.max(10,sp.distM||50)));
+CV.done=CV.plan.length;
+S.sprAmend=true;S.sprFrom=S.view==='detail'?'detail':'today';S.sprEdit=null;S.view='sprint';rn()}
+function exitSprint(){S.sprEdit=null;
+if(S.sprAmend){S.sprAmend=false;CV=null;
+if(S.sprFrom==='detail')S.view='detail';else{S.view='tabs';S.tab='today'}rn();return}
+S.view='tabs';S.tab='today';rn()} /* live keeps running · the Today card offers Continue */
+function sprStep(i,d){if(!CV||!CV.plan||CV.plan[i]==null)return;
+CV.plan[i]=Math.min(1000,Math.max(10,(+CV.plan[i]||0)+d));
+setV(document.getElementById('v-spr-'+i),CV.plan[i]);
+if(!S.sprAmend)sprPersist()}
+function sprEditV(i,el){if(el.querySelector('input'))return;if(!CV||!CV.plan||CV.plan[i]==null)return;
+const cur=+CV.plan[i]||0;
+el.innerHTML='<input class="vin num" type="text" inputmode="numeric" value="'+(cur||'')+'">';
+const inp=el.firstChild;inp.focus();try{inp.select()}catch(e){}
+const commit=()=>{const n2=parseFloat(inp.value);CV.plan[i]=isNaN(n2)?cur:Math.min(1000,Math.max(10,Math.round(n2)));el.textContent=CV.plan[i];if(!S.sprAmend)sprPersist()};
+inp.addEventListener('blur',commit);
+inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur()})}
+function sprLog(){if(!CV||!CV.plan)return;if(CV.done>=CV.plan.length)return;
+CV.done++;S.sprEdit=null;vibe(12);if(!S.sprAmend)sprPersist();rn()}
+function sprEditRow(i){if(!CV||i>=CV.done)return;S.sprEdit=i;rn()}
+function sprRowDone(){S.sprEdit=null;if(!S.sprAmend)sprPersist();rn()}
+function sprRowRm(i){if(!CV||!CV.plan)return;
+if(i<CV.done){CV.plan.splice(i,1);CV.done--}
+S.sprEdit=null;if(!S.sprAmend)sprPersist();rn()}
+function sprAddRep(){if(!CV||!CV.plan)return;
+CV.plan.push(CV.plan[CV.plan.length-1]||Math.min(1000,Math.max(10,Math.round(+CV.dist)||50)));
+if(!S.sprAmend)sprPersist();rn()}
+function sprRmRep(){if(!CV||!CV.plan)return;
+if(CV.plan.length>Math.max(1,CV.done))CV.plan.pop();
+if(!S.sprAmend)sprPersist();rn()}
+function sprStepGroup(i){
+return'<div class="stp"><button class="stb" data-hold data-fn="sprStep" data-args=\''+JSON.stringify([i,-5])+'\'>−</button>'
++'<div class="stv num" id="v-spr-'+i+'" onclick="sprEditV('+i+',this)">'+CV.plan[i]+'</div>'
++'<button class="stb" data-hold data-fn="sprStep" data-args=\''+JSON.stringify([i,5])+'\'>+</button></div>'}
+function vSprint(){
+if(!CV||!CV.plan){S.view='tabs';return vTabs()}
+const live=!S.sprAmend,k=CV.done,n=CV.plan.length;
+const tot=CV.plan.slice(0,k).reduce((a,b)=>a+b,0);
+const it=menuItem(CV.season||prog().season||'reset',CV.menuId);
+const pick=CV.fallback?'Easy day · Run-Throughs':(it?it.name:'Sprints');
+const sub=(it&&!CV.fallback?it.disp+' · ':'')+(CV.fallback?'float down, nothing to prove · ':'')+'walk-back recovery, rest till springy';
+let rows='';
+for(let i=0;i<n;i++){
+if(i<k&&S.sprEdit===i)rows+='<div class="sr s3" style="background:var(--surface2);border-radius:12px"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)
++'<button class="lg" onclick="sprRowDone()" style="border-color:var(--ember-line);color:var(--ember)">'+CHECK+'</button></div>'
++'<div style="display:flex;justify-content:flex-end;gap:2px;padding:2px 2px 4px"><button class="rowx" onclick="sprRowRm('+i+')">Remove rep</button><button class="rowx" style="color:var(--muted)" onclick="sprRowDone()">Cancel</button></div>';
+else if(i<k)rows+='<div class="sr s3 done" onclick="sprEditRow('+i+')"><div class="srn num">'+(i+1)+'</div><div class="dtx num">'+CV.plan[i]+' m</div><div class="dck">'+CHECK+'</div></div>';
+else if(i===k)rows+='<div class="sr s3"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)+'<button class="lg" onclick="sprLog()" aria-label="Log rep">'+CHECK+'</button></div>';
+else rows+='<div class="sr s3"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)+'<div class="lg" style="opacity:.22;pointer-events:none">'+CHECK+'</div></div>';}
+let body='<div class="exc'+(k>=n&&n>0?' fin':'')+'"><div class="exh"><div class="exn">'+esc(pick)+'</div><span class="chip bl">Sprint</span><span class="tpes num">'+k+'/'+n+'</span></div>'
++'<div class="exs">'+esc(sub)+'</div>'
++'<div class="cols s3"><span>Rep</span><span>Meters</span><span></span></div>'
++rows
++'<div class="exf"><div style="display:flex;align-items:center;gap:2px"><button class="adds" onclick="sprAddRep()">+ Add rep</button>'+(n>Math.max(1,k)?'<button class="adds" onclick="sprRmRep()">− Remove rep</button>':'')+'</div><div class="tpes num" style="padding-right:4px">'+tot+' m run</div></div></div>';
+body+='<div class="exc"><div class="fgrid" style="grid-template-columns:1fr;margin-top:2px">'+cfld('Effort %','eff',5,10,100)+'</div>'
++'<div class="flab">How did it feel?</div><div class="seg">'+['fresh','solid','faded'].map(q=>'<button class="sgb'+(CV.quality===q?' on':'')+'" onclick="cseg(\'quality\',\''+q+'\')">'+q.charAt(0).toUpperCase()+q.slice(1)+'</button>').join('')+'</div>'
++'<div class="flab">Calf · pain</div><div class="seg">'+[['none',0],['≤2',2],['>2',3]].map(p=>'<button class="sgb'+(CV.pain===p[1]?' on':'')+'" onclick="cseg(\'pain\','+p[1]+')">'+p[0]+'</button>').join('')+'</div></div>';
+const elapsed=live?'<span id="elap">'+mmss(Date.now()-((SPR&&SPR.startedAt)||Date.now()))+'</span>':fmtDk(CV.dk);
+const hd='<div class="shd"><div class="shdi"><button class="bk" onclick="exitSprint()">'+I_BACK+'</button>'
++'<div class="shm"><div class="sht">'+(live?'':'Edit · ')+'Sprints</div><div class="shs num">'+elapsed+' · '+k+'/'+n+' reps'+(tot?' · '+tot+' m':'')+'</div></div>'
++'<button class="fin'+(live?'':' q')+'" onclick="sprintFinishAsk()">'+(live?'Finish':'Done')+'</button></div></div>';
+return hd+'<div class="co nopad">'+body+'</div>'}
+function sprintFinishAsk(){if(!CV||!CV.plan)return;
+if(S.sprAmend){
+if(!CV.done){toast('Log at least one rep');return}
+const back=S.sprFrom==='detail';S.sprAmend=false;S.sprEdit=null;
+if(back)S.view='detail';else{S.view='tabs';S.tab='today'}
+saveSprints(CV.dk);return}
+const k=CV.done;
+if(!k){ovConfirm('Discard sprints?','Nothing logged yet.',
+[{label:'Discard',click:'sprintDiscard()',kind:'d'},{label:'Keep going',click:'closeOv()',kind:'o'}]);return}
+const tot=CV.plan.slice(0,k).reduce((a,b)=>a+b,0);
+ovConfirm('Finish sprints?','<b>'+k+' rep'+(k>1?'s':'')+'</b> · '+tot+' m total',
+[{label:'Finish sprints',click:'sprintFinishGo()',kind:'p'},{label:'Keep going',click:'closeOv()',kind:'o'},{label:'Discard sprints',click:'sprintDiscardAsk()',kind:'d'}])}
+function sprintFinishGo(){if(!CV||!CV.plan)return;closeOv();
+const dk=CV.dk;S.sprEdit=null;S.view='tabs';S.tab='today';
+saveSprints(dk); /* writes the per-rep record · rn()s the Today card */
+SPR=null;sprPersist();lockOff();vibe([0,40,30,80])}
+function sprintDiscardAsk(){ovConfirm('Discard these sprints?','The logged reps will be deleted.',
+[{label:'Discard',click:'sprintDiscard()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+function sprintDiscard(){closeOv();SPR=null;sprPersist();CV=null;S.sprEdit=null;S.sprAmend=false;
+S.view='tabs';S.tab='today';lockOff();rn()}
 
 /* ═══════════ MOBILITY ═══════════ */
 function vMobility(){
@@ -2761,7 +2904,7 @@ function resetAsk(){ovConfirm('Erase all data?','Every session, check, and edit 
 [{label:'Erase',click:'resetAsk2()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
 function resetAsk2(){ovConfirm('Really erase everything?','Last chance — this cannot be undone.',
 [{label:'Erase everything',click:'resetAll()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
-function resetAll(){localStorage.removeItem('blocks_v1');location.reload()}
+function resetAll(){localStorage.removeItem('blocks_v1');localStorage.removeItem('blocks_spr');localStorage.removeItem('blocks_rest');location.reload()} /* a wipe must not resurrect a live sprint (or rest timer) from the erased install */
 
 /* ═══════════ BOOT ═══════════ */
 ld();
@@ -2780,7 +2923,7 @@ navigator.serviceWorker.register('./sw.js').then(reg=>{
 }).catch(()=>{});
 let refreshed=false;
 navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshed){refreshed=true;location.reload()}})})}
-rn();restoreRest();
+restoreSpr();rn();restoreRest();
 </script>
 </body>
 </html>
