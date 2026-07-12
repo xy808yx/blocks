@@ -670,7 +670,7 @@ const daily=[
 {id:'d4',name:'90/90s',detail:'10 / side'},
 {id:'d7',name:'Couch Stretch',detail:'30s / side'},
 {id:'d8',name:"World's Greatest Stretch",detail:'5 / side · 5s holds'},
-{id:'d5',name:'Dead Hangs',detail:'1 min',skipOnTraining:true},
+{id:'d5',name:'Dead Hangs',detail:'1 min',skipIfHang:true},
 {id:'d6',name:'Chin Tucks',detail:'10 × 5s — daily for FHP'},
 ];
 const mobility=[
@@ -782,7 +782,7 @@ Speed is the anchor you enjoy, not a number to chase. Your **season** (the quart
 ];
 return{
 schemaVersion:1,
-contentRev:16,
+contentRev:17,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -791,7 +791,7 @@ programs:[{id:'p_rtt',name:'Return to Training',subtitle:'Phase IV — rebuildin
  schedule:{0:null,1:'t_pull',2:'t_cardio',3:'t_push',4:'t_pull',5:'t_cardio',6:'t_push'},
  season:'reset',
  sprintPlan:{fastWeeks:0},
- templates,checklists:{daily,dailyNoteAm:'Morning pass — one set of each. Keep the nerve flosses gentle; tissue and nerves are tighter first thing. Dead hangs skipped on training days.',dailyNotePm:'Evening pass — one set of each. Warm tissue — this is where to push stretch depth. Dead hangs skipped on training days.',mobility,therapist},reference}],
+ templates,checklists:{daily,dailyNoteAm:'Morning pass — one set of each. Keep the nerve flosses gentle; tissue and nerves are tighter first thing. Dead hangs skip when the day already has a hang.',dailyNotePm:'Evening pass — one set of each. Warm tissue — this is where to push stretch depth. Dead hangs skip when the day already has a hang.',mobility,therapist},reference}],
 sessions:[],
 days:{},
 dayOverrides:{},
@@ -822,7 +822,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=16)return;
+let cr=DB.contentRev||0;if(cr>=17)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -931,6 +931,14 @@ if(cr<16){
  (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(x=>{if(x.kind==='cardio'&&/^One modality per day/.test(x.note||''))x.note='Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Volume before intensity.'}));
  cr=16;
 }
+if(cr<17){
+ /* Dead-hang daily item is now hang-aware · it hides only when the day's workout already contains a hang (pull-ups, chin-ups, hanging leg/knee raises, toes-to-bar), not on every lift day. So a lift day with the hang parked (e.g. the shoulder-rested pull day) shows the dead hang again, and it auto-hides the moment a hang is added back. Convert the dead-hang item from skipOnTraining to skipIfHang; refresh the untouched note copy. Non-destructive: logged history untouched. */
+ (DB.programs||[]).forEach(p=>{const c=p.checklists;if(!c)return;
+  (c.daily||[]).forEach(d=>{if((d.id==='d5'||/dead\s*hang/i.test(d.name||''))&&d.skipOnTraining){delete d.skipOnTraining;d.skipIfHang=true}});
+  const fix=s=>typeof s==='string'?s.replace('Dead hangs skipped on training days.','Dead hangs skip when the day already has a hang.'):s;
+  c.dailyNoteAm=fix(c.dailyNoteAm);c.dailyNotePm=fix(c.dailyNotePm)});
+ cr=17;
+}
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -950,7 +958,11 @@ function effDow(dk){const ov=DB.dayOverrides[dk];return ov==null?dowOf(dk):ov}
 function tplForDate(dk){const d=effDow(dk);if(d===-1)return null;const tid=prog().schedule[d];return tid?tpl(tid):null}
 function dayChecks(dk){return(DB.days[dk]&&DB.days[dk].c)||[]}
 function isTrainingDay(t){return!!(t&&t.kind==='lift')}
-function dailyItems(dk){const t=tplForDate(dk);return prog().checklists.daily.filter(d=>!(d.skipOnTraining&&isTrainingDay(t)))}
+function isHangEx(ex){if(!ex)return false;const n=ex.name||'';
+if(/\bhang\s*(clean|snatch|power|high|pull)/i.test(n))return false; /* Olympic hang-position lifts are not a bar hang */
+return /pull[\s-]?ups?\b|chin[\s-]?ups?\b|\bhang(s|ing)?\b|toes[\s-]?to[\s-]?bar/i.test(n)} /* pull-ups, chin-ups, hanging leg/knee raises, dead hang, toes-to-bar · "push-ups" never matches */
+function dayHasHang(dk){const t=tplForDate(dk);if(!t||t.kind!=='lift')return false;return(t.entries||[]).some(e=>e.enabled&&isHangEx(exOf(e.exId)))} /* only ENABLED entries · a parked pull-up leaves the day hang-less */
+function dailyItems(dk){const t=tplForDate(dk),hang=dayHasHang(dk);return prog().checklists.daily.filter(d=>!(d.skipOnTraining&&isTrainingDay(t))&&!(d.skipIfHang&&hang))}
 function sessionsFor(dk){return DB.sessions.filter(s=>s.date===dk)}
 function cardioIsSprint(dk,cs){return cs&&cs.sprints?true:cs&&cs.aerobic?false:effDow(dk)===5}
 function activeSession(){return DB.sessions.find(s=>!s.finishedAt)||null}
@@ -2376,7 +2388,7 @@ if(t.note)b+='<p style="font-size:13.5px;color:var(--muted);line-height:1.55;mar
 b+='<button class="lnk" onclick="openEdT(\''+t.id+'\')">Edit template →</button>';
 h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled).length+' moves':(SEASONS[prog().season||'reset']||SEASONS.reset).name+' · sprint'),b)});
 h+='<div class="sl"><span class="lt">Checklists</span><span class="rule"></span></div>';
-h+=det('Daily Block',p.checklists.daily.length+' items · morning + evening',p.checklists.daily.map(d=>'<div class="tpe"><span class="tpen">'+esc(d.name)+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'eddaily\')">Edit →</button>');
+h+=det('Daily Block',p.checklists.daily.length+' items · morning + evening',p.checklists.daily.map(d=>'<div class="tpe"><span class="tpen">'+esc(d.name)+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+(d.skipIfHang?' <span class="chip off">no-hang days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'eddaily\')">Edit →</button>');
 h+=det('Mobility',p.checklists.mobility.reduce((a,g)=>a+g.items.length,0)+' items',p.checklists.mobility.map(g=>'<p style="margin:10px 0 4px"><strong style="color:var(--text);font-size:13px;letter-spacing:.06em;text-transform:uppercase">'+esc(g.group)+'</strong></p>'+g.items.map(i=>'<div class="tpe"><span class="tpen" style="font-weight:500;color:var(--dim)">'+esc(i.name)+'</span></div>').join('')).join('')+'<button class="lnk" onclick="openMobility(\'program\')">Open today\'s checklist →</button> <button class="lnk" onclick="openEd(\'edmob\')">Edit →</button>');
 h+=det('Therapist Nerve Flossing','',p.checklists.therapist.map(t=>'<div class="tpe"><span class="tpen">'+esc(t.name)+(t.video?' <a class="vl" href="'+t.video+'" target="_blank">▶</a>':'')+'</span><span class="tpes">'+esc(t.note)+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'edther\')">Edit →</button>');
 h+='<div class="sl"><span class="lt">Reference</span><span class="rule"></span><button class="lnk" style="padding:0;font-size:13px" onclick="openEd(\'edref\')">Edit</button></div>';
@@ -2632,13 +2644,17 @@ h+='<div class="card" style="padding:12px">'
 +'<input class="tin" style="margin-bottom:8px" placeholder="Detail" value="'+esc(it.detail||'')+'" onchange="dl().daily['+i+'].detail=this.value;sv()">'
 +'<div style="display:flex;gap:8px;align-items:center">'
 +'<input class="tin fx" placeholder="Video URL" inputmode="url" value="'+esc(it.video||'')+'" onchange="dl().daily['+i+'].video=this.value.trim()||undefined;sv()">'
-+'<button class="bbtn'+(it.skipOnTraining?'':' q')+'" style="flex-shrink:0" onclick="dl().daily['+i+'].skipOnTraining=!dl().daily['+i+'].skipOnTraining;sv();rn()">rest days only</button>'
++'</div>'
++'<div style="display:flex;gap:8px;align-items:center;margin-top:8px">'
++'<button class="bbtn'+(it.skipOnTraining?'':' q')+'" style="flex-shrink:0" onclick="tglDaily('+i+',\'skipOnTraining\')">rest days only</button>'
++'<button class="bbtn'+(it.skipIfHang?'':' q')+'" style="flex-shrink:0" onclick="tglDaily('+i+',\'skipIfHang\')">skip if hanging</button>'
 +'</div></div>'});
 h+='<button class="addb" onclick="addDaily()">+ Add item</button>';
 h+='</div>';return h}
 function mvDaily(i,d){const a=dl().daily,j=i+d;if(j<0||j>=a.length)return;const x=a[i];a[i]=a[j];a[j]=x;sv();rn()}
 function rmDaily(i){dl().daily.splice(i,1);sv();rn()}
 function addDaily(){dl().daily.push({id:id('d'),name:'New item',detail:''});sv();rn()}
+function tglDaily(i,k){const it=dl().daily[i],on=!it[k];delete it.skipOnTraining;delete it.skipIfHang;if(on)it[k]=true;sv();rn()} /* the two visibility rules are mutually exclusive · turning one on clears the other */
 function mobG(gi){return dl().mobility[gi]}
 function vEdMob(){
 const m=dl().mobility;
