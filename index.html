@@ -650,7 +650,7 @@ const templates=[
  en('s3',{sets:3,scheme:'3 × 8-10',defReps:8}),
  en('s4',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'BW → hold plates'}),
 ]},
-{id:'t_cardio',name:'Cardio + Mobility',kind:'cardio',
+{id:'t_cardio',name:'C',kind:'cardio',
  note:'Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Volume before intensity.',
  entries:[],
  sprD:{reps:3,distM:50,eff:55},
@@ -782,7 +782,7 @@ Speed is the anchor you enjoy, not a number to chase. Your **season** (the quart
 ];
 return{
 schemaVersion:1,
-contentRev:18,
+contentRev:19,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -822,7 +822,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=18)return;
+let cr=DB.contentRev||0;if(cr>=19)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -945,6 +945,12 @@ if(cr<18){
  (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(t=>{const r=REN[t.id];if(r&&t.name===r.from)t.name=r.to}));
  (DB.sessions||[]).forEach(s=>{const r=REN[s.templateId];if(r&&s.name===r.from)s.name=r.to});
  cr=18;
+}
+if(cr<19){
+ /* Cardio day joins the neutral A/B/C titles. Title only; the in-card "Cardio + Mobility" section header stays descriptive. Guarded to the shipped default so a hand-renamed template/session keeps its name. */
+ (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(t=>{if(t.id==='t_cardio'&&t.name==='Cardio + Mobility')t.name='C'}));
+ (DB.sessions||[]).forEach(s=>{if(s.templateId==='t_cardio'&&s.name==='Cardio + Mobility')s.name='C'});
+ cr=19;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
