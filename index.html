@@ -630,7 +630,7 @@ ex('cx_barbellthruster','Barbell Thruster',0,120,['quads','shoulders','glutes'])
 ];
 const en=(exId,o)=>Object.assign({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false},o);
 const templates=[
-{id:'t_pull',name:'Pull + Calves',kind:'lift',
+{id:'t_pull',name:'A',kind:'lift',
  note:'Straight sets, full rest. Hang pause replaces dead hangs. Consistent reps across all 4 sets → add weight. Calf raises: when 3×15 is easy, hold a plate.',
  entries:[
  en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,enabled:false,cue:'Parked — protecting a catching/unstable R shoulder · revisit at weekly PT'}),
@@ -641,7 +641,7 @@ const templates=[
  en('pf',{sets:3,scheme:'3 × 10',defReps:10,enabled:false,cue:'light · fast up / controlled down · metronome ~132bpm · before heavy raises'}),
  en('p6',{sets:3,scheme:'3 × 15/leg',defReps:15,cue:'3s up, 3s down → weighted when easy'}),
 ]},
-{id:'t_push',name:'Push + BSS',kind:'lift',
+{id:'t_push',name:'B',kind:'lift',
  note:'Straight sets, full rest 90-120s. Top of rep range for 2 consecutive sessions → add 5 lbs. BSS: bodyweight first, then hold plates.',
  entries:[
  en('s0',{warmups:2,sets:0,scheme:'2 × 15 · warm-up',defReps:15,cue:'light plates'}),
@@ -782,7 +782,7 @@ Speed is the anchor you enjoy, not a number to chase. Your **season** (the quart
 ];
 return{
 schemaVersion:1,
-contentRev:17,
+contentRev:18,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -822,7 +822,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=17)return;
+let cr=DB.contentRev||0;if(cr>=18)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -938,6 +938,13 @@ if(cr<17){
   const fix=s=>typeof s==='string'?s.replace('Dead hangs skipped on training days.','Dead hangs skip when the day already has a hang.'):s;
   c.dailyNoteAm=fix(c.dailyNoteAm);c.dailyNotePm=fix(c.dailyNotePm)});
  cr=17;
+}
+if(cr<18){
+ /* Rename the two lift-day titles to neutral placeholders (A/B) so a future re-theme is a one-liner; exercises untouched. Only rename a title/session still on the shipped default, so a hand-renamed template or a CSV-imported session keeps its name. */
+ const REN={t_pull:{from:'Pull + Calves',to:'A'},t_push:{from:'Push + BSS',to:'B'}};
+ (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(t=>{const r=REN[t.id];if(r&&t.name===r.from)t.name=r.to}));
+ (DB.sessions||[]).forEach(s=>{const r=REN[s.templateId];if(r&&s.name===r.from)s.name=r.to});
+ cr=18;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save — storage may be full. Export a backup from Settings.')}}
