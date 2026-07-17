@@ -238,7 +238,8 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .rowx{font-size:13px;font-weight:600;color:var(--danger);padding:12px}
 .exf{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .exrm{font-size:13px;font-weight:600;color:var(--muted);padding:13px 10px;margin:-6px 0 -8px}
-.exmv{font-size:17px;font-weight:700;color:var(--muted);min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:var(--surface2);border:1px solid var(--border);margin:-5px 0}
+.exmv{font-size:18px;font-weight:700;color:var(--muted);min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;margin:-6px -4px -8px}
+.exmv:active{color:var(--dim)}
 .exmv:disabled,.mvb:disabled{opacity:.3;pointer-events:none}
 .exrm:active{color:var(--danger)}
 
@@ -1052,8 +1053,6 @@ for(const s of DB.sessions){if(s.id===excludeSid||!s.finishedAt)continue;
 return best}
 function prefill(entry,ex,rowIdx,sess){
 const isWu=rowIdx<entry.warmups;
-if(sess&&!isWu){const lastToday=workingSets(sess,ex.id).filter(s=>!s.warmup).sort((a,b)=>b.n-a.n)[0];
- if(lastToday)return{w:wInUnit(lastToday.w),reps:lastToday.reps}}
 const lo=(sess&&!isWu&&!entry.amrap&&!entry.synth&&liftFallbackDay(sess.date))?repBand(entry)[0]:null; /* easy day · the rep target drops to the bottom of the band, matching the scheme line. Weight still prefills from history. */
 const prior=lastSessionWith(ex.id,sess?sess.id:null);
 if(prior){const rows=workingSets(prior,ex.id).sort((a,b)=>a.n-b.n);

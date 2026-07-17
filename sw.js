@@ -1,5 +1,5 @@
 // BLOCKS service worker — versioned cache-first so the app boots offline at the gym.
-const V = 'blocks-v45';
+const V = 'blocks-v46';
 const FONTS = 'blocks-fonts-v1';
 const ASSETS = ['./', './index.html', './apple-touch-icon.png'];
 
