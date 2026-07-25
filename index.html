@@ -465,7 +465,7 @@ const ex=(id,name,bw,rest,muscles,kind)=>({id,name,bw:!!bw,rest,muscles:muscles|
 const library=[
 ex('p1','Pull-ups',1,120,['back','biceps']),
 ex('p2','Landmine Rows (single-arm)',0,120,['back']),
-ex('p3','Trap 3 Raises',0,90,['shoulders']),
+ex('p3','Trap 3 Raise — 3-point bench',0,90,['shoulders']),
 ex('p4','Face Pulls',0,90,['rear delts','rotator cuff']),
 ex('p5','Med Ball Slams',0,90,['full body']),
 ex('pf','Fast Calf Raises',0,90,['calves']),
@@ -652,7 +652,7 @@ const templates=[
  entries:[
  en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,enabled:false,cue:'Parked · protecting a catching/unstable R shoulder · revisit at weekly PT'}),
  en('p2',{sets:3,scheme:'3 × 10/side',defReps:10,cue:'full rest'}),
- en('p3',{sets:3,scheme:'3 × 12-15',defReps:12,cue:'2s hold at top'}),
+ en('p3',{sets:3,scheme:'3 × 12-15/side',defReps:12,defW:5,cue:'1-arm · opp knee + hand on bench · plate · thumb up, arm straight · 2s hold at top · hips & shoulders square · all 3 sets hit 15 with a clean 2s hold, twice running → 10 lb'}),
  en('p4',{sets:3,scheme:'3 × 15',defReps:15,cue:'ext. rotation at top'}),
  en('p5',{sets:3,scheme:'3 × 8',defReps:8,enabled:false,cue:'Parked · ballistic overhead; resting a catching/unstable R shoulder · revisit at weekly PT'}),
  en('pf',{sets:3,scheme:'3 × 10',defReps:10,cue:'light · fast up / controlled down · metronome ~132bpm · before heavy raises'}),
@@ -862,7 +862,7 @@ A low-contact primer immediately BEFORE sprints is potentiation, not a collision
 ];
 return{
 schemaVersion:1,
-contentRev:21,
+contentRev:22,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0},
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -902,7 +902,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=21)return;
+let cr=DB.contentRev||0;if(cr>=22)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -1109,6 +1109,22 @@ if(cr<21){
   }
  });
  cr=21;
+}
+if(cr<22){
+ /* Trap 3 Raise → 3-point-bench variant · new setup + 5 lb load. Overwrites the authored name (library)
+    and the entry's scheme/sets/reps/load/cue from the fresh seed; logged history is never touched.
+    Idempotent: fields are set to fixed seed values, so a second run is a no-op. */
+ const ftl=(fp.templates||[]).find(x=>x.id==='t_pull');
+ const fe=ftl&&(ftl.entries||[]).find(x=>x.exId==='p3');
+ const fl=(seedDB().library||[]).find(e=>e.id==='p3');
+ (DB.programs||[]).forEach(p=>{
+  const ol=(p.templates||[]).find(x=>x.id==='t_pull');
+  const oe=ol&&(ol.entries||[]).find(x=>x.exId==='p3');
+  if(oe&&fe){oe.scheme=fe.scheme;oe.sets=fe.sets;oe.defReps=fe.defReps;oe.defW=fe.defW;oe.cue=fe.cue}
+ });
+ const le=(DB.library||[]).find(e=>e.id==='p3');
+ if(le&&fl)le.name=fl.name;
+ cr=22;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save · storage may be full. Export a backup from Settings.')}}
