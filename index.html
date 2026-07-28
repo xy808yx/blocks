@@ -1334,13 +1334,22 @@ if(sess){const today=workingSets(sess,ex.id).sort((a,b)=>b.n-a.n)[0];
 return{h:Math.max(5,hold),e:Math.min(100,Math.max(10,eff))}}
 function prefill(entry,ex,rowIdx,sess){
 const isWu=rowIdx<entry.warmups;
-const lo=(sess&&!isWu&&!entry.amrap&&!entry.synth&&liftFallbackDay(sess.date))?repBand(entry)[0]:null; /* easy day · the rep target drops to the bottom of the band, matching the scheme line. Weight still prefills from history. */
+/* The band this row is held to. A warm-up row, an AMRAP row and a synthesised entry each declare no
+   meaningful rep range, so they stay unclamped in BOTH directions — an AMRAP that clamped would be
+   the one row where beating the number is the whole point. */
+const band=(sess&&!isWu&&!entry.amrap&&!entry.synth)?repBand(entry):null;
+const lo=(band&&liftFallbackDay(sess.date))?band[0]:null; /* easy day · the rep target drops to the bottom of the band, matching the scheme line. Weight still prefills from history. */
 const prior=lastSessionWith(ex.id,sess?sess.id:null);
 if(prior){const rows=workingSets(prior,ex.id).sort((a,b)=>a.n-b.n);
  const pool=rows.filter(r=>!!r.warmup===isWu);
  const idx=isWu?rowIdx:rowIdx-entry.warmups;
  const src=pool[idx]||pool[pool.length-1];
- if(src)return{w:wPrefill(src.w),reps:lo?Math.min(lo,src.reps):src.reps}}
+ /* Carried reps are held to the band's TOP as well as its bottom. Without the ceiling a single 11
+    logged against a "3 × 10" — a good day, a stray + tap, an imported row — prefilled that set
+    position at 11 forever, above the template's own ceiling, while the scheme line above it still
+    read 10. The prefill is a starting point, not a ledger: history is never rewritten, only the
+    number the field opens on. Same clamp on every normal day, so it can't drift back in. */
+ if(src)return{w:wPrefill(src.w),reps:lo?Math.min(lo,src.reps):(band?Math.min(band[1],src.reps):src.reps)}}
 if(sess){const today=workingSets(sess,ex.id).sort((a,b)=>b.n-a.n)[0];
  if(today)return{w:wInUnit(today.w),reps:today.reps}}
 return{w:entry.defW||0,reps:lo||(entry.defReps||(entry.amrap?8:10))}}
