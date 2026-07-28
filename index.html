@@ -665,8 +665,8 @@ const templates=[
 {id:'t_pull',name:'A',kind:'lift',
  note:'Straight sets, full rest. Elbow holds go FIRST, before anything grips a bar · isometrics are analgesic, and a fresh ache reading is the honest one. Consistent reps across all 4 sets → add weight. Calf raises: heavy Monday, lighter Thursday (2 sets, less load) so Friday sprints land fresh.',
  entries:[
- en('el_n',{sets:3,scheme:'3 × 30-45s @ ~60%',defHold:40,defEff:60,cue:'elbow ~90° · upper arm pinned to the ribs · pull into rack pins set low, or self-resist with the opposite hand · LOOSE hook grip, do not crush the bar · 90s rest'}),
- en('el_s',{sets:3,scheme:'3 × 30-45s @ ~60%',defHold:40,defEff:60,gate:'e1',cue:'palm up · runs ALONGSIDE the neutral hold, it does not replace it · same setup, same loose grip'}),
+ en('el_n',{sets:3,scheme:'3 × 30-45s @ ~70%',defHold:40,defEff:70,cue:'elbow ~90° · upper arm pinned to the ribs · pull into rack pins set low, or self-resist with the opposite hand · LOOSE hook grip, do not crush the bar · 90s rest'}),
+ en('el_s',{sets:3,scheme:'3 × 30-45s @ ~70%',defHold:40,defEff:70,gate:'e1',cue:'palm up · runs ALONGSIDE the neutral hold, it does not replace it · same setup, same loose grip'}),
  en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,enabled:false,cue:'Parked · protecting a catching/unstable R shoulder · revisit at weekly PT'}),
  en('p2',{sets:3,scheme:'3 × 10/side',defReps:10,cue:'full rest'}),
  en('p3',{sets:3,scheme:'3 × 12-15/side',defReps:12,defW:5,cue:'1-arm · opp knee + hand on bench · plate · thumb up, arm straight · 2s hold at top · hips & shoulders square · all 3 sets hit 15 with a clean 2s hold, twice running → 10 lb'}),
@@ -876,7 +876,7 @@ A low-contact primer immediately BEFORE sprints is potentiation, not a collision
 {t:'Elbow Protocol',b:`Isometric holds on the right elbow, Mon + Thu, first thing in the session. Nothing else in the week loads the elbow off a bar: dead hangs are paused and hanging leg raises run on ab straps.
 
 **The prescription**
-- 3 × 30-45s, ~60% effort, 90s rest. Elbow ~90°, upper arm pinned to the ribs, pulling into something immovable · rack pins set low, or the opposite hand.
+- 3 × 30-45s, ~70% effort, 90s rest. Elbow ~90°, upper arm pinned to the ribs, pulling into something immovable · rack pins set low, or the opposite hand.
 - **Loose hook grip.** Crushing the bar recruits the exact tissue you are trying to settle.
 - Neutral grip (thumb up) is the whole protocol until Gate E1 clears. Supinated then runs *alongside* it, never instead of it.
 
@@ -889,9 +889,6 @@ They are logged separately on purpose. Averaged into a single pain score they ca
 - 4 consecutive sessions of neutral holds with ache ≤ 3, zero jolts, and no "worse" on the next-morning read.
 - Any session with a jolt resets the count and drops the next session's effort target by 10%.
 - The count is read from your logged history every time, so a correction or a deleted session always re-derives honestly. It also lapses: more than two weeks without a clean session and the run resets rather than banking stale credit.
-
-**One thing this protocol cannot do**
-Sharp, electric or catching is a nerve description, not a tendon one · and the ulnar nerve runs right through this. A jolt count that is not trending to zero is a reason to get it looked at, not a reason to keep dropping the effort dial. Same standing as "revisit at weekly PT" on the shoulder cues.
 
 **Review at 28 days** from the first logged session · ache trend, cumulative jolts, gate status. It surfaces on the elbow card in Trends.`},
 {t:'Timeline',b:`- **Wk 5-6 · Cleared** — Gate 1, Phase 3. Seated calf raises began.
@@ -906,7 +903,7 @@ Sharp, electric or catching is a nerve description, not a tendon one · and the 
 ];
 return{
 schemaVersion:1,
-contentRev:23,
+contentRev:24,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0,hangPausedAt:0}, /* hangPausedAt 0 · the resume clock falls back to meta.created on a fresh install (see hangResumeDue), so it is never measured against undefined */
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -946,7 +943,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=23)return;
+let cr=DB.contentRev||0;if(cr>=24)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -1248,6 +1245,27 @@ if(cr<23){
  if(DB.settings&&!DB.settings.hangPausedAt)DB.settings.hangPausedAt=Date.now();
  cr=23;
 }
+if(cr<24){
+ /* Isometric effort target moves ~60% → ~70%. Heavy-isometric tendon work sits near 70% MVC; 60% risks
+    sitting under the adaptation threshold, which makes the hold uncomfortable without being a stimulus.
+    Matched through the library's `iso` flag rather than the literal el_n/el_s ids, because cr23 may have
+    resolved either hold onto a pre-existing library row carrying its own id. Guarded on the shipped
+    values, so a hold you have already retuned by hand keeps your number.
+    The post-jolt 10-point drop needs no migration: it is computed at render time from logged history
+    (isoPrefill), so it lands one step under whatever you last logged, not under this new target.
+    That also means the new 70 only reaches the dial where there is no elbow history yet — a hold you
+    have already logged at 60 keeps opening at 60 until you tap it up once, and then carries.
+    Idempotent · a second run finds the new values and matches nothing. */
+ const _EFFOLD='3 × 30-45s @ ~60%',_EFFNEW='3 × 30-45s @ ~70%';
+ const _isIso=exId=>{const e=(DB.library||[]).find(x=>x.id===exId);return!!(e&&e.iso)};
+ (DB.programs||[]).forEach(p=>{(p.templates||[]).forEach(t=>{(t.entries||[]).forEach(e=>{
+  if(!_isIso(e.exId))return; /* returns from this entry's callback only · never out of migrate() */
+  if(e.scheme===_EFFOLD)e.scheme=_EFFNEW;
+  if(+e.defEff===60)e.defEff=70;
+ })})});
+ patchRef('Elbow Protocol'); /* carries the 70% prescription line and the cut nerve section together */
+ cr=24;
+}
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save · storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -1321,10 +1339,10 @@ let best=null;
 for(const s of DB.sessions){if(s.id===excludeSid||!s.finishedAt)continue;
  if(s.sets.some(x=>x.exId===exId)){if(!best||s.startedAt>best.startedAt)best=s}}
 return best}
-/* Iso prefill · carry the last session's hold and effort, and if that session logged a jolt, take 10 points off the effort target. Prefill only: the template's defEff is never touched, so the drop lasts exactly one session and undoes itself the moment a clean one is logged. Falls back to the entry defaults, which matters because entriesOf synthesises entries (defReps/defW, no defHold) for any exercise not covered by the template. */
+/* Iso prefill · carry the last session's hold and effort, and if that session logged a jolt, take 10 points off. Prefill only: the template's defEff is never touched, and the 10 comes off the CARRIED number, so it costs one session rather than compounding across a run of bad ones. Note what that means though — it is the carried number that persists afterwards, not defEff, so a hold you last logged under the template's target keeps opening there until you tap it back up. Same contract as reps and weight (see prefill, where carried reps are held to the band's ceiling but deliberately not to its floor). defEff seeds the row only when there is no logged history at all, which also covers the entries entriesOf synthesises (defReps/defW, no defHold) for any exercise the template does not carry. */
 function isoPrefill(entry,ex,sess){
 const prior=lastSessionWith(ex.id,sess?sess.id:null);
-let hold=+entry.defHold||30,eff=+entry.defEff||60;
+let hold=+entry.defHold||30,eff=+entry.defEff||70;
 if(prior){const rows=workingSets(prior,ex.id).sort((a,b)=>a.n-b.n),src=rows[rows.length-1];
  if(src&&src.iso){hold=+src.hold||hold;eff=+src.eff||eff}
  const rec=prior.elbow&&prior.elbow[ex.id];
@@ -3212,7 +3230,7 @@ if(!ser.length){h+='<div class="empty" style="padding:18px 12px">'+EB+'<div clas
 h+='<div class="exs" style="padding:2px 2px 4px">Ache across '+ser.length+' session'+(ser.length>1?'s':'')+' · lower is better</div>';
 h+=trendChart(ser,true);
 const last=ser[ser.length-1];
-h+='<div class="exs" style="padding:8px 2px 2px">Last: ache '+last.mxR+'/10 · '+pl(jolts,'jolt')+' logged in total'+(jolts?' · a jolt count that is not trending to zero is a reason to get it looked at':'')+'</div>';
+h+='<div class="exs" style="padding:8px 2px 2px">Last: ache '+last.mxR+'/10 · '+pl(jolts,'jolt')+' logged in total</div>';
 if(elbowReviewDue())h+='<div class="rxr">'+dkDays(first,tk())+' days in · read the ache trend and the jolt count together, then decide whether this is still working.</div>';
 return h+'</div>'}
 function vTrends(){
