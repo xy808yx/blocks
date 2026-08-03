@@ -480,6 +480,8 @@ ex('p5','Med Ball Slams',0,90,['full body']),
 ex('pf','Fast Calf Raises',0,90,['calves']),
 ex('p6','Deficit Single-Leg Calf Raise',0,90,['calves']),
 ex('bk','Bent-Knee Calf Raise',0,90,['calves']),
+/* Loaded end-range hip work · the one mobility item with a real effect anchor (Kay 2023 meta, pooled g=0.86, LOAD-dependent, near-null unloaded). Single 'hips' tag on purpose: weekSets counts one set per tag, and this is the mobility thread, not leg volume. */
+ex('h90','Loaded 90/90 Hold + Lift-offs',0,90,['hips']),
 ex('s0','Lu Raises (plates, light)',0,60,['shoulders']),
 ex('s1','Landmine Press (half-kneeling)',0,120,['shoulders','chest']),
 ex('s2','Decline Push-ups (feet on bench)',1,90,['chest','triceps']),
@@ -663,41 +665,41 @@ ex('cx_barbellthruster','Barbell Thruster',0,120,['quads','shoulders','glutes'])
 const en=(exId,o)=>Object.assign({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false},o);
 const templates=[
 {id:'t_pull',name:'A',kind:'lift',
- note:'Straight sets, full rest. Elbow holds go FIRST, before anything grips a bar · isometrics are analgesic, and a fresh ache reading is the honest one. Consistent reps across all 4 sets → add weight. Calf raises: heavy Monday, lighter Thursday (2 sets, less load) so Friday sprints land fresh.',
+ note:'Straight sets, full rest. Elbow holds go FIRST, before anything grips a bar · isometrics are analgesic, and a fresh ache reading is the honest one. Consistent reps across all 4 sets → add weight. Calf raises: this card is written for MONDAY. On Thursday log only 2 sets and drop the load yourself, so Friday sprints land fresh.',
  entries:[
  en('el_n',{sets:3,scheme:'3 × 30-45s @ ~70%',defHold:40,defEff:70,cue:'elbow ~90° · upper arm pinned to the ribs · pull into rack pins set low, or self-resist with the opposite hand · LOOSE hook grip, do not crush the bar · 90s rest'}),
  en('el_s',{sets:3,scheme:'3 × 30-45s @ ~70%',defHold:40,defEff:70,gate:'e1',cue:'palm up · runs ALONGSIDE the neutral hold, it does not replace it · same setup, same loose grip'}),
- en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,enabled:false,cue:'Parked · protecting a catching/unstable R shoulder · revisit at weekly PT'}),
+ en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,enabled:false,cue:'Shoulder cleared · still held for the ELBOW. A pull-up hangs the elbow off a bar, which is the exposure the isometric protocol removed. Un-park at the 28-day elbow review, together with dead hangs.'}),
  en('p2',{sets:3,scheme:'3 × 10/side',defReps:10,cue:'full rest'}),
  en('p3',{sets:3,scheme:'3 × 12-15/side',defReps:12,defW:5,cue:'1-arm · opp knee + hand on bench · plate · thumb up, arm straight · 2s hold at top · hips & shoulders square · all 3 sets hit 15 with a clean 2s hold, twice running → 10 lb'}),
- en('p4',{sets:3,scheme:'3 × 15',defReps:15,cue:'ext. rotation at top'}),
- en('p5',{sets:3,scheme:'3 × 8',defReps:8,enabled:false,cue:'Parked · ballistic overhead; resting a catching/unstable R shoulder · revisit at weekly PT'}),
- en('pf',{sets:3,scheme:'3 × 10',defReps:10,cue:'light · fast up / controlled down · metronome ~132bpm · before heavy raises'}),
- en('p6',{sets:4,scheme:'4 × 6-8/leg',defReps:8,cue:'deficit PENDING PALPATION · if insertional, drop to floor level · 1s up, 3s down · start ~25-30 lb, build to ~55 · all 4 sets hit 8 twice running → +5 lb'}),
- en('cx_pallofpress',{sets:3,scheme:'3 × 8-10/side',defReps:10,cue:'anti-rotation · stand tall, press straight out, do not let the cable turn you · slow out, slow back · stands in for landmine rainbows while the R shoulder rests'}),
+ en('p4',{warmups:2,sets:0,scheme:'2 × 15 · warm-up',defReps:15,cue:'band · ext. rotation at top · a warm-up set, not counted volume'}),
+ en('p5',{sets:3,scheme:'3 × 8',defReps:8,cue:'full intent, throw for distance not fatigue · shoulder cleared Aug 2026'}),
+ en('pf',{warmups:3,sets:0,scheme:'3 × 10 · warm-up',defReps:10,cue:'light · fast up / controlled down · the calf-specific ramp into the heavy raises, not counted volume'}),
+ en('p6',{sets:4,scheme:'4 × 6-8/leg',defReps:8,cue:'deficit · palpated midportion, so the deficit is correct · 1s up, 3s down · start ~25-30 lb, build to ~55 · all 4 sets hit 8 twice running → +5 lb'}),
+ en('h90',{sets:3,scheme:'3 × 5/side',defReps:5,defW:25,cue:'both shins ~90° · sit tall, plate at the chest · settle into the position 20-30s, then 5 slow knee lift-offs, front leg then back leg · torso stays upright, no falling back · add plate before adding reps'}),
+ en('cx_pallofpress',{sets:3,scheme:'3 × 8-10/side',defReps:10,cue:'band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back'}),
 ]},
 {id:'t_push',name:'B',kind:'lift',
  note:'Straight sets, full rest 90-120s. Top of rep range for 2 consecutive sessions → add 5 lbs. BSS: bodyweight first, then hold plates.',
  entries:[
  en('s0',{warmups:2,sets:0,scheme:'2 × 15 · warm-up',defReps:15,cue:'light plates'}),
- en('s1',{sets:4,scheme:'4 × 8-10/side',defReps:8,cue:'half-kneeling · down knee under the hip, ribs down, do not let the trunk side-bend · LEFT arm only · right resting (catching/unstable shoulder) · revisit at weekly PT · full rest'}),
- en('s2',{sets:3,scheme:'3 × max',amrap:true,defReps:10,enabled:false}),
+ en('s1',{sets:4,scheme:'4 × 8-10/side',defReps:8,cue:'half-kneeling · down knee under the hip, ribs down, do not let the trunk side-bend · both arms, right cleared Aug 2026 · full rest'}),
+ en('s2',{sets:3,scheme:'3 × max',amrap:true,defReps:10,cue:'feet on bench · shoulder cleared Aug 2026 · the only right-side pressing in the week'}),
  en('s3',{sets:3,scheme:'3 × 8-10',defReps:8,cue:'ab straps · no grip at all, the elbow and forearm stay out of it · slow down, no swing · easy at 10 → plate between the feet, back to 8'}),
  en('s4',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'BW → hold plates'}),
- en('bk',{sets:3,scheme:'3 × 10-12/leg',defReps:12,cue:'knee ~90° · plate on distal thigh or seated machine · full ROM, controlled · runs Wed + Sat, so twice a week'}),
+ en('bk',{sets:3,scheme:'3 × 10-12/leg',defReps:12,cue:'knee ~90° · plate on the distal thigh · full ROM, controlled · runs Wed + Sat, so twice a week · if Saturday morning\'s calf read came back sore, EASE this set, do not skip it'}),
  en('cx_singlelegromaniandeadlift',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'hinge, ribs down · reach long, no rotation · light and clean before heavy'}),
  en('cx_abwheelrollout',{sets:3,scheme:'3 × 8',defReps:8,cue:'kneeling · ribs down, no sag in the low back · roll only as far as you can still reverse · knees → longer reach → toes, in that order'}),
- en('cx_declinesitup',{sets:3,scheme:'3 × 10',defReps:10,cue:'flat bench, feet hooked under the bar · plate on the chest · lower slower than you lift'}),
 ]},
 {id:'t_cardio',name:'C',kind:'cardio',
- note:'Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Quality before volume · for a calf, running volume is the last box ticked, not the first.',
+ note:'Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Running is sprints and speed endurance ONLY, nothing continuous · zone 2 is the bike or the pool. Quality before volume.',
  entries:[],
  sprD:{reps:3,distM:50,eff:55},
- aerD:{mode:'bike',durMin:30,zone:'1-2'},
+ aerD:{mode:'bike',durMin:45,zone:'1-2'},
  sprCue:'walk-back recovery · Fri (not the fasted Tue)',
  aerCue:'zone 1-2 · keep it easy',
  checks:[
- {id:'mbt',name:'Med Ball Throws · pick 1',detail:'before sprints, while fresh · 3-5 × 3-5 @ 100% intent, full recovery · ① Overhead-back scoop (up & out, full triple extension) · ② Chest pass / shotput (horizontal push) · ③ Rotational scoop (into wall) · throw for distance, not fatigue',enabled:false},
+ {id:'mbt',name:'Med Ball Throws · pick 1',detail:'before sprints, while fresh · 3-5 × 3-5 @ 100% intent, full recovery · ① Overhead-back scoop (up & out, full triple extension) · ② Chest pass / shotput (horizontal push) · ③ Rotational scoop (into wall) · throw for distance, not fatigue',enabled:true},
  {id:'cl',name:'Calf Primer',detail:'before sprints, while fresh · ~40-60 pogo contacts — low bilateral, stiff ankle, toes up · PLUS 15-20 single-leg hops per side as the symptom probe (a check, not training, and counted separately) · stop when the contacts get loud',enabled:true},
  {id:'mobdone',name:'Full Mobility Routine',detail:'roll · stretch · flows',link:'mobility',enabled:true},
 ]},
@@ -713,27 +715,39 @@ const daily=[
 {id:'d4',name:'90/90s',detail:'10 / side'},
 {id:'d7',name:'Couch Stretch',detail:'30s / side'},
 {id:'d8',name:"World's Greatest Stretch",detail:'5 / side · 5s holds'},
-{id:'d5',name:'Dead Hangs',detail:'1 min',skipIfHang:true,paused:true}, /* paused for the right elbow · 4 weeks minimum. Reversible from the daily-block editor; the resume prompt shows on the daily block once the pause is 28 days old. */
-{id:'d6',name:'Chin Tucks',detail:'10 × 5s · daily for FHP'},
+{id:'d5',name:'Dead Hangs',detail:'1 min',skipIfHang:true,paused:true}, /* paused for the right elbow · 4 weeks minimum. Reversible from the daily-block editor; the resume prompt shows on the daily block once the pause is 28 days old. Pull-ups (p1) come back at the SAME review, not before. */
 ];
+/* Chin tucks cut · the only demonstrated outcomes in asymptomatic forward-head populations are surrogates (craniovertebral angle, joint position sense) with no shown transfer to pain, performance or durability, and this app records no neck symptom to treat. Kneeling neck stretches (m25) stay, so cervical work is reduced, not zeroed. */
+/* Routine cut from 29 items to 13 (Aug 2026 review). Three rules drove it:
+   1. DUPLICATES GO FROM HERE, NOT FROM THE DAILY BLOCK. m14/m18/m19 duplicated d4/d7/d8, and m20 is the
+      first half of m19. The daily block runs twice a day and reliably; this list runs about once a week and
+      gets cherry-picked. Cutting the reliable surface to de-duplicate would have been backwards.
+      Consequence: mobMatches() now returns [] for every daily item, so syncMob is a no-op. Left in place
+      rather than deleted, because re-adding a duplicate later should just work.
+   2. ROLLING CUT ON DOSE, NOT ON EFFECT. Foam-rolling TRAINING has a real pooled effect on ROM (~0.82,
+      concentrated in interventions past 4 weeks), statistically indistinguishable from the loaded
+      end-range anchor. So this is not "rolling does nothing", it is eight sites at a once-weekly dose.
+      Kept m02 (doubles as a hands-on symptom read on the injured calf while Gate 3b is live) and m06.
+      m07 duplicated m06, m08 duplicated m28 · one of each pair kept, never both cut.
+   3. NO OUTCOME LITERATURE IN EITHER DIRECTION = OUT, per J's cut-unproven bar: banded dislocations,
+      fire hydrants, scorpions, Cossack squat, cobra (lumbar, so m06 never covered it), child's pose.
+      m21 iron cross KEPT deliberately · it and m31 each duplicated the other, and cutting both would have
+      left zero rotational spine work by accident.
+   m22 'Myo stretch' STAYS PERMANENTLY · it is Vinh Pham's (MyoDetox founder), a friend of J's. Do not
+   propose cutting it again on the grounds that the name does not identify a movement. */
 const mobility=[
 {group:'Roll / Massage Gun',items:[
-{id:'m01',name:'Feet — golf ball · 3 min/foot'},{id:'m02',name:'Calves — foam roller & lacrosse ball'},
-{id:'m03',name:'IT band / quad / adductors · 15 passes/leg'},{id:'m04',name:'SMR glutes · 60s/leg'},
-{id:'m05',name:'Ab smash with med ball'},{id:'m06',name:'Thoracic extension / foam roll back'},
-{id:'m07',name:'Back — ball roll against wall'},{id:'m08',name:'Pecs/shoulders — lacrosse ball + rack stretch'}]},
+{id:'m02',name:'Calves — foam roller & lacrosse ball'},{id:'m06',name:'Thoracic extension / foam roll back'}]},
 {group:'Stretch',items:[
-{id:'m10',name:'Deep squat — 60s'},{id:'m11',name:'Cossack squats — 10/side'},
+{id:'m10',name:'Deep squat — 60s'},
 {id:'m12',name:'Hamstring nerve glides — 10/side'},{id:'m13',name:'Hamstring stretch — 60s/side'},
-{id:'m14',name:'90/90s — 10/side'},{id:'m15',name:'90/90s hip flexor — 10/side'},
+{id:'m15',name:'90/90s hip flexor — 10/side'},
 {id:'m16',name:'Figure 4 stretch — 30s/side'},{id:'m17',name:'Frog stretch — 60s'},
-{id:'m18',name:'Couch stretch — 30s × 2/side'},{id:'m19',name:"World's greatest stretch — 5/side · 5s holds"},
-{id:'m20',name:'Spiderman steps — 5/leg (slow)'},{id:'m21',name:'Iron cross — 5/side'},
-{id:'m22',name:'Myo stretch'},{id:'m23',name:"Child's pose — 60s"},
-{id:'m24',name:'Cobra — 60s'},{id:'m25',name:'Neck stretches (kneeling) — 30s/side'},
-{id:'m26',name:'Diaphragmatic breathing — 2 min'},{id:'m27',name:'Banded shoulder dislocations — 20'},
+{id:'m21',name:'Iron cross — 5/side'},
+{id:'m22',name:'Myo stretch'},
+{id:'m25',name:'Neck stretches (kneeling) — 30s/side'},
+{id:'m26',name:'Diaphragmatic breathing — 2 min'},
 {id:'m28',name:'Doorway stretch — 30s × 3'}]},
-{group:'Optional',optional:true,items:[{id:'m30',name:'Fire hydrants'},{id:'m31',name:'Alternating scorpions'}]},
 ];
 const therapist=[
 {name:'Hip Mobility Series (Lawson McDonald)',note:'General hip compensation clearing',video:'https://www.youtube.com/watch?v=tO_2mB53Bgs'},
@@ -749,60 +763,76 @@ const reference=[
 **Gate 3a · Return to Run · ✓ Cleared (Wk 13-14)**
 - Pass · single-leg heel raises 25-30, full ROM, pain-free. ✓ cleared.
 - Pass · single-leg hops in place 10-20, pain-free. ✓ cleared by 2-5×.
-- Pass · fast running with nothing the next morning. ✓ by your own report — the app was not collecting the next-morning read until now, so this one is recalled, not logged. Gate 3b re-tests it against real data.
+- Pass · fast running with nothing the next morning. ✓ by your own report · recalled, not logged. Gate 3b re-tests it against real data.
 - Honest note, because it changes what these mean: (a) and (b) were general-population floors, not athletic marks. 25-30 single-leg heel raises is about the age-matched median for an active adult male, and reps-to-failure correlate essentially zero (r = -0.005) with maximal plantarflexion torque · it is a fatigue test wearing a capacity test's clothes. The hop number is level 4 of 6 on the ladder it comes from, dosed in 30-60s sets, so 30-50 reps is not even one set at that rung. Clearing them means the floor is behind you, not that the calf is strong.
 **Gate 3b · Loaded Capacity · NEXT TARGET**
 - The one real gate. Everything Gate 3 was reaching for lives here, expressed as load instead of reps.
 - Pass · deficit single-leg calf raise: 5-6 controlled full-ROM reps at ~55 lb added (0.3 × bodyweight at 185 lb), right side, 0/10 pain, calf normal next morning.
-- ⚠ THE DEFICIT IS PROVISIONAL. Get it palpated this week: insertion, midportion, MTJ, or belly. If the symptom sits at the calcaneal INSERTION, a loaded deficit raise with a 3s eccentric is close to the worst available exercise for it (insertional cases: ~67% satisfied on floor-level work vs ~32% on full-dorsiflexion protocols) and the deficit comes out that day · drop to floor level, keep the load and the tempo. In the other three, the deficit stays and is correct. The load is quadrupling, so this question is worth more now than it was at 15 lb.
+- ✓ PALPATED Aug 2 2026 · MIDPORTION / muscle belly. The loaded deficit is confirmed correct and the insertional branch is closed. (Had it come back at the calcaneal insertion, the deficit came out that day and the raise dropped to floor level, load and tempo kept.)
 - Built over 8-12 weeks and never tested as a max. You arrive at the number by training to it; the last working set of the block is the test.
-- Pass · bent-knee (soleus-bias) capacity: 3 × 10-12/leg strong and controlled, built over weeks. This is the position every published benchmark is specified in and the one criterion never actually trained.
-- Pass · 0/10 pain during fast reps, settled inside 24h, calf normal the next morning · two clean cycles running, not one. The app now collects both halves: tap calf pain in the sprint window, answer the next-morning check on Today.
+- Pass · bent-knee (soleus-bias) capacity: 3 × 10-12/leg strong and controlled, built over weeks. This is the position every published benchmark is specified in. It runs on B days (Wed + Sat), so it is being trained at the gate dose twice a week.
+- Pass · 0/10 pain during fast reps, settled inside 24h, calf normal the next morning · two clean cycles running, not one. Both halves are collected: tap calf pain in the sprint window, answer the next-morning check on Today.
 - ⚠ Symmetry caveat: your injured leg was your dominant leg, so left-right comparison overstates recovery. Judge by absolute capacity, your own pre-injury baseline, and symptoms · not LSI.
 - Attribution, honestly: the 8-12 week build and the ~0.3 × bodyweight target are clinical convention, not trial-derived. Your physio sets the final number and says whether it means added or total load, and how it should be carried given the right shoulder.
 **Weekly self-test · 3 minutes, Monday morning**
-- Single-leg heel raise to failure, deficit, metronome 30/min, injured side first. Log both sides. Then the same bent-knee.
-- Back off if the injured side drops more than 5 reps from that leg's own rolling best, or the gap between legs widens more than 5 vs last week.
-- Compare each leg to itself over time, never to the other leg.
-**Live now (was "after Gate 3")**
-- Fast calf raises · 3 × 10 light and crisp before the heavy raises, metronome ~132bpm. Speed-of-contraction bridge.
+- Single-leg heel raise to failure, deficit, metronome 30/min, injured side first. Then the same bent-knee.
+- Back off if the injured side drops more than 5 reps from that leg's OWN rolling best. Compare each leg to itself over time, never to the other leg · the old left-right gap rule contradicted both that line and the symmetry caveat above, so it is gone.
+- The app has no field for these numbers, so write them somewhere you will find again. This and the next-morning read are the only symptom checks covering Monday and Thursday · the automatic one only fires the morning after a sprint.
+**Live now**
+- Fast calf raises · 3 × 10 light and crisp, now carded as the warm-up ramp into the heavy raises rather than as counted volume. The old "speed-of-contraction bridge" framing and the ~132bpm metronome figure were both unsourceable and are gone.
 - Friday calf primer · ~40-60 contacts before sprints, while fresh. Low pogos, stiff ankle, toes up. Stop when the contacts get loud.
 - 15-20 single-leg hops stay in place as a permanent pre-sprint probe. Not training · a 20-second symptom check. Hop pain and heel-raise pain measure different things.
-- Right-side hip/glute hinge is live: single-leg RDL 3 × 8-10/leg on B days (Wed + Sat). The proximal chain carries ≈30% of plantarflexion force, this addresses the R-soleus overload chain, and it is the highest-value item here for mobility and posture.
-- Box jump CHECK (test, not training): 5 bilateral onto ~30cm + 5 unilateral onto 15-20cm. Judge absolute capacity, not symmetry. Still never performed · run it at the next physio visit.
-- Easy running opens on its own gate, not behind a sprint percentage · see the Easy Running card. Separate day, short reps with walk breaks first, then minutes, capped at 20. Never within 48h of sprints.
+- Right-side hip/glute hinge is live: single-leg RDL 3 × 8-10/leg on B days (Wed + Sat). It shares load across the posterior chain and trains right-side single-leg control, which is the point of it. (The old "the proximal chain carries ≈30% of plantarflexion force" line could not be traced to any source and was mechanically incoherent as phrased · removed, same as the untraceable soleus figure in the Sources card. The exercise stands without it.)
+- Loaded 90/90 hold + lift-offs · 3 × 5/side on A days, plate at the chest. The mobility thread's first loaded, logged, progressible entry. Loaded end-range work is the one mobility modality with a real effect anchor, and it is load-dependent, so the plate is the active ingredient, not the position.
+- Running is sprints and speed endurance ONLY · nothing continuous, ever. Ceiling of 400m in any single rep, and that is an outer bound rather than a target. Zone 2 is the bike or the pool. Speed endurance past 150m waits behind Gate 4 and the bent-knee capacity check, because running fast while fatigued is the exact exposure a healing soleus tolerates worst.
 **Gate 4 · Return to Sport · Full Return · Wk 20-24**
 - Pass · pain-free maximal sprint.
 - Pass · pain-free max hopping / jumping, clean landings.
 - Pass · one full week symptom-free.
-- Running volume is the LAST box for a calf, not the first · soleus is most vulnerable once fatigued, so endurance tolerance is what you tick on the way out. (This is the opposite of a hamstring, where intensity is the risky frontier.) Hold the 20-minute cap; a 100/200m sprinter has no sport reason to own more, and every minute past it is added soleus exposure for zero return.
+- Running endurance is no longer a box on this gate. Aug 2026: continuous running is out of the program permanently, by choice · zone 2 moved to the bike and the pool. The reasoning it rested on still holds and still governs speed endurance: soleus is most vulnerable once fatigued, which is the opposite of a hamstring, where intensity is the risky frontier.
+- Speed endurance opens HERE, not before, and only then up to the 400m rep ceiling. Special Endurance I at 150m is the bridge.
 - Single-leg hops → continuous → triple hops. Reactive, sport-specific top of the ladder.
 - True max sprint · full send. Block starts resume LAST.
 - Keep loading the calf even after performance returns · stopping is the other leading recurrence cause.
 - Stretch goal, untraceable: the "~5-rep-max at ~50% bodyweight added" number could not be traced to any source. Published figures run from 0.3 × BW added to 1.5 × BW total, none specifying added vs total or single vs bilateral · a factor-of-five disagreement. Treat it as an aspiration, never as a gate.
-- 1 week full training per 2 weeks missed.`},
+- 1 week full training per 2 weeks missed.
+**Ask the physio · the open list**
+- Box jump check: 5 bilateral onto ~30cm + 5 unilateral onto 15-20cm, judged on absolute capacity not symmetry. It lived in this app for months and was never once performed, and nothing here can log it, so it belongs at a visit rather than on a card. It measures something nothing else does · a bilateral-versus-unilateral power comparison. The thresholds carry no source.
+- The right elbow, at the 28-day review: does it tolerate hanging again? Pull-ups and dead hangs both come back on that answer and neither before it.
+- Freestyle stroke rule for the right shoulder before the pool becomes the aerobic engine in October.
+- How the ~55 lb should be carried on the deficit raise, now that the right shoulder is cleared.`},
 {t:'Sprint Program',b:`**By feel · 1×/week (Friday) · build top speed first, extend later · 100m now, 200 later (track available).**
-Speed is the anchor you enjoy, not a number to chase. Your **season** (the quarterly dial in Program) sets the mood; on a sprint day you pick one option from that season's short menu. Nothing auto-advances, you choose what fits the day.
+Speed is the anchor you enjoy, not a number to chase. Your **season** (the quarterly dial in Program) sets the mood; on a sprint day you pick one option from that season's short menu. Nothing auto-advances, you choose what fits the day. All chips are equal · there is no suggested default and no highlighted pick.
+**Running is exactly two things now** (Aug 2026)
+- Sprints, and later speed endurance. Nothing continuous, ever. Ceiling of **400m** in any single rep, and that is an outer bound, not a target.
+- Zone 2 is the bike or the pool. Running is no longer an aerobic modality in this program at all.
+**About the season dial, honestly**
+- You are on **Speed**, and have been since a migration set every existing install to it. That is the only menu carrying the near-max picks, and your calf floor is banked, so max-velocity fly, acceleration and Special Endurance I are all unlocked right now.
+- The dial does not cap anything. The effort field is a free stepper, so no season has ever prevented a 95% Friday. It picks which four chips you see, nothing more.
+- Three of the fourteen chips repeat another season's numbers, but none repeats its NAME: the same dose carries a different intent in a different season (a 4 × 20m @ 80% is "short technical acceleration" in Build and "maintenance acceleration" in Lean). That is the dial working, not redundancy. Flattening the four menus into one was considered and rejected Aug 2026.
+- The one label that is genuinely wrong is **Lean**, named after a goal that was dropped as a training goal (leanness is ~80% diet). What that season actually describes is pool-forward maintenance, which is exactly the Hua Hin mode · rename it at the move rather than deleting it.
 **The seasons**
 - **Build**: legs are heavy in the gym, so sprint stays low-CNS. Run-throughs, short accels, extensive tempo. Nothing over 80%.
 - **Speed**: legs light, sprint peaks. Sub-max fly is the always-open pick; max-velocity fly, acceleration, and Special Endurance I are near-max and gated (one hard pick a week). 95% working ceiling; true all-out is a rare in-taper time-trial only.
 - **Reset**: deload. Movement-quality flow, easy run-throughs. All sub-75%.
 - **Lean**: pool-forward maintenance. One light accel to hold fast-twitch; the rest optional.
 **The calf gate (the one hard rule)**
-- No true near-max (>90%) until ~8 weeks of fast running are banked; the near-max picks stay locked until then. The clock counts weeks you actually ran fast, easy days don't count.
+- No true near-max (>90%) until ~8 weeks of fast running are banked; the near-max picks stay locked until then. The clock counts weeks you actually ran fast, easy days don't count. **This gate is currently OPEN.**
 - Clean = 0/10 pain during fast reps, settled in 24h, calf normal next morning. Pain or a "faded" day drops you to an easier pick or the easy fallback.
-- Most meters when slow, fewest at top speed · that describes the shape of a single sprint session (warm-up, run-throughs, build-ins), not a case for continuous easy volume. Easy running is dosed on its own day and capped · see the Easy Running card.
+- Stop signs, kept from the deleted Easy Running card: next-morning stiffness worse than baseline that doesn't clear in ~10 min of walking, a heel-raise count dropping below your own recent numbers, and above all any cramping or "grabbing" · that is how soleus recurrences characteristically announce themselves. Pre-run stiffness on its own is not a warning sign.
+- Most meters when slow, fewest at top speed · that describes the shape of a single sprint session (warm-up, run-throughs, build-ins), not a case for continuous easy volume. That is why the shape survived when continuous running did not.
 **Every Friday**
 - Sprint-only through the calf window (heavy lower lift sits on Monday).
 - Warm up, readiness check, ramp in (70→80→top).
 - Full recovery (rest till springy) · stop when form breaks · float down, never brake hard.
 - Flat day? Tap the easy run-through fallback, the trip's never wasted.
-**Later, 200m**
-- Speed first; you can't hold a speed you haven't built. Special Endurance I (in Speed) is the 200 bridge: controlled, gated, optional. Defer a real 200 push until Sprint work is months-clean and a bent-knee (soleus) capacity check passes.`},
+**Later, 200m and speed endurance**
+- Speed first; you can't hold a speed you haven't built. Special Endurance I at 150m is the bridge: controlled, gated, optional. Defer a real 200 push until Sprint work is months-clean and a bent-knee (soleus) capacity check passes.
+- Anything past 150m waits for Gate 4. Speed endurance IS running fast while fatigued, which is precisely the state a healing soleus tolerates worst, so the 400m ceiling is a destination and not an option on today's menu.`},
 {t:'Sprint Rationale & Sources',b:`**Short-to-long; build max velocity then extend it; polarize intensity — fast (≥95%) or easy (<70%), not chronic medium tempo.** Haugen et al., elite sprint development review. [Sports Med Open](https://pmc.ncbi.nlm.nih.gov/articles/PMC6872694/)
 **Volume before intensity — most meters at low effort, fewer as speed rises; progress on soreness, not rep counts** (50%/1:3 → 75%/1:5 → 90-100%/1:7). [Return to sprinting after injury](https://pmc.ncbi.nlm.nih.gov/articles/PMC7134353/)
 **Read that line as WITHIN a session, not across the plan.** It describes how one sprint day is built (warm-up, run-throughs, build-ins, then the fast reps). It is NOT an argument for banking continuous easy running first — for a soleus, running volume is the LAST box, not the first, because soleus is most vulnerable once fatigued. That is the opposite of a hamstring, where intensity is the risky frontier. Getting these two backwards is where the felt contradiction in this app came from.
-**~8-week floor before near-max** — the floor is a starting line, not a finish. ~13-21% recur over 2 years. **Corrected framing: you are inside the high-risk window, not past it.** In the AFL registry (563 calf strains), restricted to post-recovery injuries, the 2-6 month bucket is the LARGEST (30.9-32.3%) against 19.7-22.5% for 0-2 months, and that clock runs from injury date. You are ~13-14 weeks out with 8+ weeks of fast running banked, which puts you SQUARELY INSIDE that 2-6 month bucket, not approaching it. The gate opening was the app running out of things to protect you from, not the risk passing. [Calf strains review](https://link.springer.com/article/10.1186/s40798-025-00960-4) · [AFL recurrence](https://pmc.ncbi.nlm.nih.gov/articles/PMC12410626/)
+**~8-week floor before near-max** — the floor is a starting line, not a finish. ~13-21% recur over 2 years. **Corrected framing: you are inside the high-risk window, not past it.** In the AFL registry (563 calf strains), restricted to post-recovery injuries, the 2-6 month bucket is the LARGEST (30.9-32.3%) against 19.7-22.5% for 0-2 months, and that clock runs from injury date. As of Aug 2 2026 you were past week 14 with 8+ weeks of fast running banked, which puts you SQUARELY INSIDE that 2-6 month bucket, not approaching it. The gate opening was the app running out of things to protect you from, not the risk passing. (Dated on purpose · the old line hardcoded "~13-14 weeks", which was already stale the week it shipped, and this app holds no injury date to compute from.) [Calf strains review](https://link.springer.com/article/10.1186/s40798-025-00960-4) · [AFL recurrence](https://pmc.ncbi.nlm.nih.gov/articles/PMC12410626/)
 **Soleus gate before 200/400** — the old line here ("~90% of recurrent calf strains are soleus") could not be traced to any source and has been removed, and the link that sat beside it was never its source. What IS supported: across 8 seasons of an elite track & field cohort (Kelly et al.), soleus carried the highest incidence, the highest burden and the highest recurrence of any calf structure. Loaded most under fatigue. **No link here on purpose** — that paper is not the one linked below, and a citation is worth nothing pointing at the wrong place.
 **What the linked calf paper actually is** — Green et al. 2022, in-depth interviews with 20 expert sports clinicians. Practice and perspective, not epidemiology. It is the source for most of the return-to-running judgement in this app, and it is Level 5 evidence. [Green et al. · 20 expert clinicians](https://pmc.ncbi.nlm.nih.gov/articles/PMC8761182/)
 **Fast running is NOT calf-sparing** — peak soleus force RISES with speed, up to ~7 m/s. Friday's sub-max flys are the highest per-step soleus load of the week; the only thing protecting you is how few of them there are. What makes long slow running the larger exposure is stride count and accumulated fatigue, since soleus work per stride is roughly flat across speeds. Dose the calf in strides, not in heart rate.
@@ -810,65 +840,30 @@ Speed is the anchor you enjoy, not a number to chase. Your **season** (the quart
 **Post-session "feels fine" is not a safety signal** — exercise raises local pressure-pain thresholds 15-20% for 5-30 minutes, so the read straight after a session is partly analgesic artifact. Expert clinicians explicitly do not use symptom-free running as a calf clearance guide; the reported failure mode is "good, good, good, then no good," with no prodrome. The next morning is the honest read, which is why the app now asks for it.
 **Absolute injured-leg gate, not L/R symmetry** — your injured calf is your dominant (stronger) side, so symmetry overstates recovery. [Calf rehab](https://e3rehab.com/calf-muscle-strain-injury/)
 **One sprint day, high-low week** — equal-volume 1×/week matched 2× for speed/power (under-delivers for endurance — matters if you push the 400). [1× vs 2×](https://pubmed.ncbi.nlm.nih.gov/34079162/) · [high-low](https://www.sprintcoach.com/blog/revisiting-the-high-low-concept-of-training)
-**"Stop when form breaks"** — technique degrades before measurable speed (~3-4% velocity drop-off). [VBT autoregulation](https://www.outputsports.com/blog/autoregulation-with-velocity-based-training)
+**"Stop when form breaks"** — technique degrades before measurable speed does. The "~3-4% velocity drop-off" figure that sat here was removed Aug 2026: the page it was cited to contains no such number, and the only threshold on it is a 10% velocity loss for ending a BARBELL set, which is a different construct. Same failure as the "28% power loss" claim removed earlier. The rule needs no number and you measure no velocity anyway.
 **Honest caveats**
 - One Friday can't reach the weekly max-velocity "protective dose" — safety rests on per-rep quality + the pain gate + your year-round strength/plyo base.
 - The 1×-vs-2× study was youth soccer, not a returning masters sprinter — directional, not exact.
 - Scheduling, deload rhythm, and by-feel cues are coaching convention, not RCT-proven for your profile.
 - Most of the return-to-running guidance here is **Level 5 expert opinion** (clinician consensus surveys), not trial evidence. It is the best available for a soleus strain and it is still opinion.
 - The 8-12 week build and the ~0.3 × bodyweight capacity target are clinical convention. Your physio owns the final number.`},
-{t:'Easy Running',b:`**Opens now, on its own gate · capped at 20 minutes.** A small second running day, not a zone-2 habit. The bike stays the aerobic engine so running stays a tissue-exposure dose, not a cardio dose.
-**Why it opens now and not after 95%**
-- You half-remembered this right, and right about the part that mattered. The actual finding was never a ban on easy pace: prolonged slow continuous jogging is a poor choice EARLY in soleus rehab, and calf endurance is the last box ticked rather than the first. Short easy reps with walk breaks were the recommended entry modality all along.
-- The mechanism you absorbed is wrong, and the correction matters. Faster running does not offload the calf · peak soleus force rises with speed up to ~7 m/s. Friday's sub-max flys are the highest per-step soleus load of your week.
-- What makes long slow running the bigger exposure is stride count and accumulated fatigue. Soleus work per stride is roughly flat across speeds, so a 25-minute jog is several thousand soleus contractions against a few hundred in an entire Friday session. Dose the calf in strides, not in heart rate.
-- At 13-14 weeks, sprinting fast with nothing after, you are past the early phase the caution governs. The app's sprints-before-jogging ordering was right for a soleus injury and has now done its job · it should dissolve, not invert.
-**The rules**
-- Monday or Tuesday. Never within 48h of Friday. Never two days running.
-- Never progress running volume and sprint intensity in the same week.
-- Comfortable and springy, quick light steps. Do NOT deliberately shuffle slowly · a slow shuffle with a long overstride is exactly the profile the caution is about.
-- Firm even surface, same shoes. Everything in time, never distance · time self-limits in heat and there are no measured routes in Hua Hin.
-**The ladder**
-|Week|Session|
-|1|8 × (1 min jog / 1 min walk)|
-|2|8 × 1.5 min|
-|3|6 × 2.5 min|
-|4|HOLD · repeat week 3|
-|5|4 × 4 min|
-|6|2 × 8 min|
-|7|15 min continuous|
-|8|HOLD · repeat week 7|
-|9|18 min|
-|10|20 min · THE CAP|
-Week 7 is less jog time than week 6 on purpose · removing the walk breaks is itself the progression. Hold at 20 minutes through the move.
-**Stop rules**
-- Regress one week and repeat it. Never push through.
-- Calf pain during a run · distinct from the pre-run stiffness, which is not a warning sign.
-- Next-morning stiffness worse than baseline that doesn't clear in ~10 min of walking.
-- Heel-raise count dropping below 20, or below your own recent numbers.
-- Any cramping or "grabbing" · that is how soleus recurrences characteristically announce themselves.
-- A missed session is never made up. If Friday ever feels off, the easy day is what gets cut · never the sprint day.
-**The move (October)**
-- If the disruption exceeds 4 weeks, do NOT resume at 20 min. Resume at week 5 and rebuild.
-- The first run back must be no longer than the longest run of the previous 30 days.
-- Arrival changes surface, heat, humidity, shoe wear and sleep all at once. Run at dawn; expect the same duration to cost more.`},
-{t:'Plyometric Progression',b:`Earn the right to be reactive by first proving you can absorb. Count contacts not sets · start ~40-60 quality contacts, increase ≤10-20%/wk. Stop when the contacts get loud.
+{t:'Plyometric Progression',b:`Earn the right to be reactive by first proving you can absorb. Count contacts not sets · start ~40-60 quality contacts. **Stop when the contacts get loud** · that rule is self-limiting at once-weekly frequency and is what actually governs the session. (The old "increase ≤10-20%/wk" ceiling was removed Aug 2026: no trial supports it, and the analogous 10%-per-week rule for running volume was tested directly and came back null.)
 A low-contact primer immediately BEFORE sprints is potentiation, not a collision · that is where it lives now. The old "never back-to-back with sprint work" rule was written for a separate standalone plyo session, and that is still true of one.
+The four rungs that are also carded exercises (heavy deficit raises, bent-knee raises, fast calf raises, pogos) live on their own cards with fuller cues · this table is the map, not the prescription.
 |Stage|Exercise|Gate|Notes|
-|Base|Heavy deficit raises|Now|4 × 6-8/leg · 1s up, 3s down · building to ~55 lb|
-|Base|Bent-knee calf raise|Now|3 × 10-12/leg · knee ~90° · specificity and load-sharing, NOT more soleus|
-|Bridge|Fast calf raises|Now|Light, crisp · speed of contraction|
-|1|Stick landings|Now|Absorption / eccentric brake · folded into the Friday primer|
+|1|Stick landings|Now|Absorption / eccentric brake. NOT currently in the Friday primer · the primer is pogos plus the hop probe. This row is the only place the absorption rung is written down.|
 |2|Pogos (bilateral)|Now|Low, stiff ankle, toes up · the primer's main contacts|
-|Test|Box jump check|Now|Readiness test, not training · still never performed|
-|3|Low horizontal bounds|Now|Distance before speed · add only once pogos stay quiet|
+|3|Low horizontal bounds|After Gate 3b|Distance before speed · add only once pogos stay quiet. Not in the Friday primer, and not to be added to it · pre-sprint stays CARs and crisp patterns only.|
 |4|Single-leg → triple hops|Gate 4|Reactive, sport-specific|`},
 {t:'Parked & Cut',b:`**Parked for the calf** — nothing. Gate 3a cleared and the reactive ladder opened with it. The old entry here waited on a rep count, which turned out to be the wrong thing to wait on.
-**Parked for the right shoulder** (a separate issue, unchanged)
-- Pull-ups, med-ball slams, sprint-day throws. Revisit at weekly PT.
-- Landmine rainbows · never shipped. Two hands, long lever, end-range overhead arc with momentum at the turnaround · the same pattern the med-ball slams are parked for. Pallof press carries the anti-rotation job on Day A meanwhile. Un-park when slams do.
+**The right shoulder · ✓ CLEARED Aug 2026, park lifted**
+- Med-ball slams, sprint-day throws and decline push-ups are back on. Landmine press is both arms again. The coaching frame that drove the park was right and is worth keeping: the risky axis was never push-versus-pull, it was loaded × end-range × ballistic.
+- Decline push-ups (s2) had been switched off inside a migration with no note anywhere · that is why nothing here explained them. Back on, and now they are the only right-side pressing in the week.
+- Landmine rainbows · still never shipped, now eligible rather than parked. The Pallof press is no longer standing in for them, it holds Day A's anti-rotation slot on its own merit.
+- **Pull-ups are the exception and are still OFF.** Not for the shoulder. See below.
 **Parked for the right elbow**
-- Dead hangs · out of the daily block, 4 weeks minimum. Hanging leg raises moved to ab straps in the same breath, so nothing in the week hangs the elbow off a bar any more.
+- Dead hangs · out of the daily block, 4 weeks minimum. Hanging leg raises run on ab straps, so nothing in the week hangs the elbow off a bar.
+- **Pull-ups (p1) are held here now, not under the shoulder.** The shoulder cleared them; a pull-up still hangs the elbow off a bar, which is exactly the exposure this protocol removed. They come back at the 28-day elbow review, in the same edit that resumes dead hangs. Un-parking one without the other would leave the app contradicting itself.
 **Nerve flosses · cut Jul 2026 after an evidence review**
 Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then stops. Nobody has studied daily flossing sustained for months, and nobody has studied flossing an asymptomatic limb to prevent or maintain anything. Not weak evidence, no studies.
 - Median floss, both sides · no symptoms to treat and no prophylaxis literature of any kind. Harmless, so this is a time decision, not a safety one.
@@ -883,8 +878,12 @@ Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then
 **Cut** — bad risk/reward or no sprint value.
 - Depth / drop jumps (shock method) · needs near-full reactive capacity + clean landings; tendon-lag tail bites hardest.
 - Tuck jumps · no value over pogos + bounds.
-- Box jumps as training · keep only as the readiness test.`},
-{t:'Elbow Protocol',b:`Isometric holds on the right elbow, Mon + Thu, first thing in the session. Nothing else in the week loads the elbow off a bar: dead hangs are paused and hanging leg raises run on ab straps.
+- Box jumps as training · the readiness test they were kept for has moved to the physio list at the foot of Phase Gates. It sat in this app for months, was never once performed, and nothing here could log it.
+- Continuous running, all of it · cut Aug 2026 by choice, not by injury. The 10-week Easy Running ladder went with it, having never started a single session in its entire life. Running is sprints and speed endurance only, 400m ceiling. Zone 2 is the bike and the pool.
+- Chin tucks · surrogate outcomes only (craniovertebral angle, joint position sense) with no shown transfer to pain, performance or durability, and no neck symptom recorded here to treat. Kneeling neck stretches stay, so cervical work is reduced rather than zeroed.
+- Weighted decline sit-ups · third trunk movement on a day that already ran two, hip-flexor dominant like the hanging leg raise it sat beside, and its one distinguishing feature was external load, which is explicitly not how muscle retention progresses here.
+- Sixteen mobility-routine items · see the note in the code beside the routine. Duplicates were cut from the WEEKLY list rather than the twice-daily block, on the grounds that you cut from the surface with the adherence problem, not the one that works.`},
+{t:'Elbow Protocol',b:`Isometric holds on the right elbow, Mon + Thu, first thing in the session. Nothing else in the week loads the elbow off a bar: dead hangs are paused, hanging leg raises run on ab straps, and pull-ups stay off until the review below even though the shoulder that originally parked them is now cleared.
 
 **The prescription**
 - 3 × 30-45s, ~70% effort, 90s rest. Elbow ~90°, upper arm pinned to the ribs, pulling into something immovable · rack pins set low, or the opposite hand.
@@ -907,31 +906,31 @@ They are logged separately on purpose. Averaged into a single pain score they ca
 - Sustained grip in a flexed elbow is mechanically "holding a tool in position", the one biomechanical predictor of ulnar entrapment that reached significance in repetitive workers. That is why the hold is 90° and a loose hook grip. Control the position, don't drop the intensity.
 
 **The ulnar floss · slider, not tensioner**
-A slider moves the nerve about twice as far at roughly an eighth of the strain. Elbow and wrist move in **opposite** directions, no end-range hold, no shoulder depression. Most lay floss demos teach a tensioner.
+A slider moves the ulnar nerve at the elbow more than twice as far as a tensioner (8.3 vs 3.8 mm, Coppieters & Butler 2008), at much lower strain. Elbow and wrist move in **opposite** directions, no end-range hold, no shoulder depression. Most lay floss demos teach a tensioner. (The old "roughly an eighth of the strain" figure was corrected Aug 2026 · that pair was measured on the MEDIAN nerve at the WRIST. The direction was right, the ratio was borrowed from a different nerve at a different site.)
 It is not dangerous: ordinary maximal elbow flexion loads that nerve two to three times harder than any floss does, so do not start avoiding normal elbow movement. It simply has no demonstrated benefit: the only 6-month randomised trial in this exact condition found nerve gliding did nothing that education alone did not.
 
-**Floss withdrawal test · starts after the 28-day review**
-Days 1-28 change nothing, so the review reads against a clean baseline. Then:
-- Right ulnar floss to zero for 4-6 weeks. One long withdrawal, not short alternating blocks, because months of daily practice will not wash out in a fortnight. Hold the isometrics and the no-hanging rule frozen throughout.
-- Then reintroduce at the identical dose for 14 days.
-- **Decision rule, committed in advance:** jolts have to drop clearly while the floss is out **and** come back when it returns. Anything less and it stays cut. Write the call down before the block starts, or the goalposts move.
-- Why the reintroduction leg carries the whole inference: roughly 88-90% of mild-to-moderate cases of this improve within 6 months no matter what anyone does. A before/after read on its own is close to worthless here.
-- Your 0-10 ache has a minimal detectable change of about 1.4 points at the elbow, so any block-to-block ache difference under that is noise. **The jolt count is the better instrument.** Don't buy a grip dynamometer: grip is the wrong muscle group for this nerve and its measurement error swamps anything you could detect.
+**The floss withdrawal test · CUT Aug 2026**
+The 10-week protocol that sat here (4-6 weeks off, 14 days back on, decision rule committed in advance) was a well-designed personal experiment aimed at a question that is already answered. Spending ten weeks to re-derive a published null is the most expensive available route to it, and the Parked & Cut card applied exactly this reasoning to every other floss already.
+- What it was going to find: roughly 88-90% of mild-to-moderate cases improve within six months even on nothing more than advice about positions to avoid. The daily right ulnar floss (d2) is untouched by this and stays · that is a separate decision about a daily ritual on a symptomatic nerve, not about the experiment.
+- Worth keeping from it: your 0-10 ache has a minimal detectable change of about 1.4 points at the elbow, so any block-to-block ache difference under that is noise. **The jolt count is the better instrument.** Don't buy a grip dynamometer: grip is the wrong muscle group for this nerve and its measurement error swamps anything you could detect.
 
 **Review at 28 days** from the first logged session · ache trend, cumulative jolts, gate status. It surfaces on the elbow card in Trends.`},
 {t:'Timeline',b:`- **Wk 5-6 · Cleared** — Gate 1, Phase 3. Seated calf raises began.
 - **Wk 8 · Cleared** — Gate 2, Phase 4. Deficit calf raises. BSS. Sprint run-throughs begun.
 - **Wk 13-14 · Cleared** — Gate 3a, return to run. Fast running clean; heel-raise and hop floors cleared (they were floors).
-- **Gate 3b · Target** — loaded capacity. An 8-12 week build to ~55 lb on the deficit raise. Plyo primer, bent-knee work, single-leg RDL and capped easy running all run alongside it.
-- **Wk 20-24 · Sep-Oct** — Gate 4, full return. Max velocity. Block starts last. Arrive Hua Hin rebuilt.`},
+- **Gate 3b · Target** — loaded capacity. An 8-12 week build to ~55 lb on the deficit raise. Plyo primer, bent-knee work and the single-leg RDL run alongside it.
+- **Aug 2 2026** — palpated midportion, so the deficit stays. Right shoulder cleared by the physio, so slams, throws, decline push-ups and both-arm pressing come back. Continuous running dropped by choice. Programs reviewed and cut.
+- **Aug 2026, before the move** — prove the deficit-raise loading vehicle at ~30 lb while there is still a fallback in the room. The build's heaviest third lands on the far side of October, and a carry method that changes mid-build breaks it at the worst point.
+- **~Aug 25 · 28-day elbow review** — ache trend, cumulative jolts, Gate E1. Pull-ups and dead hangs both come back on this answer, together or not at all.
+- **Wk 20-24 · Sep-Oct** — Gate 4, full return. Max velocity. Speed endurance opens here, 400m ceiling. Block starts last. Arrive Hua Hin rebuilt.`},
 {t:'How the Tear Heals',b:`**Phase 1 — Destruction · Hours 0-48.** Torn fibers retract. Hematoma forms scaffold. Neutrophils (hrs 1-24), macrophages (hrs 24-72) secrete growth factors activating satellite cells.
 **Phase 2 — Repair · Days 3-21.** Satellite cells fuse into myotubes bridging the gap. Fibroblasts lay Type III collagen — weak, disorganized. Grade II gap too large to fully bridge; scar fills the rest.
-**Phase 3 — Remodeling · Weeks 3-6+ months.** Type III → Type I collagen, organized along stress lines. Concentric = moderate stress. Eccentric = highest demand — remodeling stimulus if mature, re-tear if too early.
+**Phase 3 — Remodeling · Weeks 3-6+ months.** Type III → Type I collagen, organized along stress lines. Concentric = moderate stress. Eccentric = highest demand — remodeling stimulus if mature, re-tear if too early. **You are past this** · Gate 3a is cleared and 3s eccentrics at load are the current prescription, not a caution.
 **Why re-tears happen.** Scar is stiffer than original muscle. The junction between scar and healthy tissue is the weakest link — re-tears happen at the margins. Bulletproofing = surrounding tissue strong enough that the junction never sees failure-threshold forces.`},
 ];
 return{
 schemaVersion:1,
-contentRev:25,
+contentRev:26,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0,hangPausedAt:0}, /* hangPausedAt 0 · the resume clock falls back to meta.created on a fresh install (see hangResumeDue), so it is never measured against undefined */
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -959,6 +958,13 @@ const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec
 const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/></svg>';
 const KG=0.45359237;
 const SPRINT_FLOOR_WEEKS=8; /* no true near-max (>90%) until this many weeks of fast running are banked (calf peak-recurrence window) — read by sprintGateOpen() */
+/* Checks that belong to the SPRINTS section, not to Cardio + Mobility. t_cardio serves BOTH the Friday
+   sprint day and the deliberately fasted Tuesday recovery day, so anything not listed here renders on
+   Tuesday too. That is how a plyometric calf primer once came within an inch of landing on the fasted
+   recovery day. This was a two-id literal duplicated across four call sites; it is one constant now, so
+   adding a sprint-day check means adding its id HERE as well as to the template. */
+const SPRINT_CHECK_IDS=['mbt','cl'];
+const isSprintCheck=c=>!!c&&SPRINT_CHECK_IDS.includes(c.id);
 /* ── Training engine · seasons + day-tap load map. Season is the one quarterly dial (manual pick · no thermal winter in Hua Hin). LOAD_MAP turns the day post-tap into a session-RPE for the weekly load metric. ── */
 const SEASONS={build:{name:'Build',cal:'Spring',ds:'heavier resistance, legs included · 3 hard days'},speed:{name:'Speed',cal:'Summer',ds:'sprint peak · legs light'},reset:{name:'Reset',cal:'Fall',ds:'built-in deload · movement quality'},lean:{name:'Lean',cal:'Winter',ds:'pool volume up · stay lean'}};
 const LOAD_MAP={springy:7,normal:6,flat:5,stop:4};
@@ -971,7 +977,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=25)return;
+let cr=DB.contentRev||0;if(cr>=26)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -1141,7 +1147,10 @@ if(cr<21){
  const _CNOTEOLD=/ Volume before intensity\.$/;
  (DB.programs||[]).forEach(p=>{
   if(p.subtitle==='Phase IV · rebuilding · Gate 3 next')p.subtitle='Phase V · loading · Gate 3b next';
-  /* Easy Running is a NEW card · patchRef only updates cards that already exist, so insert it after the sprint sources (or append if that card was removed). */
+  /* Easy Running was a NEW card at this step · patchRef only updates cards that already exist, so insert it after the sprint sources (or append if that card was removed).
+     DEAD SINCE cr26: the card was cut from the seed when continuous running left the program, so `fr` is
+     undefined and this whole block is a no-op. Left in place rather than deleted so the step sequence for
+     an old install still reads in order. */
   if(p.reference&&!p.reference.some(r=>r.t==='Easy Running')){
    const fr=(fp.reference||[]).find(r=>r.t==='Easy Running');
    if(fr){const ri=p.reference.findIndex(r=>r.t==='Sprint Rationale & Sources');
@@ -1318,6 +1327,83 @@ if(cr<25){
  patchRef('Parked & Cut');   /* carries the cut list and the lunge-test gate */
  patchRef('Elbow Protocol'); /* carries the slider cue, the off-the-mat items and the withdrawal test */
  cr=25;
+}
+if(cr<26){
+ /* Aug 2026 program review · reasoning for every cut lives on the Parked & Cut card.
+    - Right shoulder CLEARED by the physio: med-ball slams, sprint-day throws and decline push-ups un-park,
+      landmine press goes back to both arms. Pull-ups do NOT: they still hang the elbow off a bar, which is
+      the one exposure the elbow protocol removed, so they wait for the 28-day review with dead hangs.
+    - Palpation came back MIDPORTION, so the deficit raise is confirmed and its provisional branch is dead.
+    - Continuous running dropped by choice, so the Easy Running card goes with it.
+    - Face pulls and fast calf raises become warm-ups. Both were already being performed that way, and as
+      counted sets they were inflating the Trends hard-set band for rear delts, cuff and calves.
+    - Mobility routine cut 29 items to 13, taking duplicates out of the WEEKLY list rather than the
+      twice-daily block. Side effect, deliberate: mobMatches() now finds nothing, so syncMob is a no-op.
+    - New h90 entry is the first loaded, logged, progressible mobility item in the app.
+    Every patch is guarded on the exact shipped value, so a cue or dose you have already edited by hand is
+    left alone. Logged history is untouched throughout: dropping a template entry or a checklist item only
+    stops it being prescribed from now on, and past sessions keep their own sets. */
+ const _T=(pp,tid)=>(pp.templates||[]).find(x=>x.id===tid);
+ const _E=(t,xid)=>t&&(t.entries||[]).find(x=>x.exId===xid);
+ const _ftl=_T(fp,'t_pull'),_ftp=_T(fp,'t_push'),_ftc=_T(fp,'t_cardio');
+ const _C_P1='Parked · protecting a catching/unstable R shoulder · revisit at weekly PT';
+ const _C_P4='ext. rotation at top';
+ const _C_P5='Parked · ballistic overhead; resting a catching/unstable R shoulder · revisit at weekly PT';
+ const _C_PF='light · fast up / controlled down · metronome ~132bpm · before heavy raises';
+ const _C_P6='deficit PENDING PALPATION · if insertional, drop to floor level · 1s up, 3s down · start ~25-30 lb, build to ~55 · all 4 sets hit 8 twice running → +5 lb';
+ const _C_PAL='anti-rotation · stand tall, press straight out, do not let the cable turn you · slow out, slow back · stands in for landmine rainbows while the R shoulder rests';
+ const _C_S1='half-kneeling · down knee under the hip, ribs down, do not let the trunk side-bend · LEFT arm only · right resting (catching/unstable shoulder) · revisit at weekly PT · full rest';
+ const _C_BK='knee ~90° · plate on distal thigh or seated machine · full ROM, controlled · runs Wed + Sat, so twice a week';
+ const _N_L='Straight sets, full rest. Elbow holds go FIRST, before anything grips a bar · isometrics are analgesic, and a fresh ache reading is the honest one. Consistent reps across all 4 sets → add weight. Calf raises: heavy Monday, lighter Thursday (2 sets, less load) so Friday sprints land fresh.';
+ const _N_C='Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Quality before volume · for a calf, running volume is the last box ticked, not the first.';
+ const _MOBCUT=['m01','m03','m04','m05','m07','m08','m11','m14','m18','m19','m20','m23','m24','m27','m30','m31'];
+ /* h90 is a NEW library row · the loaded 90/90. NOTE: `library` hangs off the top-level seed object, NOT
+    off a program, so it must come from seedDB() directly · fp is seedDB().programs[0] and fp.library is
+    undefined. Getting this wrong silently pushed the entry onto the template with no library row behind it,
+    and exOf() returns a muscle-less FALLBACK rather than null, so nothing throws and the row just renders
+    nameless. Guarded, so the entry is only added once the library row is actually there. */
+ const _flib=seedDB().library||[];
+ if(!(DB.library||[]).some(x=>x.id==='h90')){
+  const fx=_flib.find(x=>x.id==='h90');
+  if(fx)(DB.library=DB.library||[]).push(JSON.parse(JSON.stringify(fx)));
+ }
+ const _h90Ready=(DB.library||[]).some(x=>x.id==='h90');
+ (DB.programs||[]).forEach(p=>{
+  const ol=_T(p,'t_pull'),op=_T(p,'t_push'),oc=_T(p,'t_cardio');
+  if(ol&&_ftl){
+   if(ol.note===_N_L)ol.note=_ftl.note;
+   const e1=_E(ol,'p1'),f1=_E(_ftl,'p1');if(e1&&f1&&e1.cue===_C_P1)e1.cue=f1.cue; /* stays enabled:false · reason changes from shoulder to elbow */
+   const e4=_E(ol,'p4'),f4=_E(_ftl,'p4');if(e4&&f4&&e4.cue===_C_P4&&e4.sets===3){e4.warmups=f4.warmups;e4.sets=f4.sets;e4.scheme=f4.scheme;e4.cue=f4.cue}
+   const e5=_E(ol,'p5'),f5=_E(_ftl,'p5');if(e5&&f5&&e5.cue===_C_P5){e5.enabled=true;e5.cue=f5.cue}
+   const ef=_E(ol,'pf'),ff=_E(_ftl,'pf');if(ef&&ff&&ef.cue===_C_PF&&ef.sets===3){ef.warmups=ff.warmups;ef.sets=ff.sets;ef.scheme=ff.scheme;ef.cue=ff.cue}
+   const e6=_E(ol,'p6'),f6=_E(_ftl,'p6');if(e6&&f6&&e6.cue===_C_P6)e6.cue=f6.cue;
+   const ep=_E(ol,'cx_pallofpress'),fq=_E(_ftl,'cx_pallofpress');if(ep&&fq&&ep.cue===_C_PAL)ep.cue=fq.cue;
+   const fh=_h90Ready&&_E(_ftl,'h90');
+   if(fh&&!_E(ol,'h90')){const ne=JSON.parse(JSON.stringify(fh)),ix=(ol.entries||[]).findIndex(x=>x.exId==='p6');
+    if(ix>=0)ol.entries.splice(ix+1,0,ne);else(ol.entries=ol.entries||[]).push(ne)}
+  }
+  if(op&&_ftp){
+   const s1=_E(op,'s1'),g1=_E(_ftp,'s1');if(s1&&g1&&s1.cue===_C_S1)s1.cue=g1.cue;
+   const s2=_E(op,'s2'),g2=_E(_ftp,'s2');if(s2&&g2&&s2.enabled===false&&!s2.cue){s2.enabled=true;s2.cue=g2.cue}
+   const eb=_E(op,'bk'),gb=_E(_ftp,'bk');if(eb&&gb&&eb.cue===_C_BK)eb.cue=gb.cue;
+   if(Array.isArray(op.entries))op.entries=op.entries.filter(x=>x.exId!=='cx_declinesitup');
+  }
+  if(oc&&_ftc){
+   if(oc.note===_N_C)oc.note=_ftc.note;
+   if(oc.aerD&&+oc.aerD.durMin===30&&_ftc.aerD)oc.aerD.durMin=_ftc.aerD.durMin;
+   const mb=(oc.checks||[]).find(x=>x.id==='mbt');if(mb&&mb.enabled===false)mb.enabled=true;
+  }
+  const c=p.checklists;
+  if(c){
+   if(Array.isArray(c.daily))c.daily=c.daily.filter(x=>x.name!=='Chin Tucks'); /* matched on NAME · the daily block is user-editable, so a hand-added row carries a generated id */
+   if(Array.isArray(c.mobility))c.mobility=c.mobility
+    .map(g=>Object.assign({},g,{items:(g.items||[]).filter(it=>!_MOBCUT.includes(it.id))}))
+    .filter(g=>(g.items||[]).length); /* the Optional group empties completely and drops out */
+  }
+  if(Array.isArray(p.reference))p.reference=p.reference.filter(r=>r.t!=='Easy Running');
+ });
+ ['Phase Gates','Sprint Program','Sprint Rationale & Sources','Plyometric Progression','Parked & Cut','Elbow Protocol','Timeline','How the Tear Heals'].forEach(t=>patchRef(t));
+ cr=26;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save · storage may be full. Export a backup from Settings.')}}
@@ -1598,7 +1684,7 @@ if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);total+=lc.tot;done+=lc.d}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  total+=1;if(cs&&(cs.sprints||cs.aerobic))done++;
- (t.checks||[]).filter(c=>c.enabled&&((c.id!=='mbt'&&c.id!=='cl')||cardioIsSprint(dk,cs))).forEach(c=>{total++;if(checks.includes(c.id))done++})}
+ (t.checks||[]).filter(c=>c.enabled&&(!isSprintCheck(c)||cardioIsSprint(dk,cs))).forEach(c=>{total++;if(checks.includes(c.id))done++})}
 const di=dailyItems(dk);total+=di.length*2;di.forEach(d=>{if(checks.includes(d.id))done++;if(checks.includes('pm:'+d.id))done++});
 return{done,total}}
 
@@ -1782,7 +1868,7 @@ if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);wd=lc.d;wt=lc.tot}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  wt+=1;if(cs&&(cs.sprints||cs.aerobic))wd++;
- (t.checks||[]).filter(c=>c.enabled&&((c.id!=='mbt'&&c.id!=='cl')||cardioIsSprint(dk,cs))).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
+ (t.checks||[]).filter(c=>c.enabled&&(!isSprintCheck(c)||cardioIsSprint(dk,cs))).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
 let ad=0,pd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))ad++;if(checks.includes('pm:'+d.id))pd++});
 return{wd,wt,dd:ad+pd,dt:di.length*2,ad,pd,ppt:di.length}}
 function workoutDone(dk,t){const sess=sessionsFor(dk);
@@ -2388,6 +2474,13 @@ let h='<div class="smenu"><div class="smh">'+esc(sn.name)+' season<span style="c
  h+='<'+el+' class="schip'+(sel?' on':'')+(locked?' lk':'')+'"'+att+'><div class="schn"><span class="scht">'+esc(it.name)+'</span>'+tag+'<span class="schd num">'+esc(it.disp)+'</span></div>'+(it.note?'<div class="schr">'+esc(it.note)+'</div>':'')+'</'+el+'>'});
 if(M.primer&&open)h+='<div class="schp">'+esc(M.primer)+'</div>';
 if(tap&&!open&&hasGated)h+='<div class="schp">Near-max picks unlock after ~'+SPRINT_FLOOR_WEEKS+' weeks of fast running ('+tot+'/'+SPRINT_FLOOR_WEEKS+' banked).</div>';
+/* The mirror of the line above, and the reason it exists: the season silently FILTERS this menu, so a
+   season carrying no near-max pick looks identical to a closed gate. That is how you can bank the floor,
+   earn the near-max picks, and never see them. Stated as a fact, not a nudge · chips are all equal here
+   and nothing in this app suggests a default. Deliberately NOT tap-only (unlike the hint above): the
+   Program tab renders this menu read-only, which is exactly where you go to change season. */
+if(open&&!hasGated){const _sw=Object.keys(SPRINT_MENUS).filter(k=>(SPRINT_MENUS[k].items||[]).some(it=>it.gated)).map(k=>(SEASONS[k]||{}).name||k);
+ h+='<div class="schp">Near-max is unlocked ('+tot+' fast weeks banked) · '+esc(sn.name)+' does not offer it.'+(_sw.length?' The near-max picks live in '+esc(_sw.join(' and '))+'.':'')+'</div>'}
 return h+'</div>'}
 function pickSprintMenu(idv){if(!CV)return;const it=menuItem(CV.season||prog().season||'reset',idv);if(!it)return;
 if(it.gated&&!sprintGateOpen(prog().sprintPlan)){toast('Banking fast-running weeks first · near-max opens at ~8 weeks');return}
@@ -2660,7 +2753,7 @@ return s2};
 /* ── Sprints · their own workout, logged rep by rep in their own window ── */
 if(sprShow){
 h+=head('Sprints');
-if(!xtra)(t.checks||[]).filter(c=>c.enabled&&(c.id==='cl'||c.id==='mbt')).forEach(c=>{h+=ckRow(c,checks)});
+if(!xtra)(t.checks||[]).filter(c=>c.enabled&&isSprintCheck(c)).forEach(c=>{h+=ckRow(c,checks)});
 const _last=lastSprint(dk),_fb=CV.fallback;
 if(!xtra&&!_det&&!sprData)h+=sprPainHint(dk); /* only on the live card · a saved day and a backfill both already show their own numbers */
 const _tp=engineOn()&&!_fb?taperState(dk):null; /* E4 · taper prescription overrides the season menu (engine-gated · dormant for now) */
@@ -2682,7 +2775,7 @@ h+='<button class="lnk" style="display:block;margin-top:10px;text-align:center" 
 h+='</div>';
 }
 /* ── Aerobic + the day's remaining checks ── */
-const dayCks=xtra?[]:(t.checks||[]).filter(c=>c.enabled&&c.id!=='mbt'&&c.id!=='cl'); /* cl and mbt are Sprints-section checks · cl used to fall through to here when the Sprints section was hidden, which was invisible while it was parked but would have put the calf primer on the Tuesday recovery day the moment it was enabled */
+const dayCks=xtra?[]:(t.checks||[]).filter(c=>c.enabled&&!isSprintCheck(c)); /* cl and mbt are Sprints-section checks · cl used to fall through to here when the Sprints section was hidden, which was invisible while it was parked but would have put the calf primer on the Tuesday recovery day the moment it was enabled */
 if(aerShow||dayCks.length){
 h+=head(xtra?'Cardio':'Cardio + Mobility');
 if(aerShow){
@@ -2820,8 +2913,8 @@ S.view='tabs';S.tab='today';lockOff();rn()}
 /* ═══════════ MOBILITY ═══════════ */
 function vMobility(){
 const ck=dayChecks(tk()),m=prog().checklists.mobility;
-let h='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="back()">'+I_BACK+'</button><div class="shm"><div class="sht">Mobility</div><div class="shs">2-3× per week · cardio days</div></div></div></div>';
-h+='<div class="co"><div class="note">Warm-up via 30 min cardio first. Work top to bottom.</div>';
+let h='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="back()">'+I_BACK+'</button><div class="shm"><div class="sht">Mobility</div><div class="shs">Tuesday, in full · Friday optional</div></div></div></div>';
+h+='<div class="co"><div class="note">Warm the tissue first · on Tuesday the bike does that, on Friday it is the sprint warm-up. Work top to bottom.</div>';
 m.forEach((g,gi)=>{
 h+='<div class="sl'+(g.optional?'':'')+'" id="sl-g'+gi+'"><span class="lt">'+esc(g.group)+'</span><span class="rule"></span><span class="cnt num" id="cnt-g'+gi+'"></span></div>';
 h+='<div class="mgrid">'+g.items.map(it=>{const on=ck.includes(it.id);
