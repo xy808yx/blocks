@@ -171,7 +171,8 @@ body:has(.tb~.restc:not(.hide)) .co{padding-bottom:calc(170px + env(safe-area-in
 .hbs b{font-weight:700}
 .hb.on .hbs{color:var(--sage)}
 .bedstat{display:flex;align-items:center;gap:13px;padding:14px 16px;margin-bottom:10px}
-.bsf{font-size:25px;line-height:1;flex-shrink:0}
+.bsf{display:flex;align-items:center;flex-shrink:0;color:var(--muted);opacity:.6;transition:color .2s,opacity .2s}
+.bsf.on{color:var(--ember-hot);opacity:1}
 .bsn{font-family:var(--fd);font-size:18px;font-weight:600;letter-spacing:.01em}
 .bsn b{color:var(--ember-hot)}
 .bss{font-size:12.5px;color:var(--muted);margin-top:1px}
@@ -790,7 +791,7 @@ const reference=[
 - Built over 8-12 weeks and never tested as a max. You arrive at the number by training to it; the last working set of the block is the test.
 - Pass · bent-knee (soleus-bias) capacity: 3 × 10-12/leg strong and controlled, built over weeks. This is the position every published benchmark is specified in. It runs on B days (Wed + Sat), so it is being trained at the gate dose twice a week.
 - Pass · 0/10 pain during fast reps, settled inside 24h, calf normal the next morning · two clean cycles running, not one. Both halves are collected: tap calf pain in the sprint window, answer the next-morning check on Today.
-- ⚠ Symmetry caveat: your injured leg was your dominant leg, so left-right comparison overstates recovery. Judge by absolute capacity, your own pre-injury baseline, and symptoms · not LSI.
+- Symmetry caveat: your injured leg was your dominant leg, so left-right comparison overstates recovery. Judge by absolute capacity, your own pre-injury baseline, and symptoms · not LSI.
 - Attribution, honestly: the 8-12 week build and the ~0.3 × bodyweight target are clinical convention, not trial-derived. Your physio sets the final number and says whether it means added or total load, and how it should be carried given the right shoulder.
 **Weekly self-test · 3 minutes, Monday morning**
 - Single-leg heel raise to failure, deficit, metronome 30/min, injured side first. Then the same bent-knee.
@@ -948,7 +949,7 @@ The 10-week protocol that sat here (4-6 weeks off, 14 days back on, decision rul
 ];
 return{
 schemaVersion:1,
-contentRev:27,
+contentRev:28,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0,hangPausedAt:0}, /* hangPausedAt 0 · the resume clock falls back to meta.created on a fresh install (see hangResumeDue), so it is never measured against undefined */
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -995,7 +996,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=27)return;
+let cr=DB.contentRev||0;if(cr>=28)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -1448,8 +1449,15 @@ if(cr<27){
  });
  cr=27;
 }
+if(cr<28){
+ /* Emoji purge · the app's icons are inline SVG and always were, but a handful of emoji had crept into
+    banners, the streak card and one reference line. UI emoji are code and ship with the file; this line
+    is authored text living in the stored blob, so it needs the patch to reach an existing install. */
+ patchRef('Phase Gates');
+ cr=28;
+}
 DB.contentRev=cr;sv()}
-function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save · storage may be full. Export a backup from Settings.')}}
+function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('Couldn’t save · storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function tk(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function fmtDk(dk){const[y,m,d]=dk.split('-').map(Number);return MN[m-1]+' '+d}
@@ -1833,6 +1841,7 @@ const I_CAR='<svg class="car" width="14" height="14" viewBox="0 0 24 24" fill="n
 const I_LIFT='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M8 12h8"/><path d="M5.2 8.6v6.8M18.8 8.6v6.8"/><path d="M2.6 10.4v3.2M21.4 10.4v3.2"/></svg>';
 const I_CARD2='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3.5L9 6.5l4.5 11L16 12h5"/></svg>';
 const I_MOON='<svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+const moonAt=s=>I_MOON.replace('width="19" height="19"','width="'+s+'" height="'+s+'"'); /* one moon, drawn at whatever size the slot needs · icons are SVG here, never emoji */
 const I_FAST='<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h10M7 20.5h10M7 3.5L12 12 7 20.5M17 3.5L12 12 17 20.5"/></svg>';
 const HABITS=[{key:'fast',label:'Fasting',full:'Fasting',ic:I_FAST,off:0,streak:false},{key:'bed',get label(){return bedShort()},get full(){return bedFull()},ic:I_MOON,off:-1,streak:true}];
 const EB='<svg class="eb" width="46" height="46" viewBox="0 0 32 32"><g fill="#ff6f2e"><rect x="12.2" y="5.5" width="7.6" height="5" rx="1.5"/><rect x="9.6" y="13.4" width="12.8" height="5" rx="1.5" opacity=".72"/><rect x="7" y="21.3" width="18" height="5" rx="1.5" opacity=".45"/></g></svg>';
@@ -2012,7 +2021,7 @@ if(!ks.length)return 0;let best=0,run=0,d=ks[0],end=ks[ks.length-1];
 while(d<=end){if(habitOn(d,key)){if(++run>best)best=run}else if(!sunNeutral(d,off))run=0;d=shiftDk(d,1)}return best}
 function habitInner(key){const def=habitDef(key);
 if(def.streak){const n=habitStreak(key);
- if(n>0)return'🔥&nbsp;<b>'+n+'</b>&nbsp;night'+(n>1?'s':'');
+ if(n>0)return'<b>'+n+'</b>&nbsp;night'+(n>1?'s':'')+' in a row';
  return habitToday(key)?'Logged':'Last night?'}
 return habitToday(key)?'Logged today':'Tap to log'}
 function habitCard(h){const on=habitToday(h.key);
@@ -2029,7 +2038,7 @@ rn()}
 function bedStat(){const n=habitStreak('bed'),best=habitBest('bed');
 const head=n>0?'<b>'+n+'</b> night'+(n>1?'s':'')+' in a row':'Sleep by '+fmtTimeShort(bedTime())+' tonight';
 const sub=best>0?bedFull()+' · best '+best+' night'+(best>1?'s':''):bedFull()+' · logged each morning';
-return'<div class="card bedstat"><span class="bsf"'+(n>0?'':' style="filter:grayscale(1);opacity:.55"')+'>🔥</span><div class="bsm"><div class="bsn">'+head+'</div><div class="bss">'+sub+'</div></div></div>'}
+return'<div class="card bedstat"><span class="bsf'+(n>0?' on':'')+'">'+moonAt(23)+'</span><div class="bsm"><div class="bsn">'+head+'</div><div class="bss">'+sub+'</div></div></div>'}
 /* ── Day pre-tap (readiness) · the first of the two daily taps. E1 records it; later stages drive the easy-day swap and trend guard off it. ── */
 function preTap(dk){return(DB.days[dk]&&DB.days[dk].pre)||null}
 function setPre(dk,v){const d=DB.days[dk]=DB.days[dk]||{c:[]};const was=d.pre;if(d.pre===v)delete d.pre;else d.pre=v;sv();vibe(8);
@@ -2046,19 +2055,19 @@ const dk=tk(),dow=dowOf(dk);
 engTick(); /* fold banked day-verdicts into the lift plan · check the deload triggers */
 let h='';
 const n=nagDue();
-if(n)h+='<div class="ban em"><span>🛟</span><span><b>'+n+' session'+(n>1?'s':'')+'</b> since last backup</span><span class="bba"><button class="bbtn" onclick="doExport()">Export</button><button class="bbtn q" onclick="nagLater()">Later</button></span></div>';
-if(calfAmDue(dk)&&!(S.sel!=null&&S.sel!==dow)&&!(dow===0&&!sunTracked(dk)))h+='<div class="ban"><span>🦵</span><span><b>Calf</b> this morning?</span><div class="seg" style="flex-basis:100%">'+[[0,'Normal'],[1,'Stiff'],[2,'Sore']].map(o=>'<button class="sgb" onclick="setCalfAm('+o[0]+')">'+o[1]+'</button>').join('')+'</div></div>'; /* same seg as the readiness row — one look for "pick one of three" */
+if(n)h+='<div class="ban em"><span><b>'+n+' session'+(n>1?'s':'')+'</b> since last backup</span><span class="bba"><button class="bbtn" onclick="doExport()">Export</button><button class="bbtn q" onclick="nagLater()">Later</button></span></div>';
+if(calfAmDue(dk)&&!(S.sel!=null&&S.sel!==dow)&&!(dow===0&&!sunTracked(dk)))h+='<div class="ban"><span><b>Calf</b> this morning?</span><div class="seg" style="flex-basis:100%">'+[[0,'Normal'],[1,'Stiff'],[2,'Sore']].map(o=>'<button class="sgb" onclick="setCalfAm('+o[0]+')">'+o[1]+'</button>').join('')+'</div></div>'; /* same seg as the readiness row — one look for "pick one of three" */
 /* Same suppression guards as the calf read · a morning question belongs on today's screen, never on a day preview or the untracked Sunday. Both reads stay banners and stay at the top: they are perishable, and a skipped one is a datum Gate E1 never gets. */
-if(elbowAmDue(dk)&&!(S.sel!=null&&S.sel!==dow)&&!(dow===0&&!sunTracked(dk)))h+='<div class="ban"><span>💪</span><span><b>Elbow</b> this morning?</span><div class="seg" style="flex-basis:100%">'+[[0,'Better'],[1,'Same'],[2,'Worse']].map(o=>'<button class="sgb" onclick="setElbowAm('+o[0]+')">'+o[1]+'</button>').join('')+'</div></div>';
+if(elbowAmDue(dk)&&!(S.sel!=null&&S.sel!==dow)&&!(dow===0&&!sunTracked(dk)))h+='<div class="ban"><span><b>Elbow</b> this morning?</span><div class="seg" style="flex-basis:100%">'+[[0,'Better'],[1,'Same'],[2,'Worse']].map(o=>'<button class="sgb" onclick="setElbowAm('+o[0]+')">'+o[1]+'</button>').join('')+'</div></div>';
 const act=activeSession();
 if(act&&!(S.sel!=null&&S.sel!==dow))h+='<div class="ban"><span><b>'+esc(dayTitle(act.name))+'</b> in progress'+(act.date!==dk?' · '+fmtDk(act.date):'')+'</span><span class="bba"><button class="bbtn" onclick="resumeSession(\''+act.id+'\')">Resume</button><button class="bbtn q" onclick="finishQuickAsk(\''+act.id+'\')">End</button></span></div>';
 if(S.sel!=null&&S.sel!==dow)return h+vPreview(dk,dow);
 if(dow===0&&!sunTracked(dk)){
-h+='<header class="hero"><div class="rw" style="display:grid;place-items:center"><span style="font-size:32px;opacity:.65">☾</span></div>'
+h+='<header class="hero"><div class="rw" style="display:grid;place-items:center"><span style="display:flex;color:var(--muted);opacity:.8">'+moonAt(34)+'</span></div>'
 +'<div><div class="eyebrow"><b>'+DY[dow]+'</b> · '+fmtDk(dk)+'</div><h1 class="title">Sacred Rest</h1><div class="hsub">Untracked by design</div></div></header>';
 h+=weekStrip(dk);
 h+='<div class="sl"><span class="lt">Rest</span><span class="rule"></span></div>'
-+'<div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="font-size:20px">☾</span><div><div class="scard-t" style="font-size:16px">Fully off, maybe a walk</div><div class="ckr" style="margin-top:2px">Nothing to check, nothing counts as missed. Streaks skip Sundays.</div></div></div>'
++'<div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="display:flex;color:var(--muted);margin-top:1px">'+moonAt(20)+'</span><div><div class="scard-t" style="font-size:16px">Fully off, maybe a walk</div><div class="ckr" style="margin-top:2px">Nothing to check, nothing counts as missed. Streaks skip Sundays.</div></div></div>'
 +'<button class="lnk" style="display:block;margin:10px 2px" onclick="sunOverride(\''+dk+'\')">Track today anyway</button>';
 return h}
 const t=tplForDate(dk),ov=DB.dayOverrides[dk]!=null,sunOv=dow===0&&!!(DB.days[dk]&&DB.days[dk].sunOn);
@@ -2071,7 +2080,7 @@ if(t)h+=preTapRow(dk);
 if(t&&engineOn()&&inDeloadWeek(dk))h+='<div class="note">Deload week · sets halved, sprints easy · normal service resumes Monday</div>';
 if(t&&t.kind==='lift')h+=liftArea(dk,t);
 else if(t&&t.kind==='cardio')h+=cardioArea(dk,t,null);
-else h+='<div class="sl" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div><div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="font-size:20px">☾</span><div><div class="scard-t" style="font-size:16px">Full recovery</div><div class="ckr" style="margin-top:2px">Morning + evening blocks + 30 min walk. That’s it.</div></div></div>';
+else h+='<div class="sl" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div><div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="display:flex;color:var(--muted);margin-top:1px">'+moonAt(20)+'</span><div><div class="scard-t" style="font-size:16px">Full recovery</div><div class="ckr" style="margin-top:2px">Morning + evening blocks + 30 min walk. That’s it.</div></div></div>';
 h+=extraArea(dk,t);
 h+=dailySection(dk,t);
 h+=habitsStrip();
@@ -2150,7 +2159,7 @@ h+='<div class="note">'+esc(am?c.dailyNoteAm||'':c.dailyNotePm||'')+'</div>';
 items.forEach(it=>{h+=ckRow(am?it:Object.assign({},it,{id:'pm:'+it.id}),checks)});
 h+='<div class="note" style="margin:10px 0 0">Walk 30 min every day · backward walking + sprint warm-up drills.</div>';
 /* The resume prompt lives here rather than in the Today banner stack · it is a four-week decision, not a this-morning one, and the two symptom reads own the banners. */
-if(hangResumeDue())h+='<div class="ban" style="margin:12px 0 0"><span>🪝</span><span><b>Dead hangs</b> have been paused four weeks</span><span class="bba"><button class="bbtn" onclick="hangResume()">Resume</button><button class="bbtn q" onclick="hangKeepPaused()">Not yet</button></span></div>';
+if(hangResumeDue())h+='<div class="ban" style="margin:12px 0 0"><span><b>Dead hangs</b> have been paused four weeks</span><span class="bba"><button class="bbtn" onclick="hangResume()">Resume</button><button class="bbtn q" onclick="hangKeepPaused()">Not yet</button></span></div>';
 return h}
 function hangKeepPaused(){if(DB.settings)DB.settings.hangPausedAt=Date.now();sv();rn();toast('Still paused · asking again in four weeks')} /* restarts the clock rather than hiding the prompt for good */
 function setDailyTab(x){if(S.dailyTab===x)return;S.dailyTab=x;rn()}
