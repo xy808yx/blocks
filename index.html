@@ -36,7 +36,7 @@ button{font-family:var(--f);color:inherit;background:none;border:none;cursor:poi
 a{color:var(--ember);text-decoration:none}
 .num{font-variant-numeric:tabular-nums}
 ::selection{background:var(--ember-soft)}
-:focus-visible{outline:2px solid var(--ember-line);outline-offset:2px}
+:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
 ::-webkit-scrollbar{width:12px}
 ::-webkit-scrollbar-thumb{background:var(--border);border:3.5px solid var(--bg);border-radius:7px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -50,24 +50,22 @@ a{color:var(--ember);text-decoration:none}
 .hbt:active{background:var(--surface2);color:var(--text)}
 .tb{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(10,11,14,.86);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid rgba(38,42,51,.8)}
 .tbi{max-width:560px;margin:0 auto;display:flex;padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
-.tbb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 8px;color:var(--muted);font-size:10.5px;font-weight:600;letter-spacing:.05em;transition:color .25s}
+.tbb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 8px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.05em;transition:color .25s}
 .tbb svg{display:block}
 .tbb .ic{width:52px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;transition:background .25s}
 .tbb.on{color:var(--ember)}
-.tbb.on .ic{background:var(--ember-soft);animation:icpop .35s var(--ease)}
+.tbb.on .ic{background:var(--ember-soft)}
+.tbb.on.navpop .ic{animation:icpop .35s var(--ease)}
 @keyframes icpop{45%{transform:scale(1.14)}}
-.co{max-width:560px;margin:0 auto;padding:20px 16px 110px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
-.co.nopad{padding-bottom:130px}
+.co{max-width:560px;margin:0 auto;padding:20px 16px calc(90px + env(safe-area-inset-bottom));padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+.co.nopad{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+body:has(.tb~.restc:not(.hide)) .co{padding-bottom:calc(170px + env(safe-area-inset-bottom))} /* while a rest timer floats on a tab view, keep the last row clear of the chip (mirrors the toast rule below) */
 
-/* ── view entrance — staggered, only on view change ── */
+/* ── view entrance — one fade on the container, only on view change ── */
+/* the per-child stagger ran .21s of delay + .42s of duration with fill-mode both, so everything below
+   the 6th child sat at opacity 0 for .63s on EVERY tab tap · one short container fade instead */
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.co.fresh>*{animation:rise .42s var(--ease) both}
-.co.fresh>*:nth-child(2){animation-delay:.035s}
-.co.fresh>*:nth-child(3){animation-delay:.07s}
-.co.fresh>*:nth-child(4){animation-delay:.105s}
-.co.fresh>*:nth-child(5){animation-delay:.14s}
-.co.fresh>*:nth-child(6){animation-delay:.175s}
-.co.fresh>*:nth-child(n+7){animation-delay:.21s}
+.co.fresh{animation:rise .18s var(--ease)}
 
 /* ── banners ── */
 .ban{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--card-g);border:1px solid var(--border);border-radius:14px;padding:13px 15px;margin-bottom:16px;font-size:15px;color:var(--dim);box-shadow:var(--card-sh)}
@@ -96,7 +94,7 @@ a{color:var(--ember);text-decoration:none}
 .week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:24px}
 .day{background:var(--card-g);border:1px solid var(--border);border-radius:12px;padding:10px 2px 13px;text-align:center;position:relative;transition:border-color .2s,background .2s,transform .15s var(--ease);box-shadow:var(--card-sh)}
 .day:active{transform:scale(.94)}
-.day .dl{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.day .dl{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
 .day .dw{font-size:10.5px;font-weight:650;color:var(--dim);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .day.lift .dw{color:var(--ember)}
 .day.cardio .dw{color:var(--blue)}
@@ -114,7 +112,8 @@ a{color:var(--ember);text-decoration:none}
 .xrm{position:relative;background:none;border:none;color:var(--muted);font-size:18px;line-height:1;padding:0 4px;cursor:pointer}
 .xrm::after{content:'';position:absolute;inset:-13px -10px}
 .sl.done .lt,.sl.done .cnt{color:var(--sage)}
-.note{font-size:14.5px;color:var(--muted);line-height:1.55;margin:-2px 0 12px}
+.note{font-size:14.5px;color:var(--dim);line-height:1.55;margin:-2px 0 12px}
+.note:empty{display:none} /* an unset Morning/Evening note must not reserve a phantom gap */
 
 /* ── cards & buttons ── */
 .card{background:var(--card-g);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:var(--card-sh)}
@@ -135,13 +134,13 @@ a{color:var(--ember);text-decoration:none}
 .ck{display:flex;align-items:center;gap:14px;background:var(--card-g);border:1px solid var(--border);border-radius:13px;padding:12px 14px;margin-bottom:7px;min-height:54px;user-select:none;-webkit-user-select:none;transition:border-color .2s,background .2s;box-shadow:var(--card-sh)}
 .ck:active{background:var(--surface2)}
 .ck.ro{pointer-events:none} /* reference-only rows must not offer a press state they can't honour */
-.ck.ro .vl{pointer-events:auto}
+.ck.ro .vl{pointer-events:auto;display:inline-flex;align-items:center;min-height:44px;padding:0 10px;margin:-11px -6px -11px 0} /* on a non-pressable row the video link is the sole target · give it a full 44px without changing row height */
 .ck.done{border-color:var(--sage-line);background:linear-gradient(180deg,rgba(127,176,105,.13),rgba(127,176,105,.06))}
-.cb{width:27px;height:27px;border-radius:8px;border:2px solid var(--border-h);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--bg);transition:background .2s,border-color .2s}
+.cb{width:27px;height:27px;border-radius:8px;border:2px solid #666d7b;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--bg);transition:background .2s,border-color .2s} /* unchecked outline lifted to ~3.4:1 so the empty box reads as tappable; done/on states below override to sage */
 .cb svg{width:14px;height:14px}
 .cb path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .25s ease .04s}
 @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.16)}100%{transform:scale(1)}}
-.ck.done .cb,.mc.done .cb,.hb.on .cb{background:var(--sage);border-color:var(--sage);animation:pop .3s cubic-bezier(.22,1,.36,1)}
+.ck.done .cb,.mc.done .cb,.hb.on .cb{background:var(--sage);border-color:var(--sage);animation:pop .3s var(--ease)}
 .ck.done .cb path,.mc.done .cb path,.hb.on .cb path{stroke-dashoffset:0}
 .ckm{flex:1;min-width:0}
 .ckn{font-size:15.5px;font-weight:600;line-height:1.3}
@@ -191,11 +190,13 @@ button.fin:active{transform:scale(.96);box-shadow:inset 0 1px 0 rgba(255,255,255
 button.fin.q{background:var(--surface2);color:var(--text);border:1px solid var(--border-h);box-shadow:none}
 
 /* ── exercise card & set rows ── */
-.exc{background:var(--card-g);border:1px solid var(--border);border-radius:16px;padding:15px 14px 12px;margin-bottom:12px;box-shadow:var(--card-sh);transition:border-color .35s}
-.exc.fin{border-color:var(--sage-line)}
+.exc{background:var(--card-g);border:1px solid var(--border);border-radius:16px;padding:15px 14px 12px;margin-bottom:12px;box-shadow:var(--card-sh);transition:border-color .35s,opacity .35s}
+.exc.fin{border-color:var(--sage-line);opacity:.62} /* a finished exercise recedes so the remaining work leads the eye · its logged values stay legible and editable */
 .exh{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
-.exn{font-family:var(--fd);font-size:19.5px;font-weight:600;letter-spacing:.012em;flex:1;min-width:0;line-height:1.2}
-.chip{font-size:10.5px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:6px;flex-shrink:0;text-transform:uppercase}
+.exh .tpes{color:var(--dim);font-weight:600} /* the live set count is the primary per-card glance · lift it to at least match the rest pill beside it */
+/* the name identifies, the numbers are what you act on · the name steps back so .stv can lead */
+.exn{font-family:var(--fd);font-size:17px;font-weight:600;letter-spacing:.012em;flex:1;min-width:0;line-height:1.25}
+.chip{font-size:11px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:6px;flex-shrink:0;text-transform:uppercase}
 .chip.em{color:var(--ember);background:var(--ember-soft)}
 .chip.bl{color:var(--blue);background:var(--blue-soft)}
 .chip.off{color:var(--muted);background:var(--surface2)}
@@ -206,22 +207,28 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .ghost{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;margin-bottom:10px}
 .ghost b{color:var(--dim);font-weight:600}
 .cols{display:grid;grid-template-columns:26px 1.2fr 1fr 54px;gap:6px;padding:0 2px;margin:8px 0 5px}
-.cols span{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;text-align:center}
+.cols span{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;text-align:center}
 .cols span:first-child{text-align:left}
 .sr{display:grid;grid-template-columns:26px 1.2fr 1fr 54px;gap:6px;align-items:center;padding:5px 2px;border-radius:12px}
 .sr+.sr{margin-top:2px}
 .srn{font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;text-align:left}
 .sr.wu .srn{color:var(--blue)}
-.stp{display:flex;align-items:stretch;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:54px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
-.stb{width:34px;position:relative;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:22px;font-weight:500;flex-shrink:0;user-select:none;-webkit-user-select:none;transition:background .15s,color .15s}
+/* overflow:hidden used to clip .stb::after, killing the outward half of the hit expander — a tap 4px
+   outside the ± landed on the row, not the button. The pill corners now come from the children. */
+.stp{display:flex;align-items:stretch;background:var(--surface2);border:1px solid var(--border);border-radius:12px;height:54px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.stp>*:first-child{border-radius:11px 0 0 11px}
+.stp>*:last-child{border-radius:0 11px 11px 0}
+.stb{width:30px;position:relative;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:19px;font-weight:500;flex-shrink:0;user-select:none;-webkit-user-select:none;transition:background .15s,color .15s}
 .stb::after{content:'';position:absolute;top:0;bottom:0;left:-6px;right:-6px}
-.stb:active{background:var(--border);color:var(--text)}
-.stv{flex:1;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;min-width:0;letter-spacing:-.01em;transition:background .15s}
+/* expand outward only · the inward 6px used to eat the value's own tap-to-type target */
+.stp>.stb:first-child::after{left:-8px;right:0}
+.stp>.stb:last-child::after{left:0;right:-8px}
+.stv{flex:1;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;min-width:0;letter-spacing:-.01em;transition:background .15s}
 .stv.tick{animation:vtick .2s var(--ease)}
 .stv:active{background:var(--border)}
 @keyframes vtick{from{transform:scale(1.22)}}
 .stv .u{font-size:10px;color:var(--muted);font-weight:600;margin-left:2px}
-.vin{width:100%;background:transparent;border:none;color:var(--text);font-size:17px;font-weight:700;letter-spacing:-.01em;text-align:center;font-family:var(--f);font-variant-numeric:tabular-nums}
+.vin{width:100%;background:transparent;border:none;color:var(--text);font-size:19px;font-weight:700;letter-spacing:-.01em;text-align:center;font-family:var(--f);font-variant-numeric:tabular-nums}
 .vin:focus{outline:none}
 .lg{height:54px;border-radius:12px;border:1.5px solid var(--ember-line);background:rgba(255,111,46,.08);display:flex;align-items:center;justify-content:center;color:var(--ember);transition:transform .12s var(--ease),background .15s,border-color .15s,color .15s}
 .lg svg{width:20px;height:20px}
@@ -234,15 +241,17 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .sr.done .srn{color:var(--dim)} /* the sage wash lifts the backdrop — --muted would drop under AA exactly as the row completes */
 .sr.done.new{animation:srin .55s var(--ease)}
 @keyframes srin{from{background:rgba(127,176,105,.32);transform:scale(.97)}}
-.sr.done .dtx{font-size:15.5px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums;grid-column:2/4;text-align:center}
+.sr.done .dtx{font-size:17px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums;grid-column:2/4;text-align:center} /* a logged value is the permanent record · it must not shrink below the size it was entered at */
 .sr.done .dck{height:44px;display:flex;align-items:center;justify-content:center;color:var(--sage)}
 .sr.done .dck svg{width:18px;height:18px}
-.adds{font-size:14px;font-weight:600;color:var(--muted);padding:13px 8px 13px 4px;display:inline-block;margin:-6px 0 -8px}
+.adds{font-size:14px;font-weight:600;color:var(--muted);padding:13px 8px 13px 4px;display:inline-block;margin:-6px 0 -8px;white-space:nowrap}
+.exf{flex-wrap:wrap;row-gap:2px} /* Add/Remove-set + reorder + Remove can't always share one line on a narrow phone · wrap cleanly instead of breaking a label mid-word */
 .adds:active{color:var(--dim)}
 .rowx{font-size:13px;font-weight:600;color:var(--danger);padding:12px}
 .exf{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.exrm{font-size:13px;font-weight:600;color:var(--muted);padding:13px 10px;margin:-6px -6px -8px 0}
-.exmv{font-size:18px;font-weight:700;color:var(--muted);min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;margin:-6px -4px -8px}
+/* Remove deletes a whole exercise · quarantine it from the reorder arrows it used to sit 1px from */
+.exrm{font-size:13px;font-weight:600;color:var(--muted);padding:13px 10px;margin:-6px -6px -8px 16px}
+.exmv{font-size:18px;font-weight:700;color:var(--muted);min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;margin:-6px 0 -8px} /* the -4px horizontal pull made ↑ and ↓ physically overlap */
 .exmv:active{color:var(--dim)}
 .exmv:disabled,.mvb:disabled,.calnav button:disabled{opacity:.3;pointer-events:none}
 .exrm:active{color:var(--danger)}
@@ -252,24 +261,27 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .restc.hide{display:none}
 .tb~.restc{bottom:calc(78px + env(safe-area-inset-bottom))} /* clear the tab bar when one exists (tabs views) · session views have no .tb, chip stays low */
 .restc.zero{border-color:var(--sage-line);background:rgba(27,37,25,.92)}
-/* every stop keeps the chip's own float + inner highlight, or it visibly un-floats twice a second */
-@keyframes pulse{0%,100%{box-shadow:0 18px 44px -10px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}50%{box-shadow:0 18px 44px -10px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06),0 0 0 7px rgba(127,176,105,.16)}}
-.restc.zero{animation:pulse 1.2s ease-in-out infinite}
+/* the pulse rides a pseudo-element on opacity (compositor) instead of animating the chip's own box-shadow (a per-frame repaint over the scrolling set list) · the chip keeps its static float shadow untouched */
+@keyframes pulse{0%,100%{opacity:0}50%{opacity:1}}
+.restc.zero::before{content:'';position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 0 7px rgba(127,176,105,.16);animation:pulse 1.2s ease-in-out infinite;pointer-events:none}
 .rcm{flex:1;min-width:0}
 .rcl{font-size:12px;font-weight:650;letter-spacing:.01em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis} /* holds an exercise name, not an eyebrow — caps mangled "Landmine Press (kneeling)" */
-.rct{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1.05}
+/* the one number read at arm's length between sets · the chip has ~187px of free width at 375, so the
+   negative tracking was density optimisation where there is no density problem. Raising this grows the
+   chip ~8px, which is why the toast offset below moves in the same edit. */
+.rct{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:0;line-height:1.06}
 .restc.zero .rct{color:var(--sage)}
 .rcp{height:4px;background:rgba(58,63,76,.55);border-radius:2px;margin-top:7px;overflow:hidden}
 .rcpf{height:100%;background:linear-gradient(90deg,var(--ember-hot),var(--ember));border-radius:2px;transition:width .25s linear}
 .restc.zero .rcpf{background:var(--sage)}
-.rcb{font-size:14px;font-weight:700;color:var(--text);background:var(--surface2);border:1px solid var(--border-h);padding:11px 13px;border-radius:12px;flex-shrink:0;transition:transform .12s var(--ease),background .15s}
+.rcb{font-size:14px;font-weight:700;color:var(--text);background:var(--surface2);border:1px solid var(--border-h);padding:11px 13px;border-radius:12px;flex-shrink:0;min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;transition:transform .12s var(--ease),background .15s}
 .rcb:active{background:var(--border);transform:scale(.94)}
 
 /* ── field steppers (cardio) ── */
 .fgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0 12px}
 .fld .fl2{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;text-align:center;margin-bottom:5px}
 .seg{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:3px;gap:3px;box-shadow:inset 0 1px 2px rgba(0,0,0,.2)}
-.sgb{flex:1;min-height:40px;border-radius:8px;font-size:14.5px;font-weight:650;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
+.sgb{flex:1;min-height:44px;border-radius:8px;font-size:14.5px;font-weight:650;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
 .sgb.on{background:var(--border-h);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06)}
 .sgb:not(.on):active{background:var(--border);color:var(--dim)}
 .sgb .sgc{margin-left:7px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -368,8 +380,12 @@ button.schip:active{background:var(--surface)}
 
 /* ── toast ── */
 .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(6px);bottom:calc(86px + env(safe-area-inset-bottom));z-index:90;background:rgba(27,30,37,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--border-h);color:var(--text);font-size:14.5px;font-weight:600;padding:12px 18px;border-radius:13px;box-shadow:0 12px 32px -6px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;transition:opacity .28s,transform .32s var(--ease)}
-.toast.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(-4px)}
-body:has(.tb~.restc:not(.hide)) .toast{bottom:calc(164px + env(safe-area-inset-bottom))} /* clear the rest chip instead of landing on top of it */
+/* pointer-events stays none on the pill · only the action inside it is tappable, so an informational
+   toast stops parking a ~250px dead zone over the set rows underneath it */
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+.toast.show .tb2{pointer-events:auto}
+body:has(.tb~.restc:not(.hide)) .toast{bottom:calc(180px + env(safe-area-inset-bottom))} /* clear the rest chip instead of landing on top of it · 180 tracks the taller .rct above */
+body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(108px + env(safe-area-inset-bottom))} /* session views have no tab bar · keep the same gap above the low-floating chip */
 .toast .tb2{color:var(--ember);font-weight:700;font-size:14.5px;padding:12px 10px;margin:-12px -10px -12px -6px}
 
 /* ── editors ── */
@@ -402,8 +418,8 @@ body:has(.tb~.restc:not(.hide)) .toast{bottom:calc(164px + env(safe-area-inset-b
 .erow .en2,.en2{font-size:15.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .erow .es2,.es2{font-size:12.5px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .erow.offed .en2{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border-h)}
-.mvc{display:flex;flex-direction:column;gap:3px;flex-shrink:0}
-.mvb{width:36px;height:25px;display:flex;align-items:center;justify-content:center;border-radius:7px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);font-size:10px;transition:background .15s,color .15s}
+.mvc{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.mvb{width:36px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:7px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);font-size:10px;transition:background .15s,color .15s}
 .mvb:active{color:var(--text);background:var(--border)}
 .addb{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:50px;border-radius:13px;border:1.5px dashed var(--border-h);color:var(--dim);font-size:15px;font-weight:600;margin:2px 0 10px;transition:transform .15s var(--ease),background .15s}
 .addb:active{background:var(--surface2);transform:scale(.98)}
@@ -419,7 +435,7 @@ body:has(.tb~.restc:not(.hide)) .toast{bottom:calc(164px + env(safe-area-inset-b
 .calc{aspect-ratio:1;min-height:42px;border-radius:9px;background:var(--surface2);border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;position:relative;transition:transform .15s var(--ease)}
 .calc.out{visibility:hidden}
 .calc.tod{border-color:var(--ember)}
-.calc.fut{background:rgba(27,30,37,.55);color:#5d6472}
+.calc.fut{background:rgba(27,30,37,.55);color:#7a828f} /* lifted from ~2.9:1 so upcoming dates stay readable while still clearly recessed */
 .calc.tr{background:linear-gradient(180deg,rgba(127,176,105,.5),rgba(127,176,105,.3));border-color:var(--sage-line);color:var(--text);font-weight:700}
 .calc:not(.out):not(.fut):active{transform:scale(.9)}
 .cmk{position:absolute;bottom:3px;left:0;right:0;display:flex;gap:3px;justify-content:center;pointer-events:none}
@@ -677,6 +693,7 @@ const templates=[
  en('pf',{warmups:3,sets:0,scheme:'3 × 10 · warm-up',defReps:10,cue:'light · fast up / controlled down · the calf-specific ramp into the heavy raises, not counted volume'}),
  en('p6',{sets:4,scheme:'4 × 6-8/leg',defReps:8,cue:'deficit · palpated midportion, so the deficit is correct · 1s up, 3s down · start ~25-30 lb, build to ~55 · all 4 sets hit 8 twice running → +5 lb'}),
  en('h90',{sets:3,scheme:'3 × 5/side',defReps:5,defW:25,cue:'both shins ~90° · sit tall, plate at the chest · settle into the position 20-30s, then 5 slow knee lift-offs, front leg then back leg · torso stays upright, no falling back · add plate before adding reps'}),
+ en('s3',{sets:3,scheme:'3 × 8-10',defReps:8,cue:'ab straps · no grip at all, the elbow and forearm stay out of it · slow down, no swing · easy at 10 → plate between the feet, back to 8'}),
  en('cx_pallofpress',{sets:3,scheme:'3 × 8-10/side',defReps:10,cue:'band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back'}),
 ]},
 {id:'t_push',name:'B',kind:'lift',
@@ -685,11 +702,12 @@ const templates=[
  en('s0',{warmups:2,sets:0,scheme:'2 × 15 · warm-up',defReps:15,cue:'light plates'}),
  en('s1',{sets:4,scheme:'4 × 8-10/side',defReps:8,cue:'half-kneeling · down knee under the hip, ribs down, do not let the trunk side-bend · both arms, right cleared Aug 2026 · full rest'}),
  en('s2',{sets:3,scheme:'3 × max',amrap:true,defReps:10,cue:'feet on bench · shoulder cleared Aug 2026 · the only right-side pressing in the week'}),
- en('s3',{sets:3,scheme:'3 × 8-10',defReps:8,cue:'ab straps · no grip at all, the elbow and forearm stay out of it · slow down, no swing · easy at 10 → plate between the feet, back to 8'}),
+ /* the rollout takes the slot the hanging leg raise vacated · it is the most position-sensitive move in
+    the week, so it runs before the leg work rather than last, when the trunk is already cooked */
+ en('cx_abwheelrollout',{sets:3,scheme:'3 × 8',defReps:8,cue:'kneeling · ribs down, no sag in the low back · roll only as far as you can still reverse · knees → longer reach → toes, in that order'}),
  en('s4',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'BW → hold plates'}),
  en('bk',{sets:3,scheme:'3 × 10-12/leg',defReps:12,cue:'knee ~90° · plate on the distal thigh · full ROM, controlled · runs Wed + Sat, so twice a week · if Saturday morning\'s calf read came back sore, EASE this set, do not skip it'}),
  en('cx_singlelegromaniandeadlift',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'hinge, ribs down · reach long, no rotation · light and clean before heavy'}),
- en('cx_abwheelrollout',{sets:3,scheme:'3 × 8',defReps:8,cue:'kneeling · ribs down, no sag in the low back · roll only as far as you can still reverse · knees → longer reach → toes, in that order'}),
 ]},
 {id:'t_cardio',name:'C',kind:'cardio',
  note:'Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Running is sprints and speed endurance ONLY, nothing continuous · zone 2 is the bike or the pool. Quality before volume.',
@@ -930,7 +948,7 @@ The 10-week protocol that sat here (4-6 weeks off, 14 days back on, decision rul
 ];
 return{
 schemaVersion:1,
-contentRev:26,
+contentRev:27,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0,hangPausedAt:0}, /* hangPausedAt 0 · the resume clock falls back to meta.created on a fresh install (see hangResumeDue), so it is never measured against undefined */
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -977,7 +995,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=26)return;
+let cr=DB.contentRev||0;if(cr>=27)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -1405,6 +1423,31 @@ if(cr<26){
  ['Phase Gates','Sprint Program','Sprint Rationale & Sources','Plyometric Progression','Parked & Cut','Elbow Protocol','Timeline','How the Tear Heals'].forEach(t=>patchRef(t));
  cr=26;
 }
+if(cr<27){
+ /* Trunk work was stacked. B carried BOTH the hanging leg raise and the ab wheel rollout, on the two
+    days it runs, while A carried only the Pallof (anti-rotation) — twelve rectus-dominant sets on two
+    days, none on the other two. The rollout also ran LAST of eight, at peak trunk fatigue, which is
+    exactly where its "ribs down, no sag in the low back" cue is hardest to honour.
+    The hanging leg raise moves to A: it is strap-based and explicitly no-grip, so it is the one of the
+    two that touches neither the grip nor the elbow, and it can sit on the elbow-isometric day safely.
+    The rollout stays on B and takes the slot the raise vacated, straight after the pressing.
+    The entry object MOVES rather than being re-seeded, so a hand-tuned scheme, set count or cue travels
+    with it — same principle as the s1 handling in cr23. */
+ (DB.programs||[]).forEach(p=>{
+  const tl=(p.templates||[]).find(x=>x.id==='t_pull'),tp=(p.templates||[]).find(x=>x.id==='t_push');
+  if(!tl||!tp||!Array.isArray(tl.entries)||!Array.isArray(tp.entries))return;
+  const si=tp.entries.findIndex(x=>x.exId==='s3');
+  if(si>=0&&!tl.entries.some(x=>x.exId==='s3')){
+   const moved=tp.entries.splice(si,1)[0];
+   const pi=tl.entries.findIndex(x=>x.exId==='cx_pallofpress');
+   if(pi>=0)tl.entries.splice(pi,0,moved);else tl.entries.push(moved); /* ahead of the Pallof · the harder trunk move goes first */
+  }
+  /* indexes recomputed after the splice above */
+  const s2i=tp.entries.findIndex(x=>x.exId==='s2'),ai=tp.entries.findIndex(x=>x.exId==='cx_abwheelrollout');
+  if(ai>=0&&s2i>=0&&ai>s2i+1){const aw=tp.entries.splice(ai,1)[0];tp.entries.splice(s2i+1,0,aw)}
+ });
+ cr=27;
+}
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('⚠︎ Couldn’t save · storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -1807,6 +1850,7 @@ return'<div class="tb"><div class="tbi">'+b('today',I_TODAY,'Today')+b('history'
 function restChip(){return'<div id="restc" class="restc hide"><div class="rcm"><div class="rcl" id="rcL" aria-live="polite">Rest</div><div class="rct num" id="rcT">0:00</div><div class="rcp"><div class="rcpf" id="rcPf" style="width:100%"></div></div></div><button class="rcb num" onclick="t30()">+30s</button><button class="rcb" onclick="killRest()" aria-label="Dismiss timer">✕</button></div>'}
 function rn(){
 const y=window.scrollY,a=document.getElementById('app');
+const fid=document.activeElement&&document.activeElement.id||''; /* innerHTML is replaced wholesale below, so focus (and the VoiceOver cursor with it) would otherwise reset to the top of the document on every single tap · restore it the same way scrollY already is */
 let h='';
 if(S.view==='session')h=vSession();
 else if(S.view==='sprint')h=vSprint();
@@ -1828,8 +1872,11 @@ else h=vTabs();
 a.innerHTML=h+restChip();
 const sig=S.view+'|'+S.tab;
 const changed=PREVV!==sig;PREVV=sig;
-if(changed)a.querySelectorAll('.co').forEach(c=>c.classList.add('fresh'));
+if(changed){a.querySelectorAll('.co').forEach(c=>c.classList.add('fresh'));const ot=a.querySelector('.tbb.on');if(ot)ot.classList.add('navpop')} /* the nav-icon pop, like the entrance, fires only on a real tab change — not on every same-view re-render */
 wire();upd();
+if(fid&&!changed){let fe=document.getElementById(fid);
+ if(!fe){const m=fid.match(/^(lg-.+)-(\d+)$/);if(m)fe=document.getElementById(m[1]+'-'+(+m[2]+1))} /* the log button you just used no longer exists — land on the next pending set, not the page top */
+ if(fe&&fe.focus)try{fe.focus({preventScroll:true})}catch(e){fe.focus()}}
 window.scrollTo(0,changed?0:Math.min(y,Math.max(0,document.body.scrollHeight-window.innerHeight)));
 if((S.view==='session'||S.view==='sprint'&&SPR)&&!S.amend&&!S.sprAmend)lockOn();else lockOff();
 clearInterval(EINT);
@@ -2255,7 +2302,7 @@ seedPV(key,ex,entry,i,sess);
 const isWu=i<entry.warmups,wIdx=i-entry.warmups+1,wstep=unit()==='kg'?2.5:5;
 return'<div class="sr'+(isWu?' wu':'')+'"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
 +(isIso(ex)?isoPair(key):stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false))
-+'<button class="lg" onclick="logSet(\''+ex.id+'\','+i+')" aria-label="Log set">'+CHECK+'</button></div>'}
++'<button class="lg" id="lg-'+ex.id+'-'+i+'" onclick="logSet(\''+ex.id+'\','+i+')" aria-label="Log set">'+CHECK+'</button></div>'} /* stable id · lets rn() hand focus to the next pending set instead of dropping it */
 function doneRow(ex,entry,st){
 const wIdx=(st.n-1)-entry.warmups+1;
 return'<div class="sr done'+(st.warmup?' wu':'')+(S.flash===ex.id+'_'+st.n?' new':'')+'" onclick="editLogged(\''+ex.id+'\','+st.n+')"><div class="srn num">'+(st.warmup?'W':wIdx)+'</div>'
@@ -2285,7 +2332,7 @@ for(let i=0;i<total;i++){const st=byN[i+1];
  else if(st)rows+=doneRow(ex,entry,st);
  else rows+=pendRow(ex,entry,i,sess)}
 body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+esc(ex.name)
-+(ex.video?' <a class="vl" href="'+ex.video+'" target="_blank">▶</a>':'')+'</div>'
++(ex.video?' <a class="vl" href="'+ex.video+'" target="_blank" aria-label="Watch video">▶</a>':'')+'</div>'
 +(entry.amrap?'<span class="chip em">max</span>':'')
 +'<button class="chip off rest num" onclick="restSheet(\''+entry.exId+'\')" aria-label="Rest '+restFor(entry,ex)+' seconds · tap to change">'+restFor(entry,ex)+'s</button>'
 +'<span class="tpes num">'+logged.length+'/'+total+'</span></div>'
@@ -2370,6 +2417,10 @@ sess.sets.forEach(x=>{if(x.exId===exId&&x.n>n)x.n--});
 S.editKey=null;delete PV['e_'+exId+'_'+n];sv();rn();toastUndo('Set removed',()=>{sess.sets=before;sv()})}
 function addRow(exId){EXTRA[exId]=(EXTRA[exId]||0)+1;rn()}
 function moveEx(exId,dir){const s=sessById(S.sid);if(!s)return;const order=entriesOf(s).map(e=>e.exId),i=order.indexOf(exId),j=i+dir;if(i<0||j<0||j>=order.length)return;order.splice(j,0,order.splice(i,1)[0]);s.order=order;sv();rn()}
+/* This deliberately does NOT delete logged sets. Deleting a recorded set stays on the one deliberate
+   path: tap the set you mean, then confirm in the edit row. A footer button sitting 2px from "+ Add set"
+   is the wrong place to put anything that touches history, and a 5s undo toast at the bottom of the
+   screen is easy to miss mid-workout. This only takes back a pending row you added yourself. */
 function rmRow(exId){const n=EXTRA[exId]||0;if(n<=0)return;
 const sess=sessById(S.sid),entry=sess?entryFor(sess,exId):null;
 if(entry){const base=prescSets(entry,sess.date);delete PV[exId+'_'+(entry.warmups+base+n-1)]} /* pending-row key rides the prescribed set count, which a guard day lowers */
@@ -2929,7 +2980,7 @@ return h}
 /* ═══════════ HISTORY ═══════════ */
 function vHistory(){
 const all=DB.sessions.slice().sort((a,b)=>b.startedAt-a.startedAt);
-let h='<div class="sl"><span class="lt">History</span><span class="rule"></span><button class="lnk" onclick="pastSheet()">+ Past workout</button></div>';
+let h='<header class="hero" style="align-items:flex-start"><div style="flex:1;min-width:0"><h1 class="title">History</h1></div><button class="lnk" style="margin-top:4px;flex-shrink:0" onclick="pastSheet()">+ Past workout</button></header>';
 if(!all.length)return h+'<div class="empty" style="padding-top:34px">'+EB+'<div class="empty-t">No sessions yet</div>Log today on the Today tab, or add a workout you did earlier.</div>';
 const list=S.histAll?all:all.slice(0,150);
 let lastM='';
@@ -3014,7 +3065,7 @@ h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled&&gateOpen(e)).
 h+='<div class="sl"><span class="lt">Checklists</span><span class="rule"></span></div>';
 h+=det('Daily Block',p.checklists.daily.filter(d=>!d.paused).length+' items · morning + evening',p.checklists.daily.map(d=>'<div class="tpe'+(d.paused?' offed':'')+'"><span class="tpen">'+esc(d.name)+(d.paused?' <span class="chip off">paused</span>':'')+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+(d.skipIfHang?' <span class="chip off">no-hang days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'eddaily\')">Edit →</button>');
 h+=det('Mobility',p.checklists.mobility.reduce((a,g)=>a+g.items.length,0)+' items',p.checklists.mobility.map(g=>'<p style="margin:10px 0 4px"><strong style="color:var(--text);font-size:13px;letter-spacing:.06em;text-transform:uppercase">'+esc(g.group)+'</strong></p>'+g.items.map(i=>'<div class="tpe"><span class="tpen" style="font-weight:500;color:var(--dim)">'+esc(i.name)+'</span></div>').join('')).join('')+'<button class="lnk" onclick="openMobility(\'program\')">Open today\'s checklist →</button> <button class="lnk" onclick="openEd(\'edmob\')">Edit →</button>');
-h+=det('Therapist Nerve Flossing','',p.checklists.therapist.map(t=>'<div class="tpe"><span class="tpen">'+esc(t.name)+(t.video?' <a class="vl" href="'+t.video+'" target="_blank">▶</a>':'')+'</span><span class="tpes">'+esc(t.note)+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'edther\')">Edit →</button>');
+h+=det('Therapist Nerve Flossing','',p.checklists.therapist.map(t=>'<div class="tpe"><span class="tpen">'+esc(t.name)+(t.video?' <a class="vl" href="'+t.video+'" target="_blank" aria-label="Watch video">▶</a>':'')+'</span><span class="tpes">'+esc(t.note)+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'edther\')">Edit →</button>');
 h+='<div class="sl"><span class="lt">Reference</span><span class="rule"></span><button class="lnk" onclick="openEd(\'edref\')">Edit</button></div>';
 (p.reference||[]).forEach(r=>{h+=det(esc(r.t),'',md(r.b))});
 h+='<div class="sl"><span class="lt">Library</span><span class="rule"></span></div>';
