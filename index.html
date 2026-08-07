@@ -711,24 +711,31 @@ const templates=[
  en('cx_singlelegromaniandeadlift',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'hinge, ribs down · reach long, no rotation · light and clean before heavy'}),
 ]},
 {id:'t_cardio',name:'C',kind:'cardio',
- note:'Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Running is sprints and speed endurance ONLY, nothing continuous · zone 2 is the bike or the pool. Quality before volume.',
+ note:'Friday opens with the 30-45 min dynamic warm-up at 125-155 bpm · that is the day\'s zone 2 · then sprints, run rep by rep from the sprint window. Tuesday is the fasted recovery day (easy aerobic + mobility). Running is sprints and speed endurance ONLY, nothing continuous · zone 2 is otherwise the bike or the pool. Quality before volume.',
  entries:[],
  sprD:{reps:3,distM:50,eff:55},
  aerD:{mode:'bike',durMin:45,zone:'1-2'},
+ /* The sprint day's dynamic warm-up · deliberately ONE logged row, not a drill checklist. It runs 30-45
+    min of skips, drills and easy strides and sits at 125-155 bpm the whole time, which is zone 2 by heart
+    rate, so it is the day's aerobic work as well as its warm-up. wuD is only the tap-to-log default;
+    the row's stepper holds the real number. Zone is fixed at 2 · there is nothing to pick. */
+ wuD:{durMin:40},
  sprCue:'walk-back recovery · Fri (not the fasted Tue)',
  aerCue:'zone 1-2 · keep it easy',
+ wuCue:'before the sprints · 125-155 bpm the whole way',
  checks:[
  {id:'mbt',name:'Med Ball Throws · pick 1',detail:'before sprints, while fresh · 3-5 × 3-5 @ 100% intent, full recovery · ① Overhead-back scoop (up & out, full triple extension) · ② Chest pass / shotput (horizontal push) · ③ Rotational scoop (into wall) · throw for distance, not fatigue',enabled:true},
  {id:'cl',name:'Calf Primer',detail:'before sprints, while fresh · ~40-60 pogo contacts — low bilateral, stiff ankle, toes up · PLUS 15-20 single-leg hops per side as the symptom probe (a check, not training, and counted separately) · stop when the contacts get loud',enabled:true},
  {id:'mobdone',name:'Full Mobility Routine',detail:'roll · stretch · flows',link:'mobility',enabled:true},
 ]},
 ];
-/* Nerve flosses cut back to one · see Parked & Cut for the reasoning. The median floss and the LEFT
-   ulnar floss ran daily in limbs with no symptoms, which no trial has ever studied in either direction.
-   The posterior tibial floss leaves the twice-daily block under both branches of its own test: cut it if
-   the lunge test shows no gap, and if it does show one the studied dose is 3×/week, not 14×. What is left
-   is the right ulnar, deliberately unchanged until the 28-day elbow review, so the withdrawal test after
-   it has a clean baseline to read against. */
+/* The twice-daily block carries ONE nerve floss: the right ulnar, deliberately unchanged until the 28-day
+   elbow review so the withdrawal test after it has a clean baseline to read against.
+   The median and R. posterior tibial flosses are NOT cut · they moved to the weekly mobility routine
+   (m32 / m33) at J's call, Aug 2026. That move is the thing the Jul evidence review actually argued for
+   and stopped short of: the objection was never the movement, it was fourteen doses a week in limbs with
+   no symptoms. About weekly is inside the studied range for the tibial floss (3×/week if the lunge test
+   shows a real gap) instead of five times past it. Do not "restore" either one to this list. */
 const daily=[
 {id:'d2',name:'R. Ulnar Nerve Floss',detail:'10 · slider, mid-range'},
 {id:'d4',name:'90/90s',detail:'10 / side'},
@@ -736,37 +743,48 @@ const daily=[
 {id:'d8',name:"World's Greatest Stretch",detail:'5 / side · 5s holds'},
 {id:'d5',name:'Dead Hangs',detail:'1 min',skipIfHang:true,paused:true}, /* paused for the right elbow · 4 weeks minimum. Reversible from the daily-block editor; the resume prompt shows on the daily block once the pause is 28 days old. Pull-ups (p1) come back at the SAME review, not before. */
 ];
-/* Chin tucks cut · the only demonstrated outcomes in asymptomatic forward-head populations are surrogates (craniovertebral angle, joint position sense) with no shown transfer to pain, performance or durability, and this app records no neck symptom to treat. Kneeling neck stretches (m25) stay, so cervical work is reduced, not zeroed. */
-/* Routine cut from 29 items to 13 (Aug 2026 review). Three rules drove it:
-   1. DUPLICATES GO FROM HERE, NOT FROM THE DAILY BLOCK. m14/m18/m19 duplicated d4/d7/d8, and m20 is the
-      first half of m19. The daily block runs twice a day and reliably; this list runs about once a week and
-      gets cherry-picked. Cutting the reliable surface to de-duplicate would have been backwards.
-      Consequence: mobMatches() now returns [] for every daily item, so syncMob is a no-op. Left in place
-      rather than deleted, because re-adding a duplicate later should just work.
-   2. ROLLING CUT ON DOSE, NOT ON EFFECT. Foam-rolling TRAINING has a real pooled effect on ROM (~0.82,
-      concentrated in interventions past 4 weeks), statistically indistinguishable from the loaded
-      end-range anchor. So this is not "rolling does nothing", it is eight sites at a once-weekly dose.
-      Kept m02 (doubles as a hands-on symptom read on the injured calf while Gate 3b is live) and m06.
-      m07 duplicated m06, m08 duplicated m28 · one of each pair kept, never both cut.
-   3. NO OUTCOME LITERATURE IN EITHER DIRECTION = OUT, per J's cut-unproven bar: banded dislocations,
-      fire hydrants, scorpions, Cossack squat, cobra (lumbar, so m06 never covered it), child's pose.
-      m21 iron cross KEPT deliberately · it and m31 each duplicated the other, and cutting both would have
-      left zero rotational spine work by accident.
-   m22 'Myo stretch' STAYS PERMANENTLY · it is Vinh Pham's (MyoDetox founder), a friend of J's. Do not
-   propose cutting it again on the grounds that the name does not identify a movement. */
+/* RESTORED IN FULL, Aug 2026, at J's explicit call. The Aug review had cut this list from 29 items to 13
+   on three rules (duplicates out of the weekly list rather than the daily block; rolling trimmed on dose;
+   anything with no outcome literature in either direction out). J asked for all sixteen back, so all
+   sixteen are back, and the three items below came WITH them out of the twice-daily block:
+     m32 median nerve floss · m33 R. posterior tibial nerve floss · m34 chin tucks.
+   Read this as a change of venue, not a reversal of the evidence. The Jul/Aug reasoning was about DOSE in
+   an asymptomatic body, and every one of these now runs about weekly instead of twice daily or daily. The
+   evidence notes still stand and still live in Parked & Cut: chin tucks have surrogate outcomes only
+   (craniovertebral angle, joint position sense) with no shown transfer to pain, performance or durability;
+   rolling has a real pooled ROM effect (~0.82) but wants more than a weekly touch per site to earn it.
+   None of that is an argument for cutting them again, and this is J's list to set. Do not re-propose the
+   cut. If it ever comes up again, it is a conversation to have with him, not a change to make.
+
+   Two things that are load-bearing rather than editorial:
+   - m14 / m18 / m19 duplicate the daily block's d4 / d7 / d8 ON PURPOSE. Restoring them re-arms
+     mobMatches() and syncMob(), so ticking 90/90s, the couch stretch or the world's greatest stretch in
+     the daily block auto-ticks its twin here on a mobility day. That path was left intact when the
+     duplicates were cut precisely so re-adding them would just work. The em dashes in these names are
+     what normCk() splits on to make the match · do not "clean up" the punctuation.
+   - m22 'Myo stretch' STAYS PERMANENTLY · it is Vinh Pham's (MyoDetox founder), a friend of J's. Do not
+     propose cutting it on the grounds that the name does not identify a movement. */
 const mobility=[
 {group:'Roll / Massage Gun',items:[
-{id:'m02',name:'Calves — foam roller & lacrosse ball'},{id:'m06',name:'Thoracic extension / foam roll back'}]},
+{id:'m01',name:'Feet — golf ball · 3 min/foot'},{id:'m02',name:'Calves — foam roller & lacrosse ball'},
+{id:'m03',name:'IT band / quad / adductors · 15 passes/leg'},{id:'m04',name:'SMR glutes · 60s/leg'},
+{id:'m05',name:'Ab smash with med ball'},{id:'m06',name:'Thoracic extension / foam roll back'},
+{id:'m07',name:'Back — ball roll against wall'},{id:'m08',name:'Pecs/shoulders — lacrosse ball + rack stretch'}]},
 {group:'Stretch',items:[
-{id:'m10',name:'Deep squat — 60s'},
-{id:'m12',name:'Hamstring nerve glides — 10/side'},{id:'m13',name:'Hamstring stretch — 60s/side'},
-{id:'m15',name:'90/90s hip flexor — 10/side'},
+{id:'m10',name:'Deep squat — 60s'},{id:'m11',name:'Cossack squats — 10/side'},
+{id:'m12',name:'Hamstring nerve glides — 10/side'},
+{id:'m32',name:'Median nerve floss — 10/side'},{id:'m33',name:'R. posterior tibial nerve floss — 10 oscillations'},
+{id:'m13',name:'Hamstring stretch — 60s/side'},
+{id:'m14',name:'90/90s — 10/side'},{id:'m15',name:'90/90s hip flexor — 10/side'},
 {id:'m16',name:'Figure 4 stretch — 30s/side'},{id:'m17',name:'Frog stretch — 60s'},
-{id:'m21',name:'Iron cross — 5/side'},
-{id:'m22',name:'Myo stretch'},
-{id:'m25',name:'Neck stretches (kneeling) — 30s/side'},
-{id:'m26',name:'Diaphragmatic breathing — 2 min'},
+{id:'m18',name:'Couch stretch — 30s × 2/side'},{id:'m19',name:"World's greatest stretch — 5/side · 5s holds"},
+{id:'m20',name:'Spiderman steps — 5/leg (slow)'},{id:'m21',name:'Iron cross — 5/side'},
+{id:'m22',name:'Myo stretch'},{id:'m23',name:"Child's pose — 60s"},
+{id:'m24',name:'Cobra — 60s'},{id:'m25',name:'Neck stretches (kneeling) — 30s/side'},
+{id:'m34',name:'Chin tucks — 10 × 5s'},
+{id:'m26',name:'Diaphragmatic breathing — 2 min'},{id:'m27',name:'Banded shoulder dislocations — 20'},
 {id:'m28',name:'Doorway stretch — 30s × 3'}]},
+{group:'Optional',optional:true,items:[{id:'m30',name:'Fire hydrants'},{id:'m31',name:'Alternating scorpions'}]},
 ];
 const therapist=[
 {name:'Hip Mobility Series (Lawson McDonald)',note:'General hip compensation clearing',video:'https://www.youtube.com/watch?v=tO_2mB53Bgs'},
@@ -825,6 +843,7 @@ Speed is the anchor you enjoy, not a number to chase. Your **season** (the quart
 **Running is exactly two things now** (Aug 2026)
 - Sprints, and later speed endurance. Nothing continuous, ever. Ceiling of **400m** in any single rep, and that is an outer bound, not a target.
 - Zone 2 is the bike or the pool. Running is no longer an aerobic modality in this program at all.
+- **The one exception on foot is Friday's dynamic warm-up**: 30-45 min of skips, A / B, dribbles and easy strides, sitting at 125-155 bpm the whole way. That is zone 2 by heart rate, and it is the sprint day's aerobic work as well as its warm-up. It is broken work with a walk in it, not continuous running, which is why it does not contradict the line above. It logs as one row, on purpose · the drills are the content, not a checklist to tick through.
 **About the season dial, honestly**
 - You are on **Speed**, and have been since a migration set every existing install to it. That is the only menu carrying the near-max picks, and your calf floor is banked, so max-velocity fly, acceleration and Special Endurance I are all unlocked right now.
 - The dial does not cap anything. The effort field is a free stepper, so no season has ever prevented a 95% Friday. It picks which four chips you see, nothing more.
@@ -883,11 +902,11 @@ The four rungs that are also carded exercises (heavy deficit raises, bent-knee r
 **Parked for the right elbow**
 - Dead hangs · out of the daily block, 4 weeks minimum. Hanging leg raises run on ab straps, so nothing in the week hangs the elbow off a bar.
 - **Pull-ups (p1) are held here now, not under the shoulder.** The shoulder cleared them; a pull-up still hangs the elbow off a bar, which is exactly the exposure this protocol removed. They come back at the 28-day elbow review, in the same edit that resumes dead hangs. Un-parking one without the other would leave the app contradicting itself.
-**Nerve flosses · cut Jul 2026 after an evidence review**
-Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then stops. Nobody has studied daily flossing sustained for months, and nobody has studied flossing an asymptomatic limb to prevent or maintain anything. Not weak evidence, no studies.
-- Median floss, both sides · no symptoms to treat and no prophylaxis literature of any kind. Harmless, so this is a time decision, not a safety one.
-- Left ulnar floss · same reason. The right one stays for now, on its own schedule below.
-- R. posterior tibial floss · out of the twice-daily block under both branches of its own test. The calf-strain consensus uses neural tension tests to rule things OUT and prescribes no neurodynamic technique in any of its six treatment phases. **Run the weight-bearing lunge test both sides.** Under ~7° of asymmetry there is no target and it stays cut. A real gap and it comes back as 2 × 10 with ~5s of tension, 3×/week, re-measured at 4 weeks. Never back to 14×/week.
+**Nerve flosses · re-dosed Jul 2026, re-homed Aug 2026**
+Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then stops. Nobody has studied daily flossing sustained for months, and nobody has studied flossing an asymptomatic limb to prevent or maintain anything. Not weak evidence, no studies. That was an argument about **dose**, not about the movement, and the resolution is that these now run about weekly in the mobility routine instead of twice a day.
+- Median floss · **moved to the mobility routine** (was cut from the twice-daily block in Jul). No symptoms to treat and no prophylaxis literature of any kind, so this was always a time decision rather than a safety one, and about weekly costs little.
+- Left ulnar floss · still out. The right one stays in the daily block on its own schedule below.
+- R. posterior tibial floss · **moved to the mobility routine.** The calf-strain consensus uses neural tension tests to rule things OUT and prescribes no neurodynamic technique in any of its six treatment phases, so it earns no place in the twice-daily block. **Run the weight-bearing lunge test both sides.** A real gap (~7° of asymmetry or more) and the studied dose is 2 × 10 with ~5s of tension, 3×/week, re-measured at 4 weeks. Weekly sits under that, not over it. Never back to 14×/week.
 - Left obturator floss · "contralateral compensation" is not a studied construct. No trial, cohort or case series.
 - Right femoral floss · stays on the therapist list, conditional on right anterior thigh symptoms. It was never meant to be a habit.
 - **Kept:** hamstring nerve glides. The one item with a replicated effect, and that effect is range of motion and nothing else. Real and durable (nerve stiffness genuinely adapts over 12 weeks). No transfer to jump, agility or strength. That was measured and came back null. Keep it for the ROM, not as hamstring insurance; eccentric strength is what moves injury rates.
@@ -899,9 +918,9 @@ Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then
 - Tuck jumps · no value over pogos + bounds.
 - Box jumps as training · the readiness test they were kept for has moved to the physio list at the foot of Phase Gates. It sat in this app for months, was never once performed, and nothing here could log it.
 - Continuous running, all of it · cut Aug 2026 by choice, not by injury. The 10-week Easy Running ladder went with it, having never started a single session in its entire life. Running is sprints and speed endurance only, 400m ceiling. Zone 2 is the bike and the pool.
-- Chin tucks · surrogate outcomes only (craniovertebral angle, joint position sense) with no shown transfer to pain, performance or durability, and no neck symptom recorded here to treat. Kneeling neck stretches stay, so cervical work is reduced rather than zeroed.
+- Chin tucks · **moved to the mobility routine** (Aug 2026), not cut. The evidence note stands: surrogate outcomes only (craniovertebral angle, joint position sense) with no shown transfer to pain, performance or durability, and no neck symptom recorded here to treat. That was enough to take them off a twice-daily schedule. It is not enough to refuse them a weekly slot, and it is your call either way.
 - Weighted decline sit-ups · third trunk movement on a day that already ran two, hip-flexor dominant like the hanging leg raise it sat beside, and its one distinguishing feature was external load, which is explicitly not how muscle retention progresses here.
-- Sixteen mobility-routine items · see the note in the code beside the routine. Duplicates were cut from the WEEKLY list rather than the twice-daily block, on the grounds that you cut from the surface with the adherence problem, not the one that works.`},
+- Sixteen mobility-routine items · **all sixteen restored Aug 2026**, at your call, and the routine is back to its full list plus the three items that came over from the daily block. Nothing above about their evidence has changed; what changed is that a weekly slot costs almost nothing and you wanted them there. Recorded here so the reversal is on the page rather than a mystery in six months.`},
 {t:'Elbow Protocol',b:`Isometric holds on the right elbow, Mon + Thu, first thing in the session. Nothing else in the week loads the elbow off a bar: dead hangs are paused, hanging leg raises run on ab straps, and pull-ups stay off until the review below even though the shoulder that originally parked them is now cleared.
 
 **The prescription**
@@ -949,7 +968,7 @@ The 10-week protocol that sat here (4-6 weeks off, 14 days back on, decision rul
 ];
 return{
 schemaVersion:1,
-contentRev:28,
+contentRev:30,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0,hangPausedAt:0}, /* hangPausedAt 0 · the resume clock falls back to meta.created on a fresh install (see hangResumeDue), so it is never measured against undefined */
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -996,7 +1015,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=28)return;
+let cr=DB.contentRev||0;if(cr>=30)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -1456,6 +1475,46 @@ if(cr<28){
  patchRef('Phase Gates');
  cr=28;
 }
+if(cr<29){
+ /* Sprint-day dynamic warm-up · a single logged row, not a drill checklist. It is 30-45 min at 125-155 bpm,
+    which is zone 2, so it is the sprint day's aerobic work as well as its warm-up and it counts in weekly
+    load like any other zone-2 work. Seed the template default (minutes only · zone is fixed at 2) and
+    refresh the two pieces of authored copy that would otherwise read as contradicting it: the cardio note,
+    and the "zone 2 is the bike or the pool" line in Sprint Program. Additive · logged history untouched,
+    and a hand-edited note stays his. */
+ const _NC28='Sprints on Friday, run rep by rep from the sprint window; Tuesday is the fasted recovery day (easy aerobic + mobility). Running is sprints and speed endurance ONLY, nothing continuous · zone 2 is the bike or the pool. Quality before volume.';
+ const _ftc29=(fp.templates||[]).find(x=>x.kind==='cardio');
+ (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(x=>{if(x.kind!=='cardio')return;
+  if(!x.wuD)x.wuD={durMin:(_ftc29&&_ftc29.wuD?_ftc29.wuD.durMin:40)};
+  if(x.wuCue==null)x.wuCue=_ftc29?_ftc29.wuCue:'';
+  if(x.note===_NC28&&_ftc29)x.note=_ftc29.note}));
+ patchRef('Sprint Program');
+ cr=29;
+}
+if(cr<30){
+ /* Mobility routine restored in full, at J's call · the sixteen items cut at contentRev 26 come back, and
+    the median floss, the R. posterior tibial floss and chin tucks come over from the twice-daily block as
+    m32 / m33 / m34. The daily block is NOT touched: those three were already gone from it (cr 25 and 26),
+    and the four that remain there stay there.
+    Merge rather than overwrite, because this list is user-editable. For each group in the fresh seed:
+    keep the STORED item object wherever the id already exists (so a hand-renamed item survives), insert
+    the seed's object where it does not, and order by the seed. Anything J added himself has no seed
+    position, so it is appended after, and a group he created is kept whole at the end. */
+ const _fm=(fp.checklists||{}).mobility||[];
+ (DB.programs||[]).forEach(p=>{const c=p.checklists;if(!c||!Array.isArray(c.mobility))return;
+  const out=[];
+  _fm.forEach(fg=>{const og=c.mobility.find(g=>g.group===fg.group);
+   if(!og){out.push(JSON.parse(JSON.stringify(fg)));return} /* the Optional group emptied out at cr 26 and was dropped · it comes back whole */
+   const have=(og.items||[]),byId={};have.forEach(it=>{byId[it.id]=it});
+   const seeded=(fg.items||[]).map(fi=>byId[fi.id]||JSON.parse(JSON.stringify(fi)));
+   const seedIds=(fg.items||[]).map(fi=>fi.id);
+   const extras=have.filter(it=>!seedIds.includes(it.id)); /* J's own additions · never dropped, never reordered into the seed run */
+   out.push(Object.assign({},og,{items:seeded.concat(extras)}))});
+  c.mobility.forEach(og=>{if(!_fm.some(fg=>fg.group===og.group))out.push(og)}); /* a group J created himself */
+  c.mobility=out});
+ patchRef('Parked & Cut');
+ cr=30;
+}
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('Couldn’t save · storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -1735,6 +1794,7 @@ if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);total+=lc.tot;done+=lc.d}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  total+=1;if(cs&&(cs.sprints||cs.aerobic))done++;
+ if(cardioIsSprint(dk,cs)){total++;if(cs&&cs.warmup)done++} /* the warm-up is its own ring unit, and only on a sprint day · Tuesday never shows the row, so it must not count there either */
  (t.checks||[]).filter(c=>c.enabled&&(!isSprintCheck(c)||cardioIsSprint(dk,cs))).forEach(c=>{total++;if(checks.includes(c.id))done++})}
 const di=dailyItems(dk);total+=di.length*2;di.forEach(d=>{if(checks.includes(d.id))done++;if(checks.includes('pm:'+d.id))done++});
 return{done,total}}
@@ -1793,6 +1853,7 @@ const _cardio=s.kind?s.kind==='cardio':!!(s.sprints||s.aerobic); /* route on ses
 if(_cardio){let L=0;
 if(s.sprints)L+=Math.round((s.sprints.effortPct||70)/10)*SPRINT_NOMINAL_MIN;
 if(s.aerobic)L+=({'1':3,'1-2':4,'2':5}[s.aerobic.zone]||4)*(s.aerobic.durMin||0);
+if(s.warmup)L+=({'1':3,'1-2':4,'2':5}[s.warmup.zone]||5)*(s.warmup.durMin||0); /* the sprint-day warm-up is 30-45 real zone-2 minutes · counting it on the same scale as any other zone-2 work is the only honest reading, and without it a sprint Friday under-reports by roughly half */
 return L}
 const p=dayPost(s.date),r=p?LOAD_MAP[p]:s.rpe;
 return r?r*sessMins(s):0}
@@ -1924,6 +1985,7 @@ if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);wd=lc.d;wt=lc.tot}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  wt+=1;if(cs&&(cs.sprints||cs.aerobic))wd++;
+ if(cardioIsSprint(dk,cs)){wt++;if(cs&&cs.warmup)wd++} /* mirrors dayProgress · the two counters must agree or the ring and the day card disagree about the same day */
  (t.checks||[]).filter(c=>c.enabled&&(!isSprintCheck(c)||cardioIsSprint(dk,cs))).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
 let ad=0,pd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))ad++;if(checks.includes('pm:'+d.id))pd++});
 return{wd,wt,dd:ad+pd,dt:di.length*2,ad,pd,ppt:di.length}}
@@ -2178,7 +2240,8 @@ if(t){
 if(t.note)h+='<div class="note">'+esc(t.note)+'</div>';
 h+='<div class="card">';
 if(t.kind==='lift')t.entries.forEach(e=>{h+=entryRow(e)});
-else{h+='<div class="tpe"><span class="tpen">Sprint Run-Throughs</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>'
+else{h+='<div class="tpe"><span class="tpen">Dynamic Warm-Up</span><span class="tpes num">'+wuDef(t)+' min · zone 2</span></div>'
+ +'<div class="tpe"><span class="tpen">Sprint Run-Throughs</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>'
  +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:12px;letter-spacing:.08em">— or —</div>'
  +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>';
  (t.checks||[]).forEach(c=>{h+='<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>'})}
@@ -2452,7 +2515,7 @@ delete EXTRA[exId];clearPV(exId);S.editKey=null;sv();closeOv();rn();toastUndo('E
 function aerLabel(m){return m==='bike'?'Bike':m==='run'?'Run':'Swim'}
 function ensureCV(dk,t,sess){
 if(CV&&CV.dk===dk)return;
-const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null;
+const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null,wu=(sess&&sess.warmup)||null;
 const _ts=engineOn()&&!sp?taperState(dk):null; /* E4 · taper holds quality, scales volume — not an easy day */
 const _fb0=engineOn()&&!sp&&!_ts?engine().sprintFb:null,_force=!!_fb0&&(_fb0===true||dk>_fb0); /* a Stop arms only sprints AFTER the day it was tapped · a backfilled past day is untouched */
 const _easy=engineOn()&&!sp&&!_ts&&(inDeloadWeek(dk)||trendCapped(dk)||_force); /* deload / fatigue guard / armed by a Stop · dormant leaves the easy-day fallback */
@@ -2462,8 +2525,10 @@ const _cr=engineOn()&&!ae?cardioRx(dk,t.aerD.durMin):null; /* the cardio guard e
 CV={dk,reps:sp?sp.reps:(_easy?Math.min(6,_reps):_reps),dist:sp?sp.distM:(_easy?Math.min(50,_dist):_dist),eff:sp?sp.effortPct:(_easy?Math.min(70,_eff):_eff), /* the easy seed clamps to the template on every axis · an eased day can never prescribe more than the day you wrote */
 quality:sp&&sp.quality?sp.quality:'',pain:sp&&sp.pain!=null?sp.pain:'',ready:sp&&sp.ready?sp.ready:'',fallback:sp?(sp.fallback?1:0):(_easy?1:0),menuId:sp&&sp.menuId?sp.menuId:null,season:sp&&sp.season?sp.season:(prog().season||'reset'),
 plan:null,done:0, /* the sprint window's per-rep rows · seeded on entry, never by the card */
-mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:(_cr!=null?_cr:t.aerD.durMin),zone:ae?ae.zone:t.aerD.zone};
-CE={spr:!sp,aer:!ae}}
+mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:(_cr!=null?_cr:t.aerD.durMin),zone:ae?ae.zone:t.aerD.zone,
+wu:wu?wu.durMin:wuDef(t)}; /* the warm-up carries minutes only · never eased by a guard, because a warm-up is not the dose */
+CE={spr:!sp,aer:!ae,wu:false}} /* CE.wu is an explicit "editing" flag, not "unsaved" · an unlogged warm-up must stay a one-tap row, never a form */
+function wuDef(t){const d=t&&t.wuD&&+t.wuD.durMin;return d>0?d:40} /* a template saved before contentRev 29 has no wuD */
 function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
 setV(document.getElementById('cv-'+f),CV[f]);setV(document.getElementById('rxt-'+f),CV[f]); /* the prescription headline (easy/taper card) tracks the steppers live */
 if(S.view==='sprint'&&!S.sprAmend)sprPersist()}
@@ -2481,13 +2546,35 @@ return s}
 function saveSprints(dk){if(!CV||!CV.plan)return;
 const L=CV.plan.slice(0,CV.done);if(!L.length){toast('Log at least one rep');return}
 const s=getCardioSess(dk,true);
-if(SPR&&SPR.dk===dk&&SPR.startedAt&&!s.sprints&&!s.aerobic&&!(s.sets&&s.sets.length)){s.startedAt=SPR.startedAt;s.finishedAt=Date.now()} /* a pure sprint session keeps its real wall-clock */
+if(SPR&&SPR.dk===dk&&SPR.startedAt&&!s.sprints&&!s.aerobic&&!s.warmup&&!(s.sets&&s.sets.length)){s.startedAt=SPR.startedAt;s.finishedAt=Date.now()} /* a pure sprint session keeps its real wall-clock · a warm-up logged first means the session already started earlier, so leave its clock alone */
 s.sprints={reps:L.length,distM:Math.max.apply(null,L),effortPct:CV.eff,legs:L.slice(),quality:CV.quality||null,pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,menuId:CV.menuId||null,season:CV.season||prog().season||null};
 if(!s.finishedAt)s.finishedAt=Date.now();
 if(engineOn()&&engine().sprintFb){const e=engine(),f=e.sprintFb;
  if((f===true||s.date>f)&&!taperState(s.date)&&!(e.taperEndedAt&&s.date<=e.taperEndedAt))delete e.sprintFb} /* consumed by the first sprint after the Stop · a taper day doesn't spend it, even edited after the race (the taper owned that card, so the easy day is still owed), and a backfilled past day never does */
 CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':'Sprints logged')}
 function sprFallback(dk){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=Math.min(6,CV.reps||6);CV.dist=Math.min(50,CV.dist||50);CV.eff=Math.min(70,CV.eff||70)}else{ /* the easy seed clamps to what the card already prescribed · never more than the day you wrote */const it=menuItem(CV.season||prog().season||'reset',CV.menuId),ct=prog().templates.find(x=>x.kind==='cardio');if(it){CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff}else if(ct&&ct.sprD){CV.reps=ct.sprD.reps;CV.dist=ct.sprD.distM;CV.eff=ct.sprD.eff}else{CV.reps=3;CV.dist=50;CV.eff=55}if(CV.ready==='flat'&&(+CV.eff||0)>85)CV.eff=85}rn()}
+/* ── Dynamic warm-up · one row, one tap. Stored beside sprints/aerobic rather than inside s.aerobic so a
+   Friday that also carries a real bike or swim keeps both, and so history can name it for what it is. ── */
+function saveWarmup(dk){if(!CV)return;const s=getCardioSess(dk,true);
+s.warmup={durMin:CV.wu,zone:'2'};if(!s.finishedAt)s.finishedAt=Date.now();
+CE.wu=false;sv();rn();vibe(10);toast(CV.wu+' min warm-up logged')}
+function wuEdit(){CE.wu=true;rn()}
+function rmWarmup(dk){const s=getCardioSess(dk,false);if(!s||!s.warmup)return;
+delete s.warmup;
+if(!s.sprints&&!s.aerobic&&!(s.sets&&s.sets.length))DB.sessions=DB.sessions.filter(x=>x.id!==s.id); /* the warm-up was the only thing on this session · leaving the husk behind would keep a finishedAt around and light the week strip for a day with nothing in it */
+CE.wu=false;sv();rn();vibe(8);toast('Warm-up cleared')} /* back to the one-tap row, not into the editor */
+/* One row, one tap. Deliberately NOT a drill checklist: the skips, the A / B, the strides are the content,
+   but the whole piece runs continuously at 125-155 bpm, so the app records the piece and not its parts.
+   Tapping an unlogged row logs the template default; the minutes button opens the stepper; tapping a
+   logged row clears it, exactly like every other check on the day. */
+function wuRow(dk,t,sess){
+const w=(sess&&sess.warmup)||null,def=(+CV.wu||wuDef(t)); /* what a tap would actually log, NOT the template default · edit to 30 then clear, and the button has to still say 30 or it lies about what tapping does */
+if(CE.wu)return'<div class="exc"><div class="exh"><div class="exn">Dynamic Warm-Up</div><span class="chip bl">Zone 2</span></div><div class="exs">'+esc(t.wuCue||'')+'</div>'
+ +'<div class="fgrid" style="grid-template-columns:1fr">'+cfld('Min','wu',5,10,90)+'</div>'
+ +'<button class="btn btn-o" onclick="saveWarmup(\''+dk+'\')">Save warm-up</button>'
+ +(w?'<button class="lnk" style="display:block;margin-top:10px;text-align:center" onclick="rmWarmup(\''+dk+'\')">Clear warm-up</button>':'')+'</div>';
+if(w)return'<div class="ck done" onclick="rmWarmup(\''+dk+'\')"><div class="cb">'+CHECK+'</div><div class="ckm"><div class="ckn">Dynamic Warm-Up</div><div class="ckr">'+w.durMin+' min · zone '+esc(w.zone||'2')+' · 125-155 bpm</div></div><button class="ed" onclick="event.stopPropagation();wuEdit()">Edit</button></div>';
+return'<div class="ck" onclick="saveWarmup(\''+dk+'\')"><div class="cb">'+CHECK+'</div><div class="ckm"><div class="ckn">Dynamic Warm-Up</div><div class="ckr">30-45 min · skips, drills, easy strides · zone 2 · 125-155 bpm</div></div><button class="ed" onclick="event.stopPropagation();wuEdit()">'+def+' min</button></div>'}
 function saveAerobic(dk){if(!CV)return;const s=getCardioSess(dk,true);
 s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();
@@ -2813,6 +2900,7 @@ return s2};
 /* ── Sprints · their own workout, logged rep by rep in their own window ── */
 if(sprShow){
 h+=head('Sprints');
+if(!xtra)h+=wuRow(dk,t,sess); /* first in time · the throws and the calf primer both say "while fresh", and they come after the warm-up, not before it */
 if(!xtra)(t.checks||[]).filter(c=>c.enabled&&isSprintCheck(c)).forEach(c=>{h+=ckRow(c,checks)});
 const _last=lastSprint(dk),_fb=CV.fallback;
 if(!xtra&&!_det&&!sprData)h+=sprPainHint(dk); /* only on the live card · a saved day and a backfill both already show their own numbers */
@@ -2998,6 +3086,7 @@ const[y,mo]=s.date.split('-');const mk=MN[+mo-1]+' '+y;
 if(mk!==lastM){h+='<div class="mlab">'+mk+'</div>';lastM=mk}
 let sub='';
 if(s.kind==='cardio'){const p=[];
+ if(s.warmup)p.push('WU '+s.warmup.durMin+' min'); /* first, because it ran first · named rather than folded into the aerobic pill, since a warm-up and a ride are not the same thing */
  if(s.sprints)p.push(sprDistC(s.sprints)+' @'+s.sprints.effortPct+'%');
  if(s.aerobic)p.push(aerLabel(s.aerobic.mode)+' '+s.aerobic.durMin+' min'); /* 'm' next to sprint metres meant two units in one line */
  sub=p.join(' · ')||'—'}
@@ -3012,7 +3101,7 @@ if(all.length>list.length)h+='<button class="btn btn-o" style="margin-top:6px" o
 return h}
 function openDetail(sid){S.det=sid;S.view='detail';rn()}
 function closeDetail(){const s=sessById(S.det);
-if(s&&s.kind==='cardio'&&!s.sprints&&!s.aerobic&&!(s.sets&&s.sets.length)){DB.sessions=DB.sessions.filter(x=>x.id!==s.id);sv()}
+if(s&&s.kind==='cardio'&&!s.sprints&&!s.aerobic&&!s.warmup&&!(s.sets&&s.sets.length)){DB.sessions=DB.sessions.filter(x=>x.id!==s.id);sv()} /* a day carrying only a logged warm-up is real · it must survive backing out of the detail view */
 S.view='tabs';S.tab='history';rn()}
 function vDetail(){
 const s=sessById(S.det);
@@ -3064,7 +3153,8 @@ h+='<div class="sl"><span class="lt">Templates</span><span class="rule"></span><
 p.templates.forEach(t=>{
 let b='';
 if(t.kind==='lift')b=t.entries.map(e=>entryRow(e)).join('');
-else{b=sprintMenuHtml(prog().season||'reset')
+else{b='<div class="tpe"><span class="tpen">Dynamic Warm-Up</span><span class="tpes num">'+wuDef(t)+' min · zone 2</span></div>'
+ +sprintMenuHtml(prog().season||'reset')
  +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:12px;letter-spacing:.08em">— or —</div>'
  +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>'
  +(t.checks||[]).map(c=>'<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>').join('')}
@@ -3150,14 +3240,14 @@ function openEdT(tid){S.edT=tid;S.view='edtpl';rn()}
 function tGet(f){return f.split('.').reduce((o,k)=>o[k],tEd())}
 function tStep(f,d,min,max){
 const p=f.split('.'),k=p.pop(),o=p.reduce((x,y)=>x[y],tEd());
-o[k]=Math.min(max,Math.max(min,(+o[k]||0)+d));if(/^(sprD|aerD)\./.test(f))CV=null;sv(); /* cardio defaults feed the guard-built card · rebuild it on next render */
+o[k]=Math.min(max,Math.max(min,(+o[k]||0)+d));if(/^(sprD|aerD|wuD)\./.test(f))CV=null;sv(); /* cardio defaults feed the guard-built card · rebuild it on next render */
 setV(document.getElementById('tv-'+f.replace('.','-')),o[k])}
 function tFld(label,f,step,min,max){
 return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="tStep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="tv-'+f.replace('.','-')+'">'+tGet(f)+'</div><button class="stb" data-hold data-fn="tStep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
 function newTplSheet(){sheet('New template','','<div class="shbtns"><button class="btn btn-o" onclick="newTpl(\'lift\')">Lift · sets × reps</button><button class="btn btn-o" onclick="newTpl(\'cardio\')">Cardio · sprints / bike / swim / run</button><button class="btn btn-q" onclick="closeOv()">Cancel</button></div>')}
 function newTpl(kind){
 const t=kind==='lift'?{id:id('t'),name:'New Lift Day',kind:'lift',note:'',entries:[]}
-:{id:id('t'),name:'New Cardio Day',kind:'cardio',note:'',entries:[],sprD:{reps:3,distM:50,eff:60},aerD:{mode:'bike',durMin:30,zone:'1-2'},sprCue:'',aerCue:'',checks:[]};
+:{id:id('t'),name:'New Cardio Day',kind:'cardio',note:'',entries:[],sprD:{reps:3,distM:50,eff:60},aerD:{mode:'bike',durMin:30,zone:'1-2'},wuD:{durMin:40},sprCue:'',aerCue:'',wuCue:'',checks:[]};
 prog().templates.push(t);sv();closeOv();S.edT=t.id;S.view='edtpl';rn()}
 function vEdTpl(){
 const t=tEd();if(!t){S.view='tabs';S.tab='program';return vTabs()}
@@ -3174,6 +3264,10 @@ h+='<div class="erow'+(e.enabled?'':' offed')+'">'
 +'<span class="car2" onclick="openEntry('+i+')">›</span></div>'});
 h+='<button class="addb" onclick="pickExFor(\'add\')">+ Add exercise</button>';
 }else{
+if(!t.wuD)t.wuD={durMin:40}; /* lazy heal · tGet walks the path blind, so a template that predates wuD (or arrived through an old import) would throw the editor rather than render it */
+h+='<div class="sl"><span class="lt">Warm-up default</span><span class="rule"></span></div>';
+h+='<div class="fgrid" style="grid-template-columns:1fr">'+tFld('Min','wuD.durMin',5,10,90)+'</div>'; /* minutes only · the warm-up's zone is fixed at 2, so there is nothing to pick */
+h+='<div class="flab">Warm-up cue</div><input class="tin" value="'+esc(t.wuCue||'')+'" onchange="tEd().wuCue=this.value;sv()">';
 h+='<div class="sl"><span class="lt">Sprint defaults</span><span class="rule"></span></div>';
 h+='<div class="fgrid">'+tFld('Reps','sprD.reps',1,1,20)+tFld('Dist m','sprD.distM',10,10,400)+tFld('Effort %','sprD.eff',5,10,100)+'</div>';
 h+='<div class="flab">Sprint cue</div><input class="tin" value="'+esc(t.sprCue||'')+'" onchange="tEd().sprCue=this.value;sv()">';
