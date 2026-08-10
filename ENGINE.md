@@ -4,7 +4,7 @@ This document records **how the training engine's logic was arrived at**: the re
 
 - **Design source of truth (the "what"):** the design-foundation artifact - <https://claude.ai/code/artifact/f01568bf-a6bc-48e6-80db-e0a4a628f029>. That page is the audited spec for the *autopilot* (sections: 06 progression controller, 09 guardrails, 10 constants, 11 decisions, 13 evidence). **Its §06 progression controller no longer ships** - see [The progression controller was retired](#the-progression-controller-was-retired-jul-9-2026). Everything else it says still holds.
 - **Raw research on disk:** `~/.claude/plans/blocks-autopilot-engine-research-raw.json` (218 KB, the design pass with all facets + critiques + citations), `~/.claude/plans/blocks-autopilot-engine-design.md` (85 KB, the pre-pivot draft, superseded), the taper synthesis at `~/.claude/plans/blocks-taper-synthesis/` (`FINAL.md`, `VERIFIED.json`, `SYNTH.json`, `FABAUDIT.json`, `COMPLETENESS.json`), and the retirement spec at `~/.claude/plans/blocks-guards-only-engine.md`.
-- **Status:** what ships is **three guards**, dormant behind a master off-switch (Settings → "Training guards", default Off). They drive nothing until turned on, and even then they only ever subtract volume. See [The dormant hold](#the-dormant-hold) at the bottom.
+- **Status:** what ships is **two guards**, dormant behind a master off-switch (Settings → "Training guards", default Off). They drive nothing until turned on, and even then they only ever subtract volume. The third, the flat-day ease, was cut on Aug 6 2026 along with the pre-tap that fed it (§0.2). See [The dormant hold](#the-dormant-hold) at the bottom. The right elbow isometric protocol, which was never part of the engine but shared its logging surfaces, was cut in full on Aug 10 2026 (§0.3).
 
 ---
 
@@ -16,8 +16,8 @@ J reviewed the dormant engine against his re-ranked priorities (§1) and cut it 
 
 - **Lifts and mobility are fully manual.** He builds and adjusts each quarter's blocks himself, by feel. The app shows the template *exactly as written* and logs it. It never sets or suggests a weight. It never increases anything. There is no rung ladder, no advance budget, no green counter, no muscle band, no stall counter, no cold-start on-ramp, no season re-anchor.
 - **Three guards survive**, and they auto-populate rather than nudge (J: *"auto populate is fine, I don't deload nearly enough"* - a nudge he would ignore is worse than a default he will follow):
-  1. **Auto-deload** - a chronic-flat streak or the trained-week backstop books the next full week easy. Lift sets display halved, sprints run easy, cardio minutes ease.
-  2. **Flat-day ease** - a Flat morning pre-tap takes one set off that day's lift, at the bottom of the rep range.
+  1. **Auto-deload** - a chronic-flat streak or the trained-week backstop books the next full week easy. Lift sets display halved, sprints run easy, cardio minutes ease. *(The chronic-flat trigger was cut Aug 6 2026, §0.2. The backstop is now the only trigger.)*
+  2. **Flat-day ease** - a Flat morning pre-tap takes one set off that day's lift, at the bottom of the rep range. *(Cut in full Aug 6 2026, §0.2.)*
   3. **Race taper** - Speed season plus a race date eases sprint and cardio volume into the race, quality held. Lifts are untouched.
 - Every guard can only **subtract, temporarily, on volume, and it says so on the card.** Never a weight, never upward, never a write to the saved template. A guard's output is clamped to the template value, so an eased day can never prescribe *more* than the day you wrote.
 - **A Stop post-tap arms the next sprint to run easy.** The old three-way Stop follow-up sheet ("a joint / the muscle / systemic") is gone: two of its three answers only fed the progression ladder, so they would have become promises the code no longer keeps.
@@ -40,6 +40,38 @@ A 42-agent adversarial review of the guards-only commit surfaced one theme and a
 - **The ring counts the eased prescription.** `liftCounts` rides `prescSets` like every other surface, so a completed deload/flat day reaches 100%.
 - **The scheme parser reads only the rep half.** `repBand` strips warmup/set-count/set-range prefixes (accepting a typed `x` for `×`) before parsing, so a rest/tempo/hold range ("· rest 45-60s") can never masquerade as the rep band, and a plain authored rep ("3 × 12") is its own floor — the eased line and the prefilled reps now always agree.
 - **The guards switch preserves the race date.** OFF→ON still resets the easy-week clock but no longer silently wipes `horizonDate` (only the disclosed "Start fresh" does that). `trendCapped` no longer counts deload-week flats (matching `chronicFlat`). The recovery-dial label updates live while stepping.
+
+### 0.2 The three subjective prompts were cut (Aug 6 2026, contentRev 31 / sw blocks-v59)
+
+**Everything in §0.1 above about pre-taps, `viaTap`, `fc0` and `trendCapped` is superseded here.** Those identifiers no longer exist in the code. J cut every subjective prompt that was not earning its keep:
+
+- **The daily readiness pre-tap is gone** (the "How do you feel today?" Springy / Normal / Flat question). Every reader of it sat behind `engineOn()`, which is dormant, and the answer was never surfaced in History or Trends either. It was not even bankable: enabling the guards re-anchors `engAnchor` to that day, so no stored pre-tap could ever have counted. Everything it fed went with it: the **flat-day ease**, the chronic-flat deload trigger, the two-flats sprint guard (`trendCapped`), the taper flat multiplier, and the flat-day swim cut. `chronicFlat`, `trendCapped`, `viaTap`, `fc0` and `liftFallbackDay` are all gone.
+- **The sprint window's Fresh / Solid / Faded read is gone.** It was display-only, and it was asked at the same moment as the calf-pain read.
+- **Gate E1 is gone**, and with it the supinated grip it was unlocking (`el_s`, archived rather than deleted) and the next-morning Better / Same / Worse elbow read. The entry `gate` mechanism went too, since Gate E1 was its only user.
+
+**So two guards ship, not three:** the auto-deload on the trained-week backstop, and the race taper. A Stop post-tap still arms the next sprint to run easy, and `cardioRx` still eases the template's own minutes during a deload week or a taper.
+
+**Kept on purpose:** the neutral hold, the ache and jolt fields, the 28-day elbow review, calf pain, the next-morning calf read, Sprint readiness (still Springy / Normal / Flat, but on the sprint card only) and the post-session "How was it?" that the weekly load line is built on. Sprint day drops from five subjective prompts to three, lift day likewise. *(The first three of those were themselves cut a few days later, §0.3.)*
+
+Logged history is never rewritten: stored `days[dk].pre`, `days[dk].elbowAm` and `sprints[..].quality` values stay where they are, simply no longer written or read. `schemaVersion` stays 1. *(`elbowAm` was deleted outright at §0.3; `pre` and `quality` still stand.)*
+
+### 0.3 The elbow isometric protocol was cut in full (Aug 10 2026, contentRev 32 / sw blocks-v60)
+
+**Everything §0.2 says it kept on the elbow side is superseded here.** J asked for the whole protocol gone, not trimmed. What went:
+
+- **The exercise.** `el_n` (the neutral-grip hold) leaves Day A and the library. `el_s`, archived at cr31, is deleted with it.
+- **The iso logging path.** Sets logged as seconds + effort % are gone as a concept: `isIso`, `isoPrefill`, `isoPair`, `setTxtIso`, the `iso` library flag, `defHold` / `defEff`, and the `!x.iso` guards that had to keep those sets out of the PR scan, the per-exercise trend, the weekly-load count and the Strength Trends picker. `setTxt` is one line again.
+- **The two symptom numbers.** `sess.elbow`, `elbowGet` / `elbowSeed` / `elbStep` / `elbFld` / `elbowBlock`, and the derived read side (`elbowDays`, `elbowJolts`, `elbowFirstDate`, `elbowSeries`, `elbowReviewDue`, `ELBOW_EX`, `ELBOW_REVIEW_DAYS`, `isoSets`).
+- **The Trends card** (`elbowCard`) and the 28-day review banner on it.
+- **The Elbow Protocol reference card**, and the elbow clauses in the Day A note, the `s3` cue, Timeline, Phase Gates and the daily notes.
+
+**This is the one migration that deletes logged history**, and it is deliberate: J asked for the sets gone, not archived. cr32 removes every iso set from every session, the `sess.elbow` records with them, and the stored `days[dk].elbowAm` readings. Because nothing references the library rows afterwards, they are *deleted* rather than archived (unlike `el_s` at cr31, which was archived precisely because deleting a row with sets behind it would break `exOf`). Everywhere else, logged work is still never rewritten.
+
+**Dead hangs and pull-ups both come back in the same step.** They were parked *for* the elbow, and un-parking one without the other would have left the app contradicting itself. `d5` loses `paused`, `p1` regains `enabled:true`, and `hangPausedAt` resets to 0. `skipIfHang` is doing real work again: Day A now contains pull-ups, so the dead hang stands itself down on A and shows on every other day.
+
+**The daily right ulnar floss (`d2`) is untouched.** A daily ritual on a symptomatic nerve was always a separate decision from the isometric protocol, and it survives it. The hang-pause clock, which had borrowed `ELBOW_REVIEW_DAYS`, now has its own `HANG_PAUSE_DAYS`.
+
+`schemaVersion` stays 1.
 
 ---
 
@@ -177,8 +209,8 @@ A running theme across every pass: adversarial fact-checkers removed fabricated 
 
 Everything is behind the master `engineOn()` switch, and everything is a lazy per-program sibling in the one `blocks_v1` blob - no `schemaVersion` bump, mirroring the sprint-plan pattern. With the switch off, the app behaves exactly as it did before the engine existed and creates no engine state at all.
 
-- **The taps, load, and season.** The day-level readiness pre-tap (Springy / Normal / Flat) and the post-session tap (Springy / Normal / Flat·sore / Stop), stored on the day record; the load metric as `LOAD_MAP × minutes`; `program.season` + the four `SEASONS`. The season is now a label plus the taper's eligibility gate: it eases nothing, so it never re-anchors the deload clock.
-- **The three guards.** `prescSets(entry, dk)` and `schemeEng(entry, dk)` read the template and return a set count in `[1, entry.sets]` with a `· deload` or `· easy day` tag. `cardioRx(dk, base)` eases the template's own minutes, clamped so it can never exceed them. `trendCapped` (two flat mornings inside four days) and a Stop-armed `sprintFb` run the sprint easy. Deloads fire on a chronic-flat streak or the trained-week backstop.
+- **The taps, load, and season.** The post-session tap (Springy / Normal / Flat·sore / Stop), stored on the day record; the load metric as `LOAD_MAP × minutes`; `program.season` + the four `SEASONS`. The season is now a label plus the taper's eligibility gate: it eases nothing, so it never re-anchors the deload clock. (The day-level readiness pre-tap that used to sit alongside it was cut Aug 6 2026, §0.2.)
+- **The two guards.** `prescSets(entry, dk)` and `schemeEng(entry, dk)` read the template and return a set count in `[1, entry.sets]` with a `· deload` tag. `cardioRx(dk, base)` eases the template's own minutes, clamped so it can never exceed them. A Stop-armed `sprintFb` runs the sprint easy. Deloads fire on the trained-week backstop, which since §0.2 is the only trigger left.
 - **Peaking + resets.** The taper (§3.5), and the fresh-block reset (`resetDate` marker; offered on open after a 14-day gap, never automatic - the Vancouver→Hua Hin move re-arms it). A fresh block now only resets the easy-week clock and clears a pending deload, taper, and race date; there is no longer a lift floor to ease back to.
 
 **Deleted (Jul 9 2026, see §0):** the whole lift progression controller and its muscle-band layer, the tendon auto-load path, the season re-anchor, the stall counter, the ramp cap, the cold-start on-ramp, the swim auto-progression, and the Stop follow-up sheet.
@@ -193,7 +225,7 @@ The guards are built but held **dormant** behind a master off-switch (`engineOn(
 
 **Why it was held:** the original engine's design assumed a **healthy athlete** - the injury logic was deliberately stripped (§3.2) on the expectation that J would be fully cleared and well-supported by the time it ran. Until then, an injury-logic-free engine must not auto-progress rehab-sensitive lifts or sprint load.
 
-**Why the hold now costs almost nothing.** That risk lived almost entirely in the progression controller, and the progression controller is gone (§0). Nothing auto-progresses. What remains can only take volume away, temporarily, on a day J already told it he feels flat. The question that used to gate the switch - *does the stripped engine need partial guardrails re-added for anything not fully cleared?* - is mostly answered by subtraction: there is no longer an auto-load path to guard.
+**Why the hold now costs almost nothing.** That risk lived almost entirely in the progression controller, and the progression controller is gone (§0). Nothing auto-progresses. What remains can only take volume away, temporarily, on a week the backstop has already booked easy or in a race run-in J set himself. The question that used to gate the switch - *does the stripped engine need partial guardrails re-added for anything not fully cleared?* - is mostly answered by subtraction: there is no longer an auto-load path to guard.
 
 **Re-enable trigger:** J's own say-so - strict mode, decoupled from any PT appointment. He flips the Settings switch himself, whenever he decides.
 

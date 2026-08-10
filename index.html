@@ -228,7 +228,6 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .stv.tick{animation:vtick .2s var(--ease)}
 .stv:active{background:var(--border)}
 @keyframes vtick{from{transform:scale(1.22)}}
-.stv .u{font-size:10px;color:var(--muted);font-weight:600;margin-left:2px}
 .vin{width:100%;background:transparent;border:none;color:var(--text);font-size:19px;font-weight:700;letter-spacing:-.01em;text-align:center;font-family:var(--f);font-variant-numeric:tabular-nums}
 .vin:focus{outline:none}
 .lg{height:54px;border-radius:12px;border:1.5px solid var(--ember-line);background:rgba(255,111,46,.08);display:flex;align-items:center;justify-content:center;color:var(--ember);transition:transform .12s var(--ease),background .15s,border-color .15s,color .15s}
@@ -246,10 +245,9 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .sr.done .dck{height:44px;display:flex;align-items:center;justify-content:center;color:var(--sage)}
 .sr.done .dck svg{width:18px;height:18px}
 .adds{font-size:14px;font-weight:600;color:var(--muted);padding:13px 8px 13px 4px;display:inline-block;margin:-6px 0 -8px;white-space:nowrap}
-.exf{flex-wrap:wrap;row-gap:2px} /* Add/Remove-set + reorder + Remove can't always share one line on a narrow phone · wrap cleanly instead of breaking a label mid-word */
 .adds:active{color:var(--dim)}
 .rowx{font-size:13px;font-weight:600;color:var(--danger);padding:12px}
-.exf{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.exf{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;row-gap:2px} /* Add/Remove-set + reorder + Remove can't always share one line on a narrow phone · wrap cleanly instead of breaking a label mid-word */
 /* Remove deletes a whole exercise · quarantine it from the reorder arrows it used to sit 1px from */
 .exrm{font-size:13px;font-weight:600;color:var(--muted);padding:13px 10px;margin:-6px -6px -8px 16px}
 .exmv{font-size:18px;font-weight:700;color:var(--muted);min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;margin:-6px 0 -8px} /* the -4px horizontal pull made ↑ and ↓ physically overlap */
@@ -506,8 +504,6 @@ ex('s4','Bulgarian Split Squats',1,120,['legs','glutes']),
 ex('cl','Stick Landings',1,60,['calves','landing mechanics']),
 ex('spr','Sprint Run-Throughs',1,0,['sprint'],'sprint'),
 ex('aer','Bike / Swim / Run',1,0,['aerobic'],'cardio'),
-/* Right elbow · isometric holds. iso rows log seconds + effort %; the ache/jolt read lives on the session (see logIso). Single 'elbow' tag on purpose — the Trends hard-sets band counts one set per tag, and these are rehab, not volume. The supinated grip (el_s) and the Gate E1 that unlocked it were cut at contentRev 31, at J's call: the gate was a distraction and the neutral hold was always the protocol. */
-ex('el_n','Right Elbow Isometric Hold · neutral grip',0,90,['elbow'],0,1),
 /* ── Preloaded common-exercise library (cx_*) — added contentRev 9. Picker sorts by usage, so these sit below your active lifts. ── */
 /* Chest */
 ex('cx_barbellbenchpress','Barbell Bench Press',0,180,['chest','triceps','front delts']),
@@ -676,14 +672,13 @@ ex('cx_wallball','Wall Ball',0,90,['quads','shoulders','glutes']),
 ex('cx_dumbbellthruster','Dumbbell Thruster',0,120,['quads','shoulders','glutes']),
 ex('cx_barbellthruster','Barbell Thruster',0,120,['quads','shoulders','glutes']),
 ];
-/* Optional entry fields, present only where used · defHold/defEff seed an iso row's two steppers. */
+/* Optional entry fields, present only where used. */
 const en=(exId,o)=>Object.assign({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false},o);
 const templates=[
 {id:'t_pull',name:'A',kind:'lift',
- note:'Straight sets, full rest. Elbow holds go FIRST, before anything grips a bar · isometrics are analgesic, and a fresh ache reading is the honest one. Consistent reps across all 4 sets → add weight. Calf raises: this card is written for MONDAY. On Thursday log only 2 sets and drop the load yourself, so Friday sprints land fresh.',
+ note:'Straight sets, full rest. Consistent reps across all 4 sets → add weight. Calf raises: this card is written for MONDAY. On Thursday log only 2 sets and drop the load yourself, so Friday sprints land fresh.',
  entries:[
- en('el_n',{sets:3,scheme:'3 × 30-45s @ ~70%',defHold:40,defEff:70,cue:'elbow ~90° · upper arm pinned to the ribs · pull into rack pins set low, or self-resist with the opposite hand · LOOSE hook grip, do not crush the bar · 90s rest'}),
- en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,enabled:false,cue:'Shoulder cleared · still held for the ELBOW. A pull-up hangs the elbow off a bar, which is the exposure the isometric protocol removed. Un-park at the 28-day elbow review, together with dead hangs.'}),
+ en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,cue:'full range, controlled down, no kipping'}),
  en('p2',{sets:3,scheme:'3 × 10/side',defReps:10,cue:'full rest'}),
  en('p3',{sets:3,scheme:'3 × 12-15/side',defReps:12,defW:5,cue:'1-arm · opp knee + hand on bench · plate · thumb up, arm straight · 2s hold at top · hips & shoulders square · all 3 sets hit 15 with a clean 2s hold, twice running → 10 lb'}),
  en('p4',{warmups:2,sets:0,scheme:'2 × 15 · warm-up',defReps:15,cue:'band · ext. rotation at top · a warm-up set, not counted volume'}),
@@ -691,7 +686,7 @@ const templates=[
  en('pf',{warmups:3,sets:0,scheme:'3 × 10 · warm-up',defReps:10,cue:'light · fast up / controlled down · the calf-specific ramp into the heavy raises, not counted volume'}),
  en('p6',{sets:4,scheme:'4 × 6-8/leg',defReps:8,cue:'deficit · palpated midportion, so the deficit is correct · 1s up, 3s down · start ~25-30 lb, build to ~55 · all 4 sets hit 8 twice running → +5 lb'}),
  en('h90',{sets:3,scheme:'3 × 5/side',defReps:5,defW:25,cue:'both shins ~90° · sit tall, plate at the chest · settle into the position 20-30s, then 5 slow knee lift-offs, front leg then back leg · torso stays upright, no falling back · add plate before adding reps'}),
- en('s3',{sets:3,scheme:'3 × 8-10',defReps:8,cue:'ab straps · no grip at all, the elbow and forearm stay out of it · slow down, no swing · easy at 10 → plate between the feet, back to 8'}),
+ en('s3',{sets:3,scheme:'3 × 8-10',defReps:8,cue:'ab straps · no grip at all · slow down, no swing · easy at 10 → plate between the feet, back to 8'}),
  en('cx_pallofpress',{sets:3,scheme:'3 × 8-10/side',defReps:10,cue:'band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back'}),
 ]},
 {id:'t_push',name:'B',kind:'lift',
@@ -726,8 +721,8 @@ const templates=[
  {id:'mobdone',name:'Full Mobility Routine',detail:'roll · stretch · flows',link:'mobility',enabled:true},
 ]},
 ];
-/* The twice-daily block carries ONE nerve floss: the right ulnar, deliberately unchanged until the 28-day
-   elbow review so the withdrawal test after it has a clean baseline to read against.
+/* The twice-daily block carries ONE nerve floss: the right ulnar. It is a daily ritual on a symptomatic
+   nerve and stands on its own · it outlived the elbow isometric protocol that was cut around it.
    The median and R. posterior tibial flosses are NOT cut · they moved to the weekly mobility routine
    (m32 / m33) at J's call, Aug 2026. That move is the thing the Jul evidence review actually argued for
    and stopped short of: the objection was never the movement, it was fourteen doses a week in limbs with
@@ -738,7 +733,7 @@ const daily=[
 {id:'d4',name:'90/90s',detail:'10 / side'},
 {id:'d7',name:'Couch Stretch',detail:'30s / side'},
 {id:'d8',name:"World's Greatest Stretch",detail:'5 / side · 5s holds'},
-{id:'d5',name:'Dead Hangs',detail:'1 min',skipIfHang:true,paused:true}, /* paused for the right elbow · 4 weeks minimum. Reversible from the daily-block editor; the resume prompt shows on the daily block once the pause is 28 days old. Pull-ups (p1) come back at the SAME review, not before. */
+{id:'d5',name:'Dead Hangs',detail:'1 min',skipIfHang:true}, /* un-paused at contentRev 32 with pull-ups, when the elbow isometric protocol was cut · skipIfHang still stands it down on a day that already hangs */
 ];
 /* RESTORED IN FULL, Aug 2026, at J's explicit call. The Aug review had cut this list from 29 items to 13
    on three rules (duplicates out of the weekly list rather than the daily block; rolling trimmed on dose;
@@ -832,7 +827,6 @@ const reference=[
 - 1 week full training per 2 weeks missed.
 **Ask the physio · the open list**
 - Box jump check: 5 bilateral onto ~30cm + 5 unilateral onto 15-20cm, judged on absolute capacity not symmetry. It lived in this app for months and was never once performed, and nothing here can log it, so it belongs at a visit rather than on a card. It measures something nothing else does · a bilateral-versus-unilateral power comparison. The thresholds carry no source.
-- The right elbow, at the 28-day review: does it tolerate hanging again? Pull-ups and dead hangs both come back on that answer and neither before it.
 - Freestyle stroke rule for the right shoulder before the pool becomes the aerobic engine in October.
 - How the ~55 lb should be carried on the deficit raise, now that the right shoulder is cleared.`},
 {t:'Sprint Program',b:`**By feel · 1×/week (Friday) · build top speed first, extend later · 100m now, 200 later (track available).**
@@ -895,10 +889,9 @@ The four rungs that are also carded exercises (heavy deficit raises, bent-knee r
 - Med-ball slams, sprint-day throws and decline push-ups are back on. Landmine press is both arms again. The coaching frame that drove the park was right and is worth keeping: the risky axis was never push-versus-pull, it was loaded × end-range × ballistic.
 - Decline push-ups (s2) had been switched off inside a migration with no note anywhere · that is why nothing here explained them. Back on, and now they are the only right-side pressing in the week.
 - Landmine rainbows · still never shipped, now eligible rather than parked. The Pallof press is no longer standing in for them, it holds Day A's anti-rotation slot on its own merit.
-- **Pull-ups are the exception and are still OFF.** Not for the shoulder. See below.
-**Parked for the right elbow**
-- Dead hangs · out of the daily block, 4 weeks minimum. Hanging leg raises run on ab straps, so nothing in the week hangs the elbow off a bar.
-- **Pull-ups (p1) are held here now, not under the shoulder.** The shoulder cleared them; a pull-up still hangs the elbow off a bar, which is exactly the exposure this protocol removed. They come back at the 28-day elbow review, in the same edit that resumes dead hangs. Un-parking one without the other would leave the app contradicting itself.
+- **Pull-ups are back on** (contentRev 32). They had been held a second time for the right elbow after the shoulder cleared them; that protocol was cut, so they and dead hangs resumed together, which is the only way they were ever going to move.
+**Cut Aug 2026 · the right elbow isometric protocol**
+The whole thing is gone: the neutral-grip holds off Day A, the ache and jolt logging, the elbow card in Trends and its 28-day review, and the reference card that carried them. Dead hangs and pull-ups both came back in the same edit. The daily right ulnar floss (d2) is untouched and stays · that was always a separate decision about a daily ritual on a symptomatic nerve. The off-the-mat measures the card carried are worth remembering without an app to hold them: avoid sustained end-range elbow flexion in the day, and sleep with the elbow near 45°.
 **Nerve flosses · re-dosed Jul 2026, re-homed Aug 2026**
 Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then stops. Nobody has studied daily flossing sustained for months, and nobody has studied flossing an asymptomatic limb to prevent or maintain anything. Not weak evidence, no studies. That was an argument about **dose**, not about the movement, and the resolution is that these now run about weekly in the mobility routine instead of twice a day.
 - Median floss · **moved to the mobility routine** (was cut from the twice-daily block in Jul). No symptoms to treat and no prophylaxis literature of any kind, so this was always a time decision rather than a safety one, and about weekly costs little.
@@ -918,44 +911,13 @@ Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then
 - Chin tucks · **moved to the mobility routine** (Aug 2026), not cut. The evidence note stands: surrogate outcomes only (craniovertebral angle, joint position sense) with no shown transfer to pain, performance or durability, and no neck symptom recorded here to treat. That was enough to take them off a twice-daily schedule. It is not enough to refuse them a weekly slot, and it is your call either way.
 - Weighted decline sit-ups · third trunk movement on a day that already ran two, hip-flexor dominant like the hanging leg raise it sat beside, and its one distinguishing feature was external load, which is explicitly not how muscle retention progresses here.
 - Sixteen mobility-routine items · **all sixteen restored Aug 2026**, at your call, and the routine is back to its full list plus the three items that came over from the daily block. Nothing above about their evidence has changed; what changed is that a weekly slot costs almost nothing and you wanted them there. Recorded here so the reversal is on the page rather than a mystery in six months.`},
-{t:'Elbow Protocol',b:`Isometric holds on the right elbow, Mon + Thu, first thing in the session. Nothing else in the week loads the elbow off a bar: dead hangs are paused, hanging leg raises run on ab straps, and pull-ups stay off until the review below even though the shoulder that originally parked them is now cleared.
-
-**The prescription**
-- 3 × 30-45s, ~70% effort, 90s rest. Elbow ~90°, upper arm pinned to the ribs, pulling into something immovable · rack pins set low, or the opposite hand.
-- **Loose hook grip.** Crushing the bar recruits the exact tissue you are trying to settle.
-- Neutral grip (thumb up) is the whole protocol. The supinated variant and the four-clean-session gate that was going to unlock it were **cut Aug 2026**: a locked exercise you are counting toward is a distraction from the one you are actually doing, and nothing said the second grip added anything the first does not.
-
-**Two numbers, not one**
-- **Ache** 0-10 · the dull, under-load feeling while you hold. This is the one that is allowed to exist.
-- **Jolts** · a count of sharp, electric or catching moments. Not a severity, a tally: how many times it happened.
-They are logged separately on purpose. Averaged into a single pain score they cancel out, and the sharp one is the one that matters.
-
-**What a jolt still costs you**
-- Any session with a jolt drops the next session's prefilled effort target by 10%. That is the one automatic response left, and it is enough: it is self-limiting, it costs one session rather than compounding, and you can tap it back up.
-- The next-morning "Better / Same / Worse" read went with the gate · it existed only to score it.
-
-**Off the mat · this outranks every exercise here**
-- **Avoid sustained end-range elbow flexion in the day.** Phone to the ear, elbow folded under a pillow, long drives. This is the only conservative measure the 2025 Cochrane review will say may help.
-- **Sleep with the elbow near 45°.** A towel loosely wrapped round the joint is the whole intervention.
-- Sustained grip in a flexed elbow is mechanically "holding a tool in position", the one biomechanical predictor of ulnar entrapment that reached significance in repetitive workers. That is why the hold is 90° and a loose hook grip. Control the position, don't drop the intensity.
-
-**The ulnar floss · slider, not tensioner**
-A slider moves the ulnar nerve at the elbow more than twice as far as a tensioner (8.3 vs 3.8 mm, Coppieters & Butler 2008), at much lower strain. Elbow and wrist move in **opposite** directions, no end-range hold, no shoulder depression. Most lay floss demos teach a tensioner. (The old "roughly an eighth of the strain" figure was corrected Aug 2026 · that pair was measured on the MEDIAN nerve at the WRIST. The direction was right, the ratio was borrowed from a different nerve at a different site.)
-It is not dangerous: ordinary maximal elbow flexion loads that nerve two to three times harder than any floss does, so do not start avoiding normal elbow movement. It simply has no demonstrated benefit: the only 6-month randomised trial in this exact condition found nerve gliding did nothing that education alone did not.
-
-**The floss withdrawal test · CUT Aug 2026**
-The 10-week protocol that sat here (4-6 weeks off, 14 days back on, decision rule committed in advance) was a well-designed personal experiment aimed at a question that is already answered. Spending ten weeks to re-derive a published null is the most expensive available route to it, and the Parked & Cut card applied exactly this reasoning to every other floss already.
-- What it was going to find: roughly 88-90% of mild-to-moderate cases improve within six months even on nothing more than advice about positions to avoid. The daily right ulnar floss (d2) is untouched by this and stays · that is a separate decision about a daily ritual on a symptomatic nerve, not about the experiment.
-- Worth keeping from it: your 0-10 ache has a minimal detectable change of about 1.4 points at the elbow, so any block-to-block ache difference under that is noise. **The jolt count is the better instrument.** Don't buy a grip dynamometer: grip is the wrong muscle group for this nerve and its measurement error swamps anything you could detect.
-
-**Review at 28 days** from the first logged session · ache trend and cumulative jolts. It surfaces on the elbow card in Trends. This is the decision point the whole protocol is pointed at, and it survived the gate being cut.`},
 {t:'Timeline',b:`- **Wk 5-6 · Cleared** — Gate 1, Phase 3. Seated calf raises began.
 - **Wk 8 · Cleared** — Gate 2, Phase 4. Deficit calf raises. BSS. Sprint run-throughs begun.
 - **Wk 13-14 · Cleared** — Gate 3a, return to run. Fast running clean; heel-raise and hop floors cleared (they were floors).
 - **Gate 3b · Target** — loaded capacity. An 8-12 week build to ~55 lb on the deficit raise. Plyo primer, bent-knee work and the single-leg RDL run alongside it.
 - **Aug 2 2026** — palpated midportion, so the deficit stays. Right shoulder cleared by the physio, so slams, throws, decline push-ups and both-arm pressing come back. Continuous running dropped by choice. Programs reviewed and cut.
 - **Aug 2026, before the move** — prove the deficit-raise loading vehicle at ~30 lb while there is still a fallback in the room. The build's heaviest third lands on the far side of October, and a carry method that changes mid-build breaks it at the worst point.
-- **~Aug 25 · 28-day elbow review** — ache trend and cumulative jolts. Pull-ups and dead hangs both come back on this answer, together or not at all.
+- **Aug 2026** — the right elbow isometric protocol cut. Pull-ups and dead hangs both resumed in the same edit.
 - **Wk 20-24 · Sep-Oct** — Gate 4, full return. Max velocity. Speed endurance opens here, 400m ceiling. Block starts last. Arrive Hua Hin rebuilt.`},
 {t:'How the Tear Heals',b:`**Phase 1 — Destruction · Hours 0-48.** Torn fibers retract. Hematoma forms scaffold. Neutrophils (hrs 1-24), macrophages (hrs 24-72) secrete growth factors activating satellite cells.
 **Phase 2 — Repair · Days 3-21.** Satellite cells fuse into myotubes bridging the gap. Fibroblasts lay Type III collagen — weak, disorganized. Grade II gap too large to fully bridge; scar fills the rest.
@@ -964,7 +926,7 @@ The 10-week protocol that sat here (4-6 weeks off, 14 days back on, decision rul
 ];
 return{
 schemaVersion:1,
-contentRev:31,
+contentRev:32,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0,hangPausedAt:0}, /* hangPausedAt 0 · the resume clock falls back to meta.created on a fresh install (see hangResumeDue), so it is never measured against undefined */
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -973,7 +935,7 @@ programs:[{id:'p_rtt',name:'Return to Training',subtitle:'Phase V · loading · 
  schedule:{0:null,1:'t_pull',2:'t_cardio',3:'t_push',4:'t_pull',5:'t_cardio',6:'t_push'},
  season:'reset',
  sprintPlan:{fastWeeks:0},
- templates,checklists:{daily,dailyNoteAm:'Morning pass · one set of each. Keep the ulnar slider gentle and mid-range; nerves are tighter first thing. Dead hangs are paused while the right elbow settles.',dailyNotePm:'Evening pass · one set of each. Warm tissue · this is where to push stretch depth. Dead hangs are paused while the right elbow settles.',mobility,therapist},reference}],
+ templates,checklists:{daily,dailyNoteAm:'Morning pass · one set of each. Keep the ulnar slider gentle and mid-range; nerves are tighter first thing.',dailyNotePm:'Evening pass · one set of each. Warm tissue · this is where to push stretch depth.',mobility,therapist},reference}],
 sessions:[],
 days:{},
 dayOverrides:{},
@@ -1011,7 +973,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=31)return;
+let cr=DB.contentRev||0;if(cr>=32)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -1111,7 +1073,7 @@ if(cr<14){
  cr=14;
 }
 if(cr<15){
- /* Guards-only engine · the lift auto-progression controller and the swim auto-progression are retired. What survives only ever subtracts volume, temporarily: the auto-deload week, the flat-day ease, and the race taper. Drop the now-dead per-slot plan blobs and the armed sprint-fallback flag; keep the surviving engine state (deload / taper / dial / on), the season, and the race date. Non-destructive: logged history untouched; never creates engine state on a dormant install. */
+ /* Guards-only engine · the lift auto-progression controller and the swim auto-progression are retired. What survives only ever subtracts volume, temporarily: the auto-deload week, the flat-day ease, and the race taper (the flat-day ease was itself cut at cr31). Drop the now-dead per-slot plan blobs and the armed sprint-fallback flag; keep the surviving engine state (deload / taper / dial / on), the season, and the race date. Non-destructive: logged history untouched; never creates engine state on a dormant install. */
  (DB.programs||[]).forEach(p=>{delete p.liftPlan;delete p.cardioPlan;if(p.engine){delete p.engine.sprintFb;delete p.engine.seasonSetAt}});
  cr=15;
 }
@@ -1240,7 +1202,7 @@ if(cr<22){
 }
 if(cr<23){
  /* Right elbow · isometric holds lead Day A (Mon + Thu), logged as seconds + effort with ache and jolt
-    kept as two separate numbers; the supinated grip waits behind Gate E1. Everything that hangs the
+    kept as two separate numbers; the supinated grip waits behind Gate E1 (both cut at cr31). Everything that hangs the
     elbow off a bar comes out in the same step: dead hangs pause, hanging leg raises move to ab straps.
     Core work joins both lift days, and the kneeling landmine press becomes the half-kneeling variant
     IN PLACE rather than gaining a near-twin — a second press would put four left-arm press sessions a
@@ -1323,7 +1285,9 @@ if(cr<24){
     resolved either hold onto a pre-existing library row carrying its own id. Guarded on the shipped
     values, so a hold you have already retuned by hand keeps your number.
     The post-jolt 10-point drop needs no migration: it is computed at render time from logged history
-    (isoPrefill), so it lands one step under whatever you last logged, not under this new target.
+    (isoPrefill · deleted at cr32 with the rest of the protocol, so this step is now inert for anyone
+    who reaches cr32 in the same run, which is everyone), so it lands one step under whatever you last
+    logged, not under this new target.
     That also means the new 70 only reaches the dial where there is no elbow history yet — a hold you
     have already logged at 60 keeps opening at 60 until you tap it up once, and then carries.
     Idempotent · a second run finds the new values and matches nothing. */
@@ -1537,6 +1501,61 @@ if(cr<31){
  patchRef('Timeline');        /* the Aug 25 review drops its Gate E1 clause */
  cr=31;
 }
+if(cr<32){
+ /* The right elbow isometric protocol is CUT IN FULL, at J's call · the neutral-grip holds off Day A,
+    the seconds+effort logging with them, the per-session ache and jolt numbers, the Elbow card in
+    Trends and its 28-day review, and the reference card that carried the whole thing.
+    This one DOES delete logged history, which is the only migration here that ever has, and it is
+    deliberate: J asked for the sets gone, not archived. Everything else in this app still holds the
+    line that logged work is never rewritten.
+    Dead hangs and pull-ups both come back in this same step. They were parked FOR the elbow and
+    un-parking one without the other was always going to leave the app contradicting itself.
+    The daily right ulnar floss (d2) is NOT touched · a daily ritual on a symptomatic nerve was always
+    a separate decision from the isometric protocol, and it survives it. */
+ const _ELID=new Set(['el_n','el_s']);
+ (DB.library||[]).forEach(e=>{if(e.iso)_ELID.add(e.id)}); /* a name-match in an old migration could have landed the hold on a different id · the iso flag is what actually marks one */
+ (DB.sessions||[]).forEach(s=>{
+  if(Array.isArray(s.sets))s.sets=s.sets.filter(x=>!(x.iso||_ELID.has(x.exId)));
+  if(Array.isArray(s.addons))s.addons=s.addons.filter(x=>!_ELID.has(x));
+  if(Array.isArray(s.hidden))s.hidden=s.hidden.filter(x=>!_ELID.has(x));
+  delete s.elbow}); /* the ache/jolt record goes with the sets it described */
+ (DB.programs||[]).forEach(p=>{
+  (p.templates||[]).forEach(t=>{if(Array.isArray(t.entries))t.entries=t.entries.filter(e=>!_ELID.has(e.exId))});
+  if(Array.isArray(p.reference))p.reference=p.reference.filter(r=>r.t!=='Elbow Protocol');
+ });
+ /* Safe to DELETE the library rows rather than archive them, unlike el_s at cr31: every set that
+    referenced them was removed above, so exOf is never asked for one again. */
+ if(Array.isArray(DB.library))DB.library=DB.library.filter(e=>!_ELID.has(e.id));
+ const _ftl=(fp.templates||[]).find(x=>x.id==='t_pull');
+ const _P1OLD='Shoulder cleared · still held for the ELBOW. A pull-up hangs the elbow off a bar, which is the exposure the isometric protocol removed. Un-park at the 28-day elbow review, together with dead hangs.';
+ const _NOTECUT='Elbow holds go FIRST, before anything grips a bar · isometrics are analgesic, and a fresh ache reading is the honest one. ';
+ const _S3CUT=', the elbow and forearm stay out of it';
+ const _HANGCUT=['Dead hangs are paused while the right elbow settles.','Dead hangs skip when the day already has a hang.','Dead hangs skipped on training days.'];
+ Object.keys(DB.days||{}).forEach(dk=>{const d=DB.days[dk];if(d&&d.elbowAm!=null)delete d.elbowAm}); /* the next-morning elbow read · cr31 left these stored on the "logged history is never touched" rule, and this cut overrides it */
+ (DB.programs||[]).forEach(p=>{
+  const ot=(p.templates||[]).find(x=>x.id==='t_pull');
+  if(ot){
+   if((ot.note||'').indexOf(_NOTECUT)>=0)ot.note=ot.note.split(_NOTECUT).join('');
+   const p1=(ot.entries||[]).find(e=>e.exId==='p1');
+   if(p1){p1.enabled=true; /* back on · it was only ever off for the shoulder, then for the elbow, and both are answered */
+    const f1=_ftl&&(_ftl.entries||[]).find(e=>e.exId==='p1');
+    if(f1&&p1.cue===_P1OLD)p1.cue=f1.cue} /* a cue J rewrote himself is left alone */
+   const s3=(ot.entries||[]).find(e=>e.exId==='s3');
+   if(s3&&(s3.cue||'').indexOf(_S3CUT)>=0)s3.cue=s3.cue.split(_S3CUT).join('');
+  }
+  const c=p.checklists;if(!c)return;
+  const d5=(c.daily||[]).find(x=>x.id==='d5');
+  if(d5)delete d5.paused; /* dead hangs back in the daily block · skipIfHang still stands them down on a day that already hangs */
+  ['dailyNoteAm','dailyNotePm'].forEach(k=>{let v=c[k];if(typeof v!=='string')return;
+   _HANGCUT.forEach(x=>{v=v.split(' '+x).join('').split(x).join('')});
+   c[k]=v.trim()});
+ });
+ if(DB.settings)DB.settings.hangPausedAt=0;
+ patchRef('Parked & Cut'); /* carries the cut and the pull-up resume */
+ patchRef('Timeline');     /* the Aug 25 elbow review line is replaced */
+ patchRef('Phase Gates');  /* the physio open list drops its elbow question */
+ cr=32;
+}
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('Couldn’t save · storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -1563,10 +1582,8 @@ if(/\bhang\s*(clean|snatch|power|high|pull)/i.test(n))return false; /* Olympic h
 return /pull[\s-]?ups?\b|chin[\s-]?ups?\b|\bhang(s|ing)?\b|toes[\s-]?to[\s-]?bar/i.test(n)} /* pull-ups, chin-ups, hanging leg/knee raises, dead hang, toes-to-bar · "push-ups" never matches */
 function dayHasHang(dk){const t=tplForDate(dk);if(!t||t.kind!=='lift')return false;return(t.entries||[]).some(e=>e.enabled&&isHangEx(exOf(e.exId)))} /* only ENABLED entries · a parked pull-up leaves the day hang-less */
 function dailyItems(dk){const t=tplForDate(dk),hang=dayHasHang(dk);return prog().checklists.daily.filter(d=>!d.paused&&!(d.skipOnTraining&&isTrainingDay(t))&&!(d.skipIfHang&&hang))} /* paused is a temporary hold, orthogonal to the two visibility rules · it hides the item on EVERY day, both passes, and the ring/streak follow because they all read through here */
-/* Gated entries · an entry names a derived predicate, and until that predicate is open the entry is filtered out of sessions, counts and previews. Nothing here ever writes the template — the entry keeps enabled:true the whole time it is waiting, so opening the gate is a change of view, not a change of program. Unknown gate names stay closed rather than falling open. */
 /* The entry `gate` mechanism (a derived predicate that had to be open before an entry rendered) was
    removed at contentRev 31 along with its only user, Gate E1. Entries now render on `enabled` alone. */
-function isIso(ex){return!!(ex&&ex.iso)}
 function sessionsFor(dk){return DB.sessions.filter(s=>s.date===dk)}
 function cardioIsSprint(dk,cs){return cs&&cs.sprints?true:cs&&cs.aerobic?false:effDow(dk)===5}
 function activeSession(){return DB.sessions.find(s=>!s.finishedAt)||null}
@@ -1599,9 +1616,8 @@ function rndInc(v,u){const i=u==='kg'?2.5:5;return Math.round(v/i)*i}
 function wInUnit(w){if(!w)return 0;return w.u===unit()?w.v:rndDisp(toU(w.v,w.u,unit()),unit())}
 function wPrefill(w){if(!w)return 0;return w.u===unit()?w.v:Math.max(0,rndInc(toU(w.v,w.u,unit()),unit()))}
 function fmtW(v,bw){if(bw&&(!v||v<=0))return'BW';if(bw)return'+'+(+v.toFixed(1)*1);return''+(+(+v).toFixed(1)*1)}
-function setTxtIso(st){return(+st.hold||0)+'s @ '+(+st.eff||0)+'%'}
-/* One route for every set display · done rows, ghost lines, the History detail pills and the per-exercise trend list all come through here, so an iso set can never render as "undefined" or as a bare rep count. */
-function setTxt(st,bw){if(st.iso)return setTxtIso(st);const v=wInUnit(st.w);return(!v||v<=0)?String(st.reps):fmtW(v,bw)+'×'+st.reps}
+/* One route for every set display · done rows, ghost lines, the History detail pills and the per-exercise trend list all come through here. */
+function setTxt(st,bw){const v=wInUnit(st.w);return(!v||v<=0)?String(st.reps):fmtW(v,bw)+'×'+st.reps}
 
 /* ═══════════ PREFILL & GHOSTS ═══════════ */
 function lastSessionWith(exId,excludeSid){
@@ -1609,24 +1625,12 @@ let best=null;
 for(const s of DB.sessions){if(s.id===excludeSid||!s.finishedAt)continue;
  if(s.sets.some(x=>x.exId===exId)){if(!best||s.startedAt>best.startedAt)best=s}}
 return best}
-/* Iso prefill · carry the last session's hold and effort, and if that session logged a jolt, take 10 points off. Prefill only: the template's defEff is never touched, and the 10 comes off the CARRIED number, so it costs one session rather than compounding across a run of bad ones. Note what that means though — it is the carried number that persists afterwards, not defEff, so a hold you last logged under the template's target keeps opening there until you tap it back up. Same contract as reps and weight (see prefill, where carried reps are held to the band's ceiling but deliberately not to its floor). defEff seeds the row only when there is no logged history at all, which also covers the entries entriesOf synthesises (defReps/defW, no defHold) for any exercise the template does not carry. */
-function isoPrefill(entry,ex,sess){
-const prior=lastSessionWith(ex.id,sess?sess.id:null);
-let hold=+entry.defHold||30,eff=+entry.defEff||70;
-if(prior){const rows=workingSets(prior,ex.id).sort((a,b)=>a.n-b.n),src=rows[rows.length-1];
- if(src&&src.iso){hold=+src.hold||hold;eff=+src.eff||eff}
- const rec=prior.elbow&&prior.elbow[ex.id];
- if(rec&&(+rec.jolt||0)>=1)eff=Math.max(30,eff-10)}
-if(sess){const today=workingSets(sess,ex.id).sort((a,b)=>b.n-a.n)[0];
- if(today&&today.iso){hold=+today.hold||hold;eff=+today.eff||eff}}
-return{h:Math.max(5,hold),e:Math.min(100,Math.max(10,eff))}}
 function prefill(entry,ex,rowIdx,sess){
 const isWu=rowIdx<entry.warmups;
 /* The band this row is held to. A warm-up row, an AMRAP row and a synthesised entry each declare no
    meaningful rep range, so they stay unclamped in BOTH directions — an AMRAP that clamped would be
    the one row where beating the number is the whole point. */
 const band=(sess&&!isWu&&!entry.amrap&&!entry.synth)?repBand(entry):null;
-const lo=null; /* was the Flat-day rep ease · the pre-tap that fed it was removed at contentRev 31. Kept as a named null so the two carry expressions below read unchanged. */
 const prior=lastSessionWith(ex.id,sess?sess.id:null);
 if(prior){const rows=workingSets(prior,ex.id).sort((a,b)=>a.n-b.n);
  const pool=rows.filter(r=>!!r.warmup===isWu);
@@ -1637,10 +1641,10 @@ if(prior){const rows=workingSets(prior,ex.id).sort((a,b)=>a.n-b.n);
     position at 11 forever, above the template's own ceiling, while the scheme line above it still
     read 10. The prefill is a starting point, not a ledger: history is never rewritten, only the
     number the field opens on. Same clamp on every normal day, so it can't drift back in. */
- if(src)return{w:wPrefill(src.w),reps:lo?Math.min(lo,src.reps):(band?Math.min(band[1],src.reps):src.reps)}}
+ if(src)return{w:wPrefill(src.w),reps:band?Math.min(band[1],src.reps):src.reps}}
 if(sess){const today=workingSets(sess,ex.id).sort((a,b)=>b.n-a.n)[0];
  if(today)return{w:wInUnit(today.w),reps:today.reps}}
-return{w:entry.defW||0,reps:lo||(entry.defReps||(entry.amrap?8:10))}}
+return{w:entry.defW||0,reps:entry.defReps||(entry.amrap?8:10)}}
 function ghostLine(ex,sess){
 const prior=lastSessionWith(ex.id,sess?sess.id:null);
 if(!prior)return'';
@@ -1808,17 +1812,6 @@ let d=0,tot=0;
 if(s)entriesOf(s).filter(e=>e.enabled).forEach(e=>{const log=workingSets(s,e.exId).length,rows=Math.max(e.warmups+prescSets(e,dk),log);tot+=rows;d+=Math.min(rows,log)});
 else t.entries.filter(e=>e.enabled).forEach(e=>{tot+=e.warmups+prescSets(e,dk)}); /* the ring counts the guard-eased prescription, same as the session view · template counts when the engine is off */
 return{d,tot}}
-function dayProgress(dk){
-const t=tplForDate(dk),checks=dayChecks(dk),sess=sessionsFor(dk);
-let total=0,done=0;
-if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);total+=lc.tot;done+=lc.d}
-if(t&&t.kind==='cardio'){
- const cs=sess.find(s=>s.kind==='cardio');
- total+=1;if(cs&&(cs.sprints||cs.aerobic))done++;
- if(cardioIsSprint(dk,cs)){total++;if(cs&&cs.warmup)done++} /* the warm-up is its own ring unit, and only on a sprint day · Tuesday never shows the row, so it must not count there either */
- (t.checks||[]).filter(c=>c.enabled&&(!isSprintCheck(c)||cardioIsSprint(dk,cs))).forEach(c=>{total++;if(checks.includes(c.id))done++})}
-const di=dailyItems(dk);total+=di.length*2;di.forEach(d=>{if(checks.includes(d.id))done++;if(checks.includes('pm:'+d.id))done++});
-return{done,total}}
 
 /* ═══════════ PR ENGINE ═══════════ */
 function prScan(){
@@ -1827,7 +1820,7 @@ const feed=[],perEx={},setPR={};
 DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
 const snap={},cand={};
 s.sets.slice().sort((a,b)=>a.ts-b.ts).forEach(st=>{
-if(st.warmup||st.iso)return; /* an iso set has no weight and no reps · it would read as a 0 lb bodyweight max-reps PR */
+if(st.warmup)return;
 const e=perEx[st.exId]=perEx[st.exId]||{maxW:0,maxWReps:0,maxWDate:null,repAt:{},maxReps:0,maxRepsDate:null,maxE1:0,e1Date:null,n:0};
 const sn=snap[st.exId]=snap[st.exId]||{virgin:e.n===0,maxW:e.maxW,repAt:Object.assign({},e.repAt),maxReps:e.maxReps};
 const w=toLb(st.w),wk=String(Math.round(w*2)/2),c=cand[st.exId]=cand[st.exId]||{};
@@ -1857,7 +1850,7 @@ function sessionPRs(sid){return prScan().feed.filter(f=>f.sid===sid)}
 function seriesFor(exId){
 const out=[];
 DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
-const rows=s.sets.filter(x=>x.exId===exId&&!x.warmup&&!x.iso);if(!rows.length)return; /* iso sets carry no weight/reps · they would plot a flat zero line */
+const rows=s.sets.filter(x=>x.exId===exId&&!x.warmup);if(!rows.length)return;
 let topW=0,topWr=0,mxR=0,e1=0;
 rows.forEach(r=>{const w=toLb(r.w);
 if(w>topW||(w===topW&&r.reps>topWr)){topW=w;topWr=r.reps}
@@ -1886,7 +1879,7 @@ arr.forEach(function(w){var p=w.wk.split('-').map(Number);w.t=new Date(p[0],p[1]
 return arr}
 function weekSets(){const wk=weekMon(tk()),cnt={},eng=engineOn();
 /* Engine on · governed tags roll up to their muscle group (one count per mapped group), ungoverned siblings still count as themselves. Dormant · the pre-E2 raw-tag count. */
-DB.sessions.filter(function(s){return s.date>=wk&&s.kind==='lift'}).forEach(function(s){(s.sets||[]).forEach(function(st){if(st.warmup||st.iso)return;var ex=exOf(st.exId); /* rehab isometrics are not hard sets · they must not enter the 10-20 band */
+DB.sessions.filter(function(s){return s.date>=wk&&s.kind==='lift'}).forEach(function(s){(s.sets||[]).forEach(function(st){if(st.warmup)return;var ex=exOf(st.exId); /* rehab isometrics are not hard sets · they must not enter the 10-20 band */
 if(!eng){var m0=(ex&&ex.muscles&&ex.muscles.length)?ex.muscles:['(untagged)'];m0.forEach(function(mu){cnt[mu]=(cnt[mu]||0)+1});return}
 var gs=groupsOf(ex),ms=(ex&&ex.muscles)||[];
 gs.forEach(function(g){var k=GROUP_NAME[g];cnt[k]=(cnt[k]||0)+1});
@@ -1901,7 +1894,7 @@ function trendExs(){
 const m={};
 DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
 const per={};
-s.sets.forEach(x=>{if(x.warmup||x.iso)return;const w=toLb(x.w); /* keeps iso exercises out of the Strength Trends picker, where they would list as "0 reps" */
+s.sets.forEach(x=>{if(x.warmup)return;const w=toLb(x.w);
 const p=per[x.exId]=per[x.exId]||{w:0,r:0,mx:0};
 if(w>p.w||(w===p.w&&x.reps>p.r)){p.w=w;p.r=x.reps}
 if(x.reps>p.mx)p.mx=x.reps});
@@ -1939,28 +1932,15 @@ function hdr(){return'<div class="hd"><div class="hdi"><div class="wm">'+WM+'BLO
 function tabbar(){const b=(t,ic,l)=>'<button class="tbb '+(S.tab===t?'on':'')+'" onclick="nav(\''+t+'\')"><span class="ic">'+ic+'</span>'+l+'</button>';
 return'<div class="tb"><div class="tbi">'+b('today',I_TODAY,'Today')+b('history',I_HIST,'History')+b('trends',I_TREND,'Trends')+b('program',I_PROG,'Program')+'</div></div>'}
 function restChip(){return'<div id="restc" class="restc hide"><div class="rcm"><div class="rcl" id="rcL" aria-live="polite">Rest</div><div class="rct num" id="rcT">0:00</div><div class="rcp"><div class="rcpf" id="rcPf" style="width:100%"></div></div></div><button class="rcb num" onclick="t30()">+30s</button><button class="rcb" onclick="killRest()" aria-label="Dismiss timer">✕</button></div>'}
+/* Every full-screen view, keyed by S.view · anything unlisted (including the '' default) falls
+   through to vTabs, the tab shell. Add a view by adding a line here, not a branch in rn(). */
+const VIEWS={session:vSession,sprint:vSprint,mobility:vMobility,detail:vDetail,trend:vTrend,
+ edsched:vEdSched,edtpl:vEdTpl,edentry:vEdEntry,pickex:vPickEx,edlib:vEdLib,edex:vEdEx,
+ eddaily:vEdDaily,edmob:vEdMob,edther:vEdTher,edref:vEdRef,edrefsec:vEdRefSec};
 function rn(){
 const y=window.scrollY,a=document.getElementById('app');
 const fid=document.activeElement&&document.activeElement.id||''; /* innerHTML is replaced wholesale below, so focus (and the VoiceOver cursor with it) would otherwise reset to the top of the document on every single tap · restore it the same way scrollY already is */
-let h='';
-if(S.view==='session')h=vSession();
-else if(S.view==='sprint')h=vSprint();
-else if(S.view==='mobility')h=vMobility();
-else if(S.view==='detail')h=vDetail();
-else if(S.view==='trend')h=vTrend();
-else if(S.view==='edsched')h=vEdSched();
-else if(S.view==='edtpl')h=vEdTpl();
-else if(S.view==='edentry')h=vEdEntry();
-else if(S.view==='pickex')h=vPickEx();
-else if(S.view==='edlib')h=vEdLib();
-else if(S.view==='edex')h=vEdEx();
-else if(S.view==='eddaily')h=vEdDaily();
-else if(S.view==='edmob')h=vEdMob();
-else if(S.view==='edther')h=vEdTher();
-else if(S.view==='edref')h=vEdRef();
-else if(S.view==='edrefsec')h=vEdRefSec();
-else h=vTabs();
-a.innerHTML=h+restChip();
+a.innerHTML=(VIEWS[S.view]||vTabs)()+restChip();
 const sig=S.view+'|'+S.tab;
 const changed=PREVV!==sig;PREVV=sig;
 if(changed){a.querySelectorAll('.co').forEach(c=>c.classList.add('fresh'));const ot=a.querySelector('.tbb.on');if(ot)ot.classList.add('navpop')} /* the nav-icon pop, like the entrance, fires only on a real tab change — not on every same-view re-render */
@@ -2006,7 +1986,7 @@ if(t&&t.kind==='lift'){const lc=liftCounts(dk,t);wd=lc.d;wt=lc.tot}
 if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  wt+=1;if(cs&&(cs.sprints||cs.aerobic))wd++;
- if(cardioIsSprint(dk,cs)){wt++;if(cs&&cs.warmup)wd++} /* mirrors dayProgress · the two counters must agree or the ring and the day card disagree about the same day */
+ if(cardioIsSprint(dk,cs)){wt++;if(cs&&cs.warmup)wd++} /* the warm-up is its own ring unit, and only on a sprint day · Tuesday never shows the row, so it must not count there either */
  (t.checks||[]).filter(c=>c.enabled&&(!isSprintCheck(c)||cardioIsSprint(dk,cs))).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
 let ad=0,pd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))ad++;if(checks.includes('pm:'+d.id))pd++});
 return{wd,wt,dd:ad+pd,dt:di.length*2,ad,pd,ppt:di.length}}
@@ -2136,8 +2116,8 @@ engTick(); /* fold banked day-verdicts into the lift plan · check the deload tr
 let h='';
 const n=nagDue();
 if(n)h+='<div class="ban em"><span><b>'+n+' session'+(n>1?'s':'')+'</b> since last backup</span><span class="bba"><button class="bbtn" onclick="doExport()">Export</button><button class="bbtn q" onclick="nagLater()">Later</button></span></div>';
-if(calfAmDue(dk)&&!(S.sel!=null&&S.sel!==dow)&&!(dow===0&&!sunTracked(dk)))h+='<div class="ban"><span><b>Calf</b> this morning?</span><div class="seg" style="flex-basis:100%">'+[[0,'Normal'],[1,'Stiff'],[2,'Sore']].map(o=>'<button class="sgb" onclick="setCalfAm('+o[0]+')">'+o[1]+'</button>').join('')+'</div></div>'; /* same seg as the readiness row — one look for "pick one of three" */
-/* Same suppression guards as the calf read · a morning question belongs on today's screen, never on a day preview or the untracked Sunday. Both reads stay banners and stay at the top: they are perishable, and a skipped one is a datum Gate E1 never gets. */
+if(calfAmDue(dk)&&!(S.sel!=null&&S.sel!==dow)&&!(dow===0&&!sunTracked(dk)))h+='<div class="ban"><span><b>Calf</b> this morning?</span><div class="seg" style="flex-basis:100%">'+[[0,'Normal'],[1,'Stiff'],[2,'Sore']].map(o=>'<button class="sgb" onclick="setCalfAm('+o[0]+')">'+o[1]+'</button>').join('')+'</div></div>'; /* same seg as Sprint readiness · one look for "pick one of three" */
+/* Same suppression guards as the calf read · a morning question belongs on today's screen, never on a day preview or the untracked Sunday. It stays a banner and stays at the top: it is perishable, and a skipped one is a datum nothing else can recover. */
 const act=activeSession();
 if(act&&!(S.sel!=null&&S.sel!==dow))h+='<div class="ban"><span><b>'+esc(dayTitle(act.name))+'</b> in progress'+(act.date!==dk?' · '+fmtDk(act.date):'')+'</span><span class="bba"><button class="bbtn" onclick="resumeSession(\''+act.id+'\')">Resume</button><button class="bbtn q" onclick="finishQuickAsk(\''+act.id+'\')">End</button></span></div>';
 if(S.sel!=null&&S.sel!==dow)return h+vPreview(dk,dow);
@@ -2236,7 +2216,7 @@ h+='<div class="seg" style="margin:0 0 12px">'
 h+='<div class="note">'+esc(am?c.dailyNoteAm||'':c.dailyNotePm||'')+'</div>';
 items.forEach(it=>{h+=ckRow(am?it:Object.assign({},it,{id:'pm:'+it.id}),checks)});
 h+='<div class="note" style="margin:10px 0 0">Walk 30 min every day · backward walking + sprint warm-up drills.</div>';
-/* The resume prompt lives here rather than in the Today banner stack · it is a four-week decision, not a this-morning one, and the two symptom reads own the banners. */
+/* The resume prompt lives here rather than in the Today banner stack · it is a four-week decision, not a this-morning one, and the calf read owns the banners. */
 if(hangResumeDue())h+='<div class="ban" style="margin:12px 0 0"><span><b>Dead hangs</b> have been paused four weeks</span><span class="bba"><button class="bbtn" onclick="hangResume()">Resume</button><button class="bbtn q" onclick="hangKeepPaused()">Not yet</button></span></div>';
 return h}
 function hangKeepPaused(){if(DB.settings)DB.settings.hangPausedAt=Date.now();sv();rn();toast('Still paused · asking again in four weeks')} /* restarts the clock rather than hiding the prompt for good */
@@ -2379,16 +2359,14 @@ function stepGroup(key,f,step,bw){
 return'<div class="stp"><button class="stb" data-hold data-fn="stepPV" data-args=\''+JSON.stringify([key,f,-step,bw])+'\'>−</button>'
 +'<div class="stv num" id="v-'+key+'-'+f+'" onclick="editPV(\''+key+'\',\''+f+'\',this,'+bw+')">'+fmtVal(key,f,bw)+'</div>'
 +'<button class="stb" data-hold data-fn="stepPV" data-args=\''+JSON.stringify([key,f,step,bw])+'\'>+</button></div>'}
-function isoPair(key){return stepGroup(key,'h',5,false)+stepGroup(key,'e',5,false)} /* the same two steppers wherever an iso row is drawn · pending, edit, both */
 function seedPV(key,ex,entry,i,sess){if(PV[key])return;
-if(isIso(ex))PV[key]=isoPrefill(entry,ex,sess);
-else{const p=prefill(entry,ex,i,sess);PV[key]={w:p.w,r:p.reps}}}
+const p=prefill(entry,ex,i,sess);PV[key]={w:p.w,r:p.reps}}
 function pendRow(ex,entry,i,sess){
 const key=ex.id+'_'+i;
 seedPV(key,ex,entry,i,sess);
 const isWu=i<entry.warmups,wIdx=i-entry.warmups+1,wstep=unit()==='kg'?2.5:5;
 return'<div class="sr'+(isWu?' wu':'')+'"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
-+(isIso(ex)?isoPair(key):stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false))
++stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false)
 +'<button class="lg" id="lg-'+ex.id+'-'+i+'" onclick="logSet(\''+ex.id+'\','+i+')" aria-label="Log set">'+CHECK+'</button></div>'} /* stable id · lets rn() hand focus to the next pending set instead of dropping it */
 function doneRow(ex,entry,st){
 const wIdx=(st.n-1)-entry.warmups+1;
@@ -2396,10 +2374,10 @@ return'<div class="sr done'+(st.warmup?' wu':'')+(S.flash===ex.id+'_'+st.n?' new
 +'<div class="dtx num">'+setTxt(st,ex.bw)+'</div><div class="dck">'+CHECK+'</div></div>'}
 function editRow(ex,entry,st){
 const key='e_'+ex.id+'_'+st.n;
-if(!PV[key])PV[key]=st.iso?{h:+st.hold||0,e:+st.eff||0}:{w:wInUnit(st.w),r:st.reps};
+if(!PV[key])PV[key]={w:wInUnit(st.w),r:st.reps};
 const isWu=!!st.warmup,wIdx=(st.n-1)-entry.warmups+1,wstep=unit()==='kg'?2.5:5;
 return'<div class="sr'+(isWu?' wu':'')+'" style="background:var(--surface2);border-radius:12px"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
-+(st.iso?isoPair(key):stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false))
++stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false)
 +'<button class="lg" onclick="updateSet(\''+ex.id+'\','+st.n+')" style="border-color:var(--ember-line);color:var(--ember)">'+CHECK+'</button></div>'
 +'<div style="display:flex;justify-content:flex-end;gap:2px;padding:2px 2px 4px"><button class="rowx" onclick="removeSet(\''+ex.id+'\','+st.n+')">Remove set</button><button class="rowx" style="color:var(--muted)" onclick="cancelEdit()">Cancel</button></div>'}
 function vSession(){
@@ -2425,9 +2403,8 @@ body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+e
 +'<span class="tpes num">'+logged.length+'/'+total+'</span></div>'
 +'<div class="exs">'+esc(schemeEng(entry,sess.date))+(entry.cue?' · '+esc(entry.cue):'')+'</div>'
 +ghostLine(ex,sess)
-+'<div class="cols"><span>Set</span><span>'+(isIso(ex)?'Sec':(ex.bw?'Load':unit()))+'</span><span>'+(isIso(ex)?'Eff %':'Reps')+'</span><span></span></div>'
++'<div class="cols"><span>Set</span><span>'+(ex.bw?'Load':unit())+'</span><span>Reps</span><span></span></div>'
 +rows
-+(isIso(ex)?elbowBlock(sess,entry.exId):'')
 +'<div class="exf"><div style="display:flex;align-items:center;gap:2px"><button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button>'+((EXTRA[entry.exId]||0)>0&&logged.length<total?'<button class="adds" onclick="rmRow(\''+entry.exId+'\')">− Remove set</button>':'')+'</div><div style="display:flex;align-items:center;gap:5px">'+(entries.length>1?'<button class="exmv" onclick="moveEx(\''+entry.exId+'\',-1)"'+(ei===0?' disabled':'')+' aria-label="Move up">↑</button><button class="exmv" onclick="moveEx(\''+entry.exId+'\',1)"'+(ei===entries.length-1?' disabled':'')+' aria-label="Move down">↓</button>':'')+'<button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div></div>'});
 body+='<button class="addb" onclick="pickExFor(\'session\')">+ Add exercise</button>';
 const elapsed=S.amend?fmtDk(sess.date):'<span id="elap">'+mmss(Date.now()-sess.startedAt)+'</span>';
@@ -2436,33 +2413,15 @@ const hd='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back
 +'<button class="fin'+(S.amend?' q':'')+'" onclick="finishAsk()">'+(S.backfill?'Save':S.amend?'Done':'Finish')+'</button></div></div>';
 return hd+'<div class="co nopad">'+body+'</div>'}
 function clearPV(exId){Object.keys(PV).forEach(k=>{if(k.indexOf(exId+'_')===0)delete PV[k]})}
-/* The two symptom numbers, per session per exercise · the shape of s.sprints, but keyed by exercise
-   because the neutral and supinated holds can both run in one session. Written straight to the session
-   on every tap (sv() each time), so a phone the gym kills mid-workout loses nothing. */
-function elbowGet(sess,exId){return(sess.elbow&&sess.elbow[exId])||{ache:0,jolt:0}}
-function elbowSeed(sess,exId){sess.elbow=sess.elbow||{};if(!sess.elbow[exId])sess.elbow[exId]={ache:0,jolt:0};return sess.elbow[exId]} /* seeded when the first hold is LOGGED, not on first tap · a genuinely clean session (ache 0, jolts 0, nothing tapped) has to count toward Gate E1 */
-function elbStep(exId,f,d,min,max){const sess=sessById(S.sid);if(!sess)return;
-const r=elbowSeed(sess,exId);r[f]=Math.min(max,Math.max(min,(+r[f]||0)+d));sv();vibe(6);
-setV(document.getElementById('elb-'+exId+'-'+f),r[f])}
-function elbFld(sess,exId,label,f,min,max){
-return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="elbStep" data-args=\''+JSON.stringify([exId,f,-1,min,max])+'\'>−</button><div class="stv num" id="elb-'+exId+'-'+f+'">'+(+elbowGet(sess,exId)[f]||0)+'</div><button class="stb" data-hold data-fn="elbStep" data-args=\''+JSON.stringify([exId,f,1,min,max])+'\'>+</button></div></div>'}
-function elbowBlock(sess,exId){
-return'<div class="fgrid" style="grid-template-columns:1fr 1fr;margin:10px 0 2px">'+elbFld(sess,exId,'Ache 0-10','ache',0,10)+elbFld(sess,exId,'Jolts','jolt',0,20)+'</div>'
-+'<div class="exs" style="padding:0 2px 4px">Ache is the dull one, under load. A jolt is sharp, electric or catching · count them, don’t rate them.</div>'}
 function logSet(exId,i){
 const sess=sessById(S.sid);if(!sess)return;
 const entry=entryFor(sess,exId);if(!entry)return;
-const ex=exOf(exId),key=exId+'_'+i,iso=isIso(ex);
+const ex=exOf(exId),key=exId+'_'+i;
 seedPV(key,ex,entry,i,sess);
 const pv=PV[key];
 const ts=S.backfill?sess.startedAt+sess.sets.length*45000:Date.now();
-if(iso){
- if(!pv.h||pv.h<5){toast('Hold has to be at least 5s');return}
- sess.sets.push({exId,n:i+1,hold:Math.round(pv.h),eff:Math.round(pv.e),iso:1,ts});
- elbowSeed(sess,exId)}
-else{
- if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
- sess.sets.push({exId,n:i+1,w:{v:+pv.w||0,u:unit()},reps:Math.round(pv.r),warmup:i<entry.warmups||undefined,amrap:entry.amrap||undefined,ts})}
+if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
+sess.sets.push({exId,n:i+1,w:{v:+pv.w||0,u:unit()},reps:Math.round(pv.r),warmup:i<entry.warmups||undefined,amrap:entry.amrap||undefined,ts});
 delete PV[key];sv();vibe(12);S.flash=exId+'_'+(i+1);
 if(!S.amend){let rem=0;
 entriesOf(sess).filter(e=>e.enabled).forEach(e=>{const tot=e.warmups+prescSets(e,sess.date)+(EXTRA[e.exId]||0);
@@ -2491,10 +2450,8 @@ function updateSet(exId,n){
 const sess=sessById(S.sid);if(!sess)return;
 const st=sess.sets.find(x=>x.exId===exId&&x.n===n);if(!st)return;
 const pv=PV['e_'+exId+'_'+n];if(!pv)return;
-if(st.iso){if(!pv.h||pv.h<5){toast('Hold has to be at least 5s');return}
- st.hold=Math.round(pv.h);st.eff=Math.round(pv.e)}
-else{if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
- st.w={v:+pv.w||0,u:unit()};st.reps=Math.round(pv.r)}
+if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
+st.w={v:+pv.w||0,u:unit()};st.reps=Math.round(pv.r);
 S.editKey=null;delete PV['e_'+exId+'_'+n];sv();rn()}
 function removeSet(exId,n){
 const sess=sessById(S.sid);if(!sess)return;
@@ -2518,13 +2475,12 @@ if(!n){rmExGo(exId);return}
 ovConfirm('Remove '+esc(exOf(exId).name)+'?',n+' logged set'+(n>1?'s':'')+' on this day will be deleted.',
 [{label:'Remove exercise',click:'rmExGo(\''+exId+'\')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
 function rmExGo(exId){const s=sessById(S.sid);if(!s)return;
-const bSets=JSON.parse(JSON.stringify(s.sets)),bAdd=JSON.parse(JSON.stringify(s.addons||[])),bHid=JSON.parse(JSON.stringify(s.hidden||[])),bElb=JSON.parse(JSON.stringify(s.elbow||null));
+const bSets=JSON.parse(JSON.stringify(s.sets)),bAdd=JSON.parse(JSON.stringify(s.addons||[])),bHid=JSON.parse(JSON.stringify(s.hidden||[]));
 s.sets=s.sets.filter(x=>x.exId!==exId);
 s.addons=(s.addons||[]).filter(x=>x!==exId);
-if(s.elbow){delete s.elbow[exId];if(!Object.keys(s.elbow).length)delete s.elbow} /* the symptom record goes with the sets · otherwise it outlives the work and Gate E1 scores a session that no longer exists */
 const t=tpl(s.templateId);
 if(t&&t.entries.some(e=>e.exId===exId)){s.hidden=s.hidden||[];if(!s.hidden.includes(exId))s.hidden.push(exId)}
-delete EXTRA[exId];clearPV(exId);S.editKey=null;sv();closeOv();rn();toastUndo('Exercise removed',()=>{s.sets=bSets;s.addons=bAdd;s.hidden=bHid;if(bElb)s.elbow=bElb;else delete s.elbow;sv()})}
+delete EXTRA[exId];clearPV(exId);S.editKey=null;sv();closeOv();rn();toastUndo('Exercise removed',()=>{s.sets=bSets;s.addons=bAdd;s.hidden=bHid;sv()})}
 
 /* ═══════════ CARDIO ═══════════ */
 function aerLabel(m){return m==='bike'?'Bike':m==='run'?'Run':'Swim'}
@@ -2562,12 +2518,14 @@ function saveSprints(dk){if(!CV||!CV.plan)return;
 const L=CV.plan.slice(0,CV.done);if(!L.length){toast('Log at least one rep');return}
 const s=getCardioSess(dk,true);
 if(SPR&&SPR.dk===dk&&SPR.startedAt&&!s.sprints&&!s.aerobic&&!s.warmup&&!(s.sets&&s.sets.length)){s.startedAt=SPR.startedAt;s.finishedAt=Date.now()} /* a pure sprint session keeps its real wall-clock · a warm-up logged first means the session already started earlier, so leave its clock alone */
+const _q=s.sprints&&s.sprints.quality; /* the Fresh/Solid/Faded read was cut at cr31 · never written or shown again, but this rebuild is wholesale, so carry a value logged BEFORE the cut across an edit rather than deleting it · logged history is never rewritten */
 s.sprints={reps:L.length,distM:Math.max.apply(null,L),effortPct:CV.eff,legs:L.slice(),pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,menuId:CV.menuId||null,season:CV.season||prog().season||null};
+if(_q!=null)s.sprints.quality=_q; /* only ever preserved, never created · a sprint logged after cr31 has no quality key and must not gain one */
 if(!s.finishedAt)s.finishedAt=Date.now();
 if(engineOn()&&engine().sprintFb){const e=engine(),f=e.sprintFb;
  if((f===true||s.date>f)&&!taperState(s.date)&&!(e.taperEndedAt&&s.date<=e.taperEndedAt))delete e.sprintFb} /* consumed by the first sprint after the Stop · a taper day doesn't spend it, even edited after the race (the taper owned that card, so the easy day is still owed), and a backfilled past day never does */
 CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':'Sprints logged')}
-function sprFallback(dk){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=Math.min(6,CV.reps||6);CV.dist=Math.min(50,CV.dist||50);CV.eff=Math.min(70,CV.eff||70)}else{ /* the easy seed clamps to what the card already prescribed · never more than the day you wrote */const it=menuItem(CV.season||prog().season||'reset',CV.menuId),ct=prog().templates.find(x=>x.kind==='cardio');if(it){CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff}else if(ct&&ct.sprD){CV.reps=ct.sprD.reps;CV.dist=ct.sprD.distM;CV.eff=ct.sprD.eff}else{CV.reps=3;CV.dist=50;CV.eff=55}if(CV.ready==='flat'&&(+CV.eff||0)>85)CV.eff=85}rn()}
+function sprFallback(){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=Math.min(6,CV.reps||6);CV.dist=Math.min(50,CV.dist||50);CV.eff=Math.min(70,CV.eff||70)}else{ /* the easy seed clamps to what the card already prescribed · never more than the day you wrote */const it=menuItem(CV.season||prog().season||'reset',CV.menuId),ct=prog().templates.find(x=>x.kind==='cardio');if(it){CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff}else if(ct&&ct.sprD){CV.reps=ct.sprD.reps;CV.dist=ct.sprD.distM;CV.eff=ct.sprD.eff}else{CV.reps=3;CV.dist=50;CV.eff=55}if(CV.ready==='flat'&&(+CV.eff||0)>85)CV.eff=85}rn()}
 /* ── Dynamic warm-up · one row, one tap. Stored beside sprints/aerobic rather than inside s.aerobic so a
    Friday that also carries a real bike or swim keeps both, and so history can name it for what it is. ── */
 function saveWarmup(dk){if(!CV)return;const s=getCardioSess(dk,true);
@@ -2667,37 +2625,14 @@ if(p>0)bits.push('pain '+(p>2?'over 2':'up to 2')+'/10 during the reps');
 if(am>0)bits.push('calf '+CALF_AM[am]+' the next morning');
 if(!bits.length)return'';
 return'<div class="note">Last sprints ('+fmtDk(s.date)+') · '+bits.join(' · ')+'. Clean is 0/10 while running and a calf that reads normal next morning. If today feels the same going in, take the easy fallback.</div>'}
-/* ── Right elbow · isometric holds, two symptom numbers ───────────────────
-   Ache and jolt are stored as separate fields and never averaged: a dull under-load ache is the
-   symptom you are allowed to train through, a sharp/electric jolt is the one that stops the run.
-   Both are DERIVED from logged history on each call · no counter to drift, so a correction, a backfill
-   or a deleted session always re-derives honestly.
-   CUT at contentRev 31, at J's call: Gate E1 (the four-clean-session run that unlocked the supinated
-   grip) and the "Elbow this morning?" Better/Same/Worse read, whose only reader was that gate. What
-   stays is the work and the instruments (the neutral hold, the ache trend and the jolt count) because
-   the 28-day review still has to answer whether this protocol is doing anything. */
-const ELBOW_EX='el_n';            /* the neutral hold · the only elbow exercise scored here */
-const ELBOW_REVIEW_DAYS=28;
-function isoSets(s,exId){return(s.sets||[]).filter(x=>x.exId===exId&&x.iso).length}
-function elbowRec(s,exId){return(s.elbow&&s.elbow[exId])||null}
-/* One bucket per CALENDAR DAY, worst reading wins · two A-days on one date are one run slot, and they
-   share the single next-morning read that validates them. Sorted by startedAt like every other history
-   scan here, because DB.sessions is insertion-ordered and a backfill lands at the END of the array. */
-function elbowDays(exId){
-const m={};
-DB.sessions.filter(s=>s.finishedAt&&isoSets(s,exId)).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
- const r=elbowRec(s,exId)||{ache:0,jolt:0},b=m[s.date]=m[s.date]||{date:s.date,ache:0,jolt:0,holds:0};
- b.ache=Math.max(b.ache,+r.ache||0);b.jolt=Math.max(b.jolt,+r.jolt||0);b.holds+=isoSets(s,exId)});
-return Object.keys(m).sort().map(k=>m[k])}
-function elbowJolts(){return elbowDays(ELBOW_EX).reduce((a,b)=>a+b.jolt,0)}
-function elbowFirstDate(){const d=elbowDays(ELBOW_EX);return d.length?d[0].date:null}
-function elbowSeries(){return elbowDays(ELBOW_EX).map(b=>({date:b.date,t:anchorTs(b.date),mxR:b.ache,topW:0,topWr:0,e1:0}))}
-function elbowReviewDue(){const f=elbowFirstDate();return!!f&&dkDays(f,tk())>=ELBOW_REVIEW_DAYS}
-/* Dead-hang pause · the clock falls back to meta.created so a fresh install (which never runs migrate) is never measured against undefined. */
+/* Dead-hang pause · a general hold on any daily item (see tglPaused); the banner and the 4-week resume
+   prompt are d5-specific because it is the one item that has ever been parked for an injury.
+   The clock falls back to meta.created so a fresh install (which never runs migrate) is never measured against undefined. */
+const HANG_PAUSE_DAYS=28;
 function hangItem(){return(prog().checklists.daily||[]).find(d=>d.id==='d5')||null}
 function hangResumeDue(){const it=hangItem();if(!it||!it.paused)return false;
 const t0=(DB.settings&&DB.settings.hangPausedAt)||(DB.meta&&DB.meta.created)||0;
-return!!t0&&(Date.now()-t0)>=ELBOW_REVIEW_DAYS*86400000}
+return!!t0&&(Date.now()-t0)>=HANG_PAUSE_DAYS*86400000}
 function hangResume(){const it=hangItem();if(!it)return;delete it.paused;if(DB.settings)DB.settings.hangPausedAt=0;sv();vibe(10);rn();
 toastUndo('Dead hangs back in the daily block',()=>{const i=hangItem();if(i){i.paused=true;if(DB.settings)DB.settings.hangPausedAt=Date.now()}sv();rn()})}
 /* Calf clock · the near-max gate is DERIVED, not counted: fastWeeksTotal = max(migrated baseline, distinct >=80% non-fallback weeks in history). No per-save bookkeeping, so out-of-order logging and deletes stay honest. plan.fastWeeks is only the migrated baseline (J's banked credit); logging adds nothing to it. */
@@ -2705,13 +2640,11 @@ toastUndo('Dead hangs back in the daily block',()=>{const i=hangItem();if(i){i.p
 /* ═══════════ TRAINING GUARDS ═══════════
    You build and adjust your lifts and mobility yourself, by feel. Nothing here progresses anything:
    there is no rung ladder, no advance budget, no auto-set-add, and no weight is ever suggested.
-   What survives are three guards, and every one of them can only SUBTRACT volume, temporarily, and
-   says so on the card. None of them ever writes your saved template.
-     · Auto-deload  - a chronic-flat streak or the trained-week backstop books the next full week easy:
+   What survives are two guards, and both can only SUBTRACT volume, temporarily, and say so on the
+   card. Neither of them ever writes your saved template.
+     · Auto-deload  - the trained-week backstop books the next full week easy:
                       lift sets display halved, sprints run easy, cardio minutes ease (floored at
                       min(template, 20), so a short day is never cut below 20 or rounded up).
-     · Flat-day ease - a Flat morning pre-tap takes one set off that day's lift, at the bottom of the
-                      rep range. A deload week owns the day instead, so the two never stack.
      · Race taper   - Speed season plus a race date eases sprint and cardio volume into the race, with
                       quality held. Lifts are untouched by the taper.
    A Stop post-tap arms the next sprint to run easy. The recovery dial now tunes exactly one thing:
@@ -2728,7 +2661,7 @@ function engine(){const p=prog();if(!p.engine){p.engine={dial:1,start:tk()};ENG_
 function dial(){return Math.min(1.4,Math.max(.6,engine().dial||1))}
 function deloadEvery(){return Math.max(3,Math.round(5.5*dial()))}
 function groupsOf(ex){const g=[];((ex&&ex.muscles)||[]).forEach(m=>{const k=MUSCLE_MAP[String(m).toLowerCase().trim()];if(k&&g.indexOf(k)<0)g.push(k)});return g}
-/* ---- the two guards that touch a lift · both read the template, neither ever writes it ----
+/* ---- the one guard that touches a lift · it reads the template, it never writes it ----
    Every guard subtracts. prescSets can only ever return a number in [1, entry.sets], and returns
    entry.sets untouched on a normal day, on a 0-set row, on an AMRAP, on an ad-hoc add, and always
    when the engine is off. The engineOn() short-circuit is load-bearing: inDeloadWeek reads
@@ -2747,21 +2680,21 @@ for(let i=0;i<2;i++){const g=/^\s*\d+(?:\s*[-–]\s*\d+)?\s*[×x](?=[\s\d])\s*/i
 const r=/^\s*(\d+)\s*[-–]\s*(\d+)/.exec(s);if(r&&+r[2]>+r[1])return[+r[1],+r[2]];
 const n=/^\s*(\d+)/.exec(s);if(n&&+n[1]>0)return[+n[1],+n[1]];
 const d=e.defReps||10;return[d,d]}
-/* The rep half of a scheme, optionally with its range collapsed to the bottom: "12-15/leg" → "12/leg".
-   Keeps the template's own words ("/side", "/leg", "max"), and accepts a hand-typed "x" for the ×.
-   The leading "N ×" is only stripped when N is really the set count: a warmup row writes its warmup
-   count there ("2 × 15 · warm-up", sets 0), and a hand-written scheme need not agree with entry.sets
-   at all. When it does not, fall back to repBand, the same parse prefill uses, so the eased line and
-   the reps in the field always agree. The collapse is anchored to the START of the rep text, so a
-   later range ("10 · rest 45-60s") is left alone. */
-function repText(e,lo){const m=/^\s*(\d+)\s*[×x]\s*(.+)$/i.exec(schemeOf(e));
-if(m&&+m[1]===e.sets){const r=m[2];return lo?r.replace(/^(\d+)\s*[-–]\s*\d+/,'$1'):r}
+/* The rep half of a scheme: "3 × 12-15/leg" → "12-15/leg". Keeps the template's own words
+   ("/side", "/leg", "max"), and accepts a hand-typed "x" for the ×. The leading "N ×" is only
+   stripped when N is really the set count: a warmup row writes its warmup count there
+   ("2 × 15 · warm-up", sets 0), and a hand-written scheme need not agree with entry.sets at all.
+   When it does not, fall back to repBand, the same parse prefill uses, so the deload line and the
+   reps in the field always agree. The optional collapse to the bottom of the range ("12-15" → "12")
+   went with the Flat-day rep ease it existed for, at contentRev 31. */
+function repText(e){const m=/^\s*(\d+)\s*[×x]\s*(.+)$/i.exec(schemeOf(e));
+if(m&&+m[1]===e.sets)return m[2];
 if(e.amrap)return'max';
 const b=repBand(e);
-return(lo||b[0]===b[1])?String(b[0]):b[0]+'-'+b[1]}
+return b[0]===b[1]?String(b[0]):b[0]+'-'+b[1]}
 function schemeEng(entry,dk){if(!engineOn()||entry.amrap||entry.synth||!(entry.sets>0))return schemeOf(entry); /* dormant, or a row no guard touches · the template exactly as written */
 if(!inDeloadWeek(dk))return schemeOf(entry); /* a normal day shows the template exactly as written */
-return(entry.warmups?entry.warmups+' wu + ':'')+prescSets(entry,dk)+' × '+repText(entry,false)+' · deload'}
+return(entry.warmups?entry.warmups+' wu + ':'')+prescSets(entry,dk)+' × '+repText(entry)+' · deload'}
 /* trendCapped (two flat mornings in four days · the sprint fatigue guard) and chronicFlat (three straight
    flat mornings · the deload trigger) both died with the pre-tap at contentRev 31. They read nothing but
    flat pre-taps, so with no pre-tap there is nothing left for them to count. The deload backstop below
@@ -2769,9 +2702,9 @@ return(entry.warmups?entry.warmups+' wu + ':'')+prescSets(entry,dk)+' × '+repTe
 function deloadWk(){const e=engine();return(e.deload&&e.deload.weekOf)||null}
 function inDeloadWeek(dk){const w=deloadWk();return!!w&&weekMon(dk)===w}
 function unlogDeload(w){const e=engine();if(e.deloadWeeks)e.deloadWeeks=e.deloadWeeks.filter(x=>x!==w)} /* a pending deload cancelled before it runs must leave no ghost in deloadWeeks · else lastNormalWeekLoad wrongly excludes that now-normal week and understates the ramp base */
-function fireDeload(by){const e=engine();
+function fireDeload(){const e=engine(); /* the backstop is the only caller left, so the old 'by' breadcrumb was a constant nothing read · dropped at the cr31 sweep */
 if(e.deload&&e.deload.weekOf>=weekMon(tk()))return false; /* one at a time */
-e.deload={weekOf:shiftDk(weekMon(tk()),7),by,at:tk()};(e.deloadWeeks=e.deloadWeeks||[]).push(e.deload.weekOf);ENG_DIRTY=true;return true} /* occupies the next full week · logs the week durably so its halved load never becomes a ramp base */
+e.deload={weekOf:shiftDk(weekMon(tk()),7),at:tk()};(e.deloadWeeks=e.deloadWeeks||[]).push(e.deload.weekOf);ENG_DIRTY=true;return true} /* occupies the next full week · logs the week durably so its halved load never becomes a ramp base */
 function trainedWeeks(){ /* completed Mon-weeks with ≥2 finished sessions, strictly after the anchor (engine start · last deload week · taper end), before this week */
 const e=engine(),cur=weekMon(tk());
 let anchor=weekMon(engAnchor()); /* engine start OR a fresh-block reset, whichever is later · a season change is NOT a rest, so it never pushes the clock back */
@@ -2783,7 +2716,7 @@ return Object.keys(m).filter(w=>m[w]>=ENG.TRAINED_MIN).length}
 function checkDeloadDue(){const e=engine();
 if(taperState(tk()))return null; /* E4 · taper owns the race run-in, the deload clock freezes */
 if(e.deload&&e.deload.weekOf>=weekMon(tk()))return null;
-if(trainedWeeks()>=deloadEvery())return fireDeload('backstop')?'backstop':null;
+if(trainedWeeks()>=deloadEvery())return fireDeload()?'backstop':null;
 return null}
 function engTick(){if(!DB||!engineOn())return; /* dormant · no deload, no taper latch, no engine state created */
 taperTick(); /* the taper latches or clears first · entry can abort a pending deload */
@@ -2792,7 +2725,7 @@ if(fired)toast('Deload week next week · earned rest, lighter by design');
 maybeOfferReset(); /* after a long gap, quietly offer a fresh block */
 if(ENG_DIRTY){ENG_DIRTY=false;sv()}}
 
-/* ═══════════ THE GUARDS · deload, flat-day ease, taper, cardio volume, resets ═══════════
+/* ═══════════ THE GUARDS · deload, taper, cardio volume, resets ═══════════
    EVERY surface below is gated by engineOn(): a dormant install reaches none of it and creates no
    engine state, so with the switch off the app behaves exactly as it did before the engine existed.
    All state is lazy/nullable, so schemaVersion stays 1 and no logged history is ever touched. */
@@ -2907,7 +2840,7 @@ else{h+=sprintMenuHtml(CV.season||prog().season||'reset',dk);
 if(_last)h+='<div class="rxr" style="margin:-4px 2px 12px">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%'+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>';}
 if(!_fb)h+='<div class="flab">Sprint readiness</div><div class="seg">'+[['Springy','springy'],['Normal','normal'],['Flat','flat']].map(r=>'<button class="sgb'+(CV.ready===r[1]?' on':'')+'" onclick="cseg(\'ready\',\''+r[1]+'\')">'+r[0]+'</button>').join('')+'</div>'+(CV.ready==='flat'?'<div class="ckr" style="margin-top:6px">Flat day: hardest picks eased back to 85%.</div>':'');
 h+='<button class="btn btn-p" style="margin-top:14px" onclick="startSprints(\''+dk+'\')">'+(_det?'Log sprints':'Start sprints')+'</button>';
-h+='<button class="lnk" style="display:block;margin-top:10px;text-align:center" onclick="sprFallback(\''+dk+'\')">'+(_fb?'↩ back to today\'s plan':'Flat day? Easy run-throughs instead →')+'</button>';}
+h+='<button class="lnk" style="display:block;margin-top:10px;text-align:center" onclick="sprFallback()">'+(_fb?'↩ back to today\'s plan':'Flat day? Easy run-throughs instead →')+'</button>';}
 h+='</div>';
 }
 /* ── Aerobic + the day's remaining checks ── */
@@ -2961,7 +2894,7 @@ function editSprints(dk){
 const ct=prog().templates.find(x=>x.kind==='cardio');if(!ct)return;
 const s=S.view==='detail'?sessById(S.det):getCardioSess(dk,false);
 const sp=s&&s.sprints;if(!sp)return;
-CV=null;ensureCV(dk,ct,s); /* seeds eff/quality/pain/menu/season from the saved record */
+CV=null;ensureCV(dk,ct,s); /* seeds eff/pain/menu/season from the saved record */
 CV.plan=sp.legs&&sp.legs.length?sp.legs.slice():Array(Math.max(1,sp.reps||1)).fill(Math.min(1000,Math.max(10,sp.distM||50)));
 CV.done=CV.plan.length;
 S.sprAmend=true;S.sprFrom=S.view==='detail'?'detail':'today';S.sprEdit=null;S.view='sprint';rn()}
@@ -3051,7 +2984,7 @@ const ck=dayChecks(tk()),m=prog().checklists.mobility;
 let h='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="back()">'+I_BACK+'</button><div class="shm"><div class="sht">Mobility</div><div class="shs">Tuesday, in full · Friday optional</div></div></div></div>';
 h+='<div class="co"><div class="note">Warm the tissue first · on Tuesday the bike does that, on Friday it is the sprint warm-up. Work top to bottom.</div>';
 m.forEach((g,gi)=>{
-h+='<div class="sl'+(g.optional?'':'')+'" id="sl-g'+gi+'"><span class="lt">'+esc(g.group)+'</span><span class="rule"></span><span class="cnt num" id="cnt-g'+gi+'"></span></div>';
+h+='<div class="sl" id="sl-g'+gi+'"><span class="lt">'+esc(g.group)+'</span><span class="rule"></span><span class="cnt num" id="cnt-g'+gi+'"></span></div>';
 h+='<div class="mgrid">'+g.items.map(it=>{const on=ck.includes(it.id);
  return'<div class="mc'+(on?' done':'')+'" onclick="tgDay(\''+it.id+'\',this)"><div class="cb">'+CHECK+'</div><div class="mcn">'+esc(it.name)+'</div></div>'}).join('')+'</div>'});
 h+='<div class="sl"><span class="lt">Therapist Nerve Flossing</span><span class="rule"></span></div>';
@@ -3351,7 +3284,8 @@ DB.library.push(e);sv();pickEx(e.id)}
 
 /* ═══════════ STAGE 2 — LIBRARY MANAGER ═══════════ */
 function vEdLib(){
-let h=edHdr('Exercise Library',DB.library.length+' exercises','goProg()');
+const _arch=DB.library.filter(e=>e.archived).length; /* the Program tab counts active moves only · say the same number here, and name the archived ones rather than hiding them (this screen is where they are restored) */
+let h=edHdr('Exercise Library',(DB.library.length-_arch)+' active'+(_arch?' · '+_arch+' archived':''),'goProg()');
 h+='<div class="co">';
 h+='<input class="tin" placeholder="Search exercises" value="'+esc(S.libQ||'')+'" oninput="S.libQ=this.value;filterLib()" style="margin-bottom:12px">';
 h+='<button class="addb" onclick="newLibEx()">+ New exercise</button>';
@@ -3505,19 +3439,6 @@ h+='<button class="'+cls+'" onclick="dayHabitSheet(\''+dk+'\')" aria-label="'+MN
 h+='</div>';
 h+='<div class="leg2"><span><i class="lg-tr"></i>trained</span><span><i class="cm-bed"></i>bed by '+fmtTimeShort(bedTime())+'</span><span><i class="cm-fast"></i>fasted</span></div>';
 return h+'</div>'}
-/* The elbow card is permanent, so it has to survive an empty series · trendChart reads pts[0] with no
-   internal guard, and every other caller guards outside. Chart is ACHE, where lower is better — the axis
-   is labelled to say so, because everything else on this tab reads up-is-progress. */
-function elbowCard(){
-const ser=elbowSeries(),jolts=elbowJolts(),first=elbowFirstDate();
-let h='<div class="sl"><span class="lt">Elbow</span><span class="rule"></span></div><div class="card">';
-if(!ser.length){h+='<div class="empty" style="padding:18px 12px">'+EB+'<div class="empty-t">No elbow sessions yet</div>Log the neutral holds on A and the ache trend builds here.</div>';return h+'</div>'}
-h+='<div class="exs" style="padding:2px 2px 4px">Ache across '+ser.length+' session'+(ser.length>1?'s':'')+' · lower is better</div>';
-h+=trendChart(ser,true);
-const last=ser[ser.length-1];
-h+='<div class="exs" style="padding:8px 2px 2px">Last: ache '+last.mxR+'/10 · '+pl(jolts,'jolt')+' logged in total</div>';
-if(elbowReviewDue())h+='<div class="rxr">'+dkDays(first,tk())+' days in · read the ache trend and the jolt count together, then decide whether this is still working. Next step is the floss withdrawal: right ulnar to zero for 4-6 weeks, isometrics frozen, then reintroduce for 14 days. Jolts must fall clearly AND come back to call it causal.</div>';
-return h+'</div>'}
 function vTrends(){
 const pr=prScan();
 let h='<header class="hero"><div><div class="eyebrow">Trends</div><h1 class="title">Progress</h1></div></header>';
@@ -3534,7 +3455,6 @@ h+='<div class="exs" style="padding:2px 2px 4px">Effort % across '+_ss.length+' 
 h+=trendChart(_ss,true);
 h+='<div class="exs" style="padding:8px 2px 2px">Last: '+sprDistC(_lsp)+' @'+_lsp.effortPct+'%'+(_lsp.pain!=null?' · pain '+_lsp.pain:'')+'</div>';
 h+='</div>';}
-h+=elbowCard();
 h+='<div class="sl"><span class="lt">Weekly load</span><span class="rule"></span></div>';
 const _wl=weeklyLoad(),_twk=weekMon(tk()),_curW=_wl.filter(function(w){return w.wk===_twk})[0],_swk=DB.sessions.filter(function(s){return s.date>=_twk}).length,_hs=weekSets(),_hk=Object.keys(_hs).sort(function(a,b){return _hs[b]-_hs[a]});
 if(!_swk&&!_wl.length)h+='<div class="card"><div class="empty" style="padding:22px 12px">'+EB+'<div class="empty-t">No load logged yet</div>Finish a session and tap how it went · weekly load and hard-set volume build here.</div></div>';
@@ -3691,7 +3611,7 @@ const body=
 +'<div class="strow"><div class="stn">Timer chime<small>visual flash always on</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.sound?'1':'0','setSound')+'</div>'
 +(('vibrate'in navigator)?'<div class="strow"><div class="stn">Haptics<small>buzz on logged sets &amp; rest end</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.haptics===false?'0':'1','setHaptics')+'</div>':'') /* iOS has no vibration API · never promise a buzz that can't happen */
 +'<div class="strow"><div class="stn">Default rest<small>when nothing more specific is set</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sRest" data-args="[-15]">−</button><div class="stv num" id="sRestV">'+rD()+'s</div><button class="stb" data-hold data-fn="sRest" data-args="[15]">+</button></div></div>'
-+'<div class="strow"><div class="stn">Training guards<small>'+(engineOn()?'auto-deload, race taper, and easy days when you are flat':'off until you are cleared · your program stays exactly as you set it')+'</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],engineOn()?'1':'0','setEngineOn')+'</div>'
++'<div class="strow"><div class="stn">Training guards<small>'+(engineOn()?'auto-deload and the race taper · both only ever cut volume':'off until you are cleared · your program stays exactly as you set it')+'</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],engineOn()?'1':'0','setEngineOn')+'</div>'
 +(engineOn()?'<div class="strow"><div class="stn">Recovery dial<small>how many trained weeks before an easy week lands · now <span id="sDialWks">'+deloadEvery()+'</span></small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sDial" data-args="[-0.1]">−</button><div class="stv num" id="sDialV">'+dial().toFixed(1)+'</div><button class="stb" data-hold data-fn="sDial" data-args="[0.1]">+</button></div></div>':'')
 +(engineOn()?'<div class="strow"><div class="stn">Start a fresh block<small>resets the easy-week clock, clears a pending deload and race date · program and history untouched</small></div><button class="btn btn-o" style="width:auto;min-height:44px;padding:0 18px;flex-shrink:0" onclick="resetAskEng()">Start fresh</button></div>':'')
 +'<div class="strow"><div class="stn">Bedtime target<small>what “bed by” aims for</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sBed" data-args="[-15]">−</button><div class="stv num" id="sBedV" style="font-size:14px">'+fmtTime12(bedTime())+'</div><button class="stb" data-hold data-fn="sBed" data-args="[15]">+</button></div></div>'
