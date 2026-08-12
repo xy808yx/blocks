@@ -945,7 +945,7 @@ dayOverrides:{},
 /* ═══════════ STATE & PERSISTENCE ═══════════ */
 let DB=null;
 let S={tab:'today',view:'tabs',sel:null,sid:null,amend:false,backfill:false,det:null,mobFrom:'today',editKey:null,edT:null,edE:0,edX:null,edRef:0,trEx:null,calM:0,e1:false,pick:null,histAll:false,libQ:'',dailyTab:null};
-let PV={},CV=null,CE={spr:false,aer:false},EXTRA={};
+let PV={},CV=null,CE={spr:false,aer:false};
 let SPR=null; /* live sprint window · {dk,startedAt,plan,done,…} mirrored to localStorage blocks_spr so a locked phone at the track loses nothing */
 let T=null,TINT=null,EINT=null,WL=null,AC=null,UPD=null,IMPORTED=null,PRC=null,IMPCSV=null,RSC=null;
 const DY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -1589,6 +1589,17 @@ function cardioIsSprint(dk,cs){return cs&&cs.sprints?true:cs&&cs.aerobic?false:e
 function activeSession(){return DB.sessions.find(s=>!s.finishedAt)||null}
 function sessById(sid){return DB.sessions.find(s=>s.id===sid)||null}
 function workingSets(sess,exId){return sess.sets.filter(s=>s.exId===exId)}
+/* Row-count delta against the prescribed set count, per exercise, per session. Lives on the session
+   (not a module global) so a mid-workout reload can't quietly restore a row you removed · losing that
+   was the whole reason "− Remove set" felt broken. Negative is legal; rowTotal floors on the highest
+   logged set number, so a delta can never hide work you already recorded. Sessions saved before this
+   have no .extra and read as 0. */
+function xtra(sess,exId){return(sess&&sess.extra&&sess.extra[exId])||0}
+function setXtra(sess,exId,v){if(!sess)return;if(!sess.extra)sess.extra={};
+if(v)sess.extra[exId]=v;else delete sess.extra[exId]}
+function rowTotal(sess,entry){
+const logged=workingSets(sess,entry.exId),maxN=logged.length?Math.max.apply(null,logged.map(x=>x.n)):0;
+return Math.max(entry.warmups+prescSets(entry,sess.date)+xtra(sess,entry.exId),maxN)}
 function rD(){return DB.settings.restDefault||90}
 function restFor(entry,ex){return(entry&&entry.rest)||ex.rest||rD()}
 function toLb(w){if(!w||!w.v)return 0;return w.u==='lb'?w.v:w.v/KG}
@@ -2274,7 +2285,7 @@ sheet('Log a past workout','Pick the day, then the session you did · it lands o
 '<div class="flab" style="margin-top:0">Date</div><input class="tin num" type="date" max="'+tk()+'" value="'+dk+'" onchange="pastSheet(this.value)" style="margin-bottom:2px"><div class="note" style="margin:9px 0 2px">'+esc(note)+'</div><div class="shbtns">'+opts+'</div>')}
 function startPastSession(dk,tid){
 const t=tid?tpl(tid):tplForDate(dk);if(!t){toast('Pick a workout');return}
-closeOv();PV={};EXTRA={};S.editKey=null;CV=null;
+closeOv();PV={};S.editKey=null;CV=null;
 if(t.kind==='cardio'){let s=sessionsFor(dk).find(x=>x.kind==='cardio');
  if(!s){const a=anchorTs(dk);s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t.name,templateId:t.id,kind:'cardio',startedAt:a,finishedAt:a,sets:[]};DB.sessions.push(s);sv()}
  openDetail(s.id);return}
@@ -2290,8 +2301,8 @@ function openPastDay(dk){const s=sessionsFor(dk).find(x=>x.finishedAt);if(s)open
 function startSession(tid){
 const dk=tk(),t=tid?tpl(tid):tplForDate(dk);if(!t)return;
 const s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t.name,templateId:t.id,kind:'lift',startedAt:Date.now(),finishedAt:null,sets:[]};
-DB.sessions.push(s);sv();PV={};EXTRA={};S.editKey=null;S.sid=s.id;S.amend=false;S.view='session';rn()}
-function resumeSession(sid){PV={};EXTRA={};S.editKey=null;S.sid=sid;S.amend=false;S.view='session';rn()}
+DB.sessions.push(s);sv();PV={};S.editKey=null;S.sid=s.id;S.amend=false;S.view='session';rn()}
+function resumeSession(sid){PV={};S.editKey=null;S.sid=sid;S.amend=false;S.view='session';rn()}
 function exitSession(){if(S.backfill){endBackfill();return}if(S.amend){S.amend=false;S.view='detail';S.det=S.sid}else{S.view='tabs';S.tab='today'}S.editKey=null;rn()}
 function endBackfill(){
 const s=sessById(S.sid);let n=0;
@@ -2388,7 +2399,7 @@ let body='';
 entries.forEach((entry,ei)=>{
 const ex=exOf(entry.exId),logged=workingSets(sess,entry.exId).sort((a,b)=>a.n-b.n);
 const maxN=logged.length?logged[logged.length-1].n:0;
-const total=Math.max(entry.warmups+prescSets(entry,sess.date)+(EXTRA[entry.exId]||0),maxN);
+const total=rowTotal(sess,entry);
 const fin=logged.length>=total&&total>0;
 let rows='';
 const byN={};logged.forEach(x=>{byN[x.n]=x});
@@ -2405,7 +2416,7 @@ body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+e
 +ghostLine(ex,sess)
 +'<div class="cols"><span>Set</span><span>'+(ex.bw?'Load':unit())+'</span><span>Reps</span><span></span></div>'
 +rows
-+'<div class="exf"><div style="display:flex;align-items:center;gap:2px"><button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button>'+((EXTRA[entry.exId]||0)>0&&logged.length<total?'<button class="adds" onclick="rmRow(\''+entry.exId+'\')">− Remove set</button>':'')+'</div><div style="display:flex;align-items:center;gap:5px">'+(entries.length>1?'<button class="exmv" onclick="moveEx(\''+entry.exId+'\',-1)"'+(ei===0?' disabled':'')+' aria-label="Move up">↑</button><button class="exmv" onclick="moveEx(\''+entry.exId+'\',1)"'+(ei===entries.length-1?' disabled':'')+' aria-label="Move down">↓</button>':'')+'<button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div></div>'});
++'<div class="exf"><div style="display:flex;align-items:center;gap:2px"><button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button>'+(total>1?'<button class="adds" onclick="rmRow(\''+entry.exId+'\')">− Remove set</button>':'')+'</div><div style="display:flex;align-items:center;gap:5px;margin-left:auto">'+(entries.length>1?'<button class="exmv" onclick="moveEx(\''+entry.exId+'\',-1)"'+(ei===0?' disabled':'')+' aria-label="Move up">↑</button><button class="exmv" onclick="moveEx(\''+entry.exId+'\',1)"'+(ei===entries.length-1?' disabled':'')+' aria-label="Move down">↓</button>':'')+'<button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div></div>'});
 body+='<button class="addb" onclick="pickExFor(\'session\')">+ Add exercise</button>';
 const elapsed=S.amend?fmtDk(sess.date):'<span id="elap">'+mmss(Date.now()-sess.startedAt)+'</span>';
 const hd='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="exitSession()">'+I_BACK+'</button>'
@@ -2424,7 +2435,7 @@ if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
 sess.sets.push({exId,n:i+1,w:{v:+pv.w||0,u:unit()},reps:Math.round(pv.r),warmup:i<entry.warmups||undefined,amrap:entry.amrap||undefined,ts});
 delete PV[key];sv();vibe(12);S.flash=exId+'_'+(i+1);
 if(!S.amend){let rem=0;
-entriesOf(sess).filter(e=>e.enabled).forEach(e=>{const tot=e.warmups+prescSets(e,sess.date)+(EXTRA[e.exId]||0);
+entriesOf(sess).filter(e=>e.enabled).forEach(e=>{const tot=rowTotal(sess,e);
  rem+=Math.max(0,tot-workingSets(sess,e.exId).length)});
 if(rem>0)startRest(restFor(entry,ex),esc(ex.name))}
 rn();S.flash=null}
@@ -2459,16 +2470,33 @@ const before=JSON.parse(JSON.stringify(sess.sets));
 sess.sets=sess.sets.filter(x=>!(x.exId===exId&&x.n===n));
 sess.sets.forEach(x=>{if(x.exId===exId&&x.n>n)x.n--});
 S.editKey=null;delete PV['e_'+exId+'_'+n];sv();rn();toastUndo('Set removed',()=>{sess.sets=before;sv()})}
-function addRow(exId){EXTRA[exId]=(EXTRA[exId]||0)+1;rn()}
+function addRow(exId){const sess=sessById(S.sid);if(!sess)return;setXtra(sess,exId,xtra(sess,exId)+1);sv();rn()}
 function moveEx(exId,dir){const s=sessById(S.sid);if(!s)return;const order=entriesOf(s).map(e=>e.exId),i=order.indexOf(exId),j=i+dir;if(i<0||j<0||j>=order.length)return;order.splice(j,0,order.splice(i,1)[0]);s.order=order;sv();rn()}
-/* This deliberately does NOT delete logged sets. Deleting a recorded set stays on the one deliberate
-   path: tap the set you mean, then confirm in the edit row. A footer button sitting 2px from "+ Add set"
-   is the wrong place to put anything that touches history, and a 5s undo toast at the bottom of the
-   screen is easy to miss mid-workout. This only takes back a pending row you added yourself. */
-function rmRow(exId){const n=EXTRA[exId]||0;if(n<=0)return;
-const sess=sessById(S.sid),entry=sess?entryFor(sess,exId):null;
-if(entry){const base=prescSets(entry,sess.date);delete PV[exId+'_'+(entry.warmups+base+n-1)]} /* pending-row key rides the prescribed set count, which a guard day lowers */
-EXTRA[exId]=n-1;rn()}
+/* "− Remove set" sits next to "+ Add set" and is always live, because a footer that can add a row but
+   only sometimes take one away is the asymmetry J kept walking into. It drops the LAST row of the
+   exercise. A pending row goes quietly; a logged one asks first, on the same confirm pattern as
+   "Remove" (the exercise), so the footer can never delete recorded work on a single tap. The floor is
+   one row, NOT one working set: a warm-up-only entry (Face Pulls is 2 warm-ups and 0 working sets)
+   would otherwise be able to add a row and never take it back, which is the asymmetry all over again. */
+function rowLabel(entry,n){return n<=entry.warmups?'warm-up set':'set '+(n-entry.warmups)}
+function rmRow(exId){const sess=sessById(S.sid);if(!sess)return;
+const entry=entryFor(sess,exId);if(!entry)return;
+const cur=rowTotal(sess,entry);
+if(cur<=1){toast('Use Remove to drop the exercise');return}
+if(workingSets(sess,exId).some(x=>x.n===cur)){
+ ovConfirm('Remove '+rowLabel(entry,cur)+'?','This set is logged. Removing it deletes what you recorded.',
+ [{label:'Remove set',click:'rmRowGo(\''+exId+'\')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}]);return}
+rmRowGo(exId)}
+function rmRowGo(exId){const sess=sessById(S.sid);if(!sess)return;
+const entry=entryFor(sess,exId);if(!entry)return;
+const cur=rowTotal(sess,entry);if(cur<=1){closeOv();return}
+const before=JSON.parse(JSON.stringify(sess.sets)),bx=xtra(sess,exId);
+const hit=sess.sets.find(x=>x.exId===exId&&x.n===cur);
+if(hit){sess.sets=sess.sets.filter(x=>!(x.exId===exId&&x.n===cur));delete PV['e_'+exId+'_'+cur]}
+delete PV[exId+'_'+(cur-1)]; /* pending-row PV key is the 0-based row index, so the row we just dropped */
+setXtra(sess,exId,(cur-1)-(entry.warmups+prescSets(entry,sess.date)));
+S.editKey=null;sv();closeOv();rn();
+if(hit)toastUndo('Set removed',()=>{sess.sets=before;setXtra(sess,exId,bx);sv()})}
 function rmExAsk(exId){const s=sessById(S.sid);if(!s)return;
 const n=workingSets(s,exId).length;
 if(!n){rmExGo(exId);return}
@@ -2480,7 +2508,7 @@ s.sets=s.sets.filter(x=>x.exId!==exId);
 s.addons=(s.addons||[]).filter(x=>x!==exId);
 const t=tpl(s.templateId);
 if(t&&t.entries.some(e=>e.exId===exId)){s.hidden=s.hidden||[];if(!s.hidden.includes(exId))s.hidden.push(exId)}
-delete EXTRA[exId];clearPV(exId);S.editKey=null;sv();closeOv();rn();toastUndo('Exercise removed',()=>{s.sets=bSets;s.addons=bAdd;s.hidden=bHid;sv()})}
+const bx=xtra(s,exId);setXtra(s,exId,0);clearPV(exId);S.editKey=null;sv();closeOv();rn();toastUndo('Exercise removed',()=>{s.sets=bSets;s.addons=bAdd;s.hidden=bHid;setXtra(s,exId,bx);sv()})}
 
 /* ═══════════ CARDIO ═══════════ */
 function aerLabel(m){return m==='bike'?'Bike':m==='run'?'Run':'Swim'}
@@ -3047,7 +3075,7 @@ h+='<div class="shbtns"><button class="btn btn-o" onclick="amendSession(\''+s.id
 h+='<div class="shbtns"><button class="btn btn-d" onclick="delAsk(\''+s.id+'\')">Delete session</button></div>';
 h+='</div>';
 return h}
-function amendSession(sid){PV={};EXTRA={};S.editKey=null;S.sid=sid;S.amend=true;S.backfill=false;S.view='session';rn()}
+function amendSession(sid){PV={};S.editKey=null;S.sid=sid;S.amend=true;S.backfill=false;S.view='session';rn()}
 function delAsk(sid){ovConfirm('Delete this session?','It disappears from history permanently.',
 [{label:'Delete',click:'delSession(\''+sid+'\')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
 function delSession(sid){const idx=DB.sessions.findIndex(x=>x.id===sid),removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==sid);sv();closeOv();S.view='tabs';S.tab='history';rn();toastUndo('Session deleted',()=>{DB.sessions.splice(idx,0,removed);sv()})}
