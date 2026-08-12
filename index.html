@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BLOCKS</title>
 <meta name="theme-color" content="#0a0b0e">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Blocks">
@@ -22,7 +19,12 @@
 --blue:#85a3c7;--blue-soft:rgba(126,156,192,.12);--blue-line:rgba(126,156,192,.3);
 --danger:#e0604f;--danger-soft:rgba(224,96,79,.09);--danger-line:rgba(224,96,79,.3);
 --f:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
---fd:'Barlow Condensed','Avenir Next Condensed','Arial Narrow',-apple-system,sans-serif;
+/* was Barlow Condensed · condensed measures 11.2% slower to read at a glance and this token carries
+   exercise names and phrase-length strings, not isolated labels · dropping it also deletes the Google
+   Fonts <link> and makes the PWA fully offline in a basement gym · left as a token so the display face
+   is still a one-line repoint later. Never fall through to a condensed face (Avenir Next Condensed
+   ships on device and was the old fallback). */
+--fd:var(--f);
 --ease:cubic-bezier(.22,1,.36,1);
 --card-g:linear-gradient(180deg,#181b21 0%,#14161b 100%);
 --card-sh:inset 0 1px 0 rgba(255,255,255,.035),0 1px 2px rgba(0,0,0,.22);
@@ -191,8 +193,16 @@ button.fin:active{transform:scale(.96);box-shadow:inset 0 1px 0 rgba(255,255,255
 button.fin.q{background:var(--surface2);color:var(--text);border:1px solid var(--border-h);box-shadow:none}
 
 /* ── exercise card & set rows ── */
-.exc{background:var(--card-g);border:1px solid var(--border);border-radius:16px;padding:15px 14px 12px;margin-bottom:12px;box-shadow:var(--card-sh);transition:border-color .35s,opacity .35s}
-.exc.fin{border-color:var(--sage-line);opacity:.62} /* a finished exercise recedes so the remaining work leads the eye · its logged values stay legible and editable */
+/* padding trimmed 14 -> 10, and the set grid below rebalanced to 22px/1.42fr/1fr/48px, buying the load
+   column the 85px that a 28px tabular "302.5" needs (79.7px) · measured, not guessed: at 26px/1.2fr the
+   column held 63px and clipped every NNN.5 load · no touch target shrank to pay for it, the log button
+   is still 48x54 */
+.exc{background:var(--card-g);border:1px solid var(--border);border-radius:16px;padding:15px 10px 12px;margin-bottom:12px;box-shadow:var(--card-sh);transition:border-color .35s}
+/* the old opacity:.62 did not "recede" a finished exercise, it erased it: logged values composited to
+   Lc 24.8 and their labels to Lc 16.5, a point above the floor where anything is visible at all, in a
+   log meant to be re-read for years. Finished is marked by a 2px rule down the left edge instead, and
+   the permanent record stays at full ink forever. */
+.exc.fin{border-color:var(--sage-line);border-left:2px solid var(--sage);padding-left:9px} /* 9 + the extra 1px of border keeps the content flush with an unfinished card */
 .exh{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
 .exh .tpes{color:var(--dim);font-weight:600} /* the live set count is the primary per-card glance · lift it to at least match the rest pill beside it */
 /* the name identifies, the numbers are what you act on · the name steps back so .stv can lead */
@@ -207,10 +217,10 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .exs{font-size:13px;color:var(--dim);margin-bottom:2px}
 .ghost{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;margin-bottom:10px}
 .ghost b{color:var(--dim);font-weight:600}
-.cols{display:grid;grid-template-columns:26px 1.2fr 1fr 54px;gap:6px;padding:0 2px;margin:8px 0 5px}
+.cols{display:grid;grid-template-columns:22px 1.42fr 1fr 48px;gap:5px;padding:0 2px;margin:8px 0 5px}
 .cols span{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;text-align:center}
 .cols span:first-child{text-align:left}
-.sr{display:grid;grid-template-columns:26px 1.2fr 1fr 54px;gap:6px;align-items:center;padding:5px 2px;border-radius:12px}
+.sr{display:grid;grid-template-columns:22px 1.42fr 1fr 48px;gap:5px;align-items:center;padding:5px 2px;border-radius:12px}
 .sr+.sr{margin-top:2px}
 .srn{font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;text-align:left}
 .sr.wu .srn{color:var(--blue)}
@@ -224,24 +234,29 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 /* expand outward only · the inward 6px used to eat the value's own tap-to-type target */
 .stp>.stb:first-child::after{left:-8px;right:0}
 .stp>.stb:last-child::after{left:0;right:-8px}
-.stv{flex:1;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;min-width:0;letter-spacing:-.01em;transition:background .15s}
+/* 19px put the one number you act on at 11.1 arcmin from the bench and 8.7 from the floor, under the
+   ISO 9241-303 floor of 16 · 28px holds 32.8 at arm's length and 16.4 at the bench */
+.stv{flex:1;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums;min-width:0;letter-spacing:-.01em;transition:background .15s}
 .stv.tick{animation:vtick .2s var(--ease)}
 .stv:active{background:var(--border)}
 @keyframes vtick{from{transform:scale(1.22)}}
-.vin{width:100%;background:transparent;border:none;color:var(--text);font-size:19px;font-weight:700;letter-spacing:-.01em;text-align:center;font-family:var(--f);font-variant-numeric:tabular-nums}
+.vin{width:100%;background:transparent;border:none;color:var(--text);font-size:28px;line-height:1;font-weight:700;letter-spacing:-.01em;text-align:center;font-family:var(--f);font-variant-numeric:tabular-nums}
 .vin:focus{outline:none}
 .lg{height:54px;border-radius:12px;border:1.5px solid var(--ember-line);background:rgba(255,111,46,.08);display:flex;align-items:center;justify-content:center;color:var(--ember);transition:transform .12s var(--ease),background .15s,border-color .15s,color .15s}
 .lg svg{width:20px;height:20px}
 .lg:active{background:var(--ember);border-color:var(--ember);color:#1a0d05;transform:scale(.93)}
-.lg.fut{border-color:var(--border-h);color:var(--border-h);background:transparent}
-.lg.fut:active{background:transparent;border-color:var(--border-h);color:var(--border-h);transform:none}
+/* --border-h drew this at Lc 0.0 on the card: the control was not there at all. --muted is Lc 37.1,
+   present but plainly recessed, and it stays under the live button beside it (ember glyph Lc 46.8 on
+   its own warm fill). Same call as .calc.fut. */
+.lg.fut{border-color:var(--muted);color:var(--muted);background:transparent}
+.lg.fut:active{background:transparent;border-color:var(--muted);color:var(--muted);transform:none}
 .sr.wu .lg{border-color:var(--blue-line);background:var(--blue-soft);color:var(--blue)}
 .sr.wu .lg:active{background:var(--blue);border-color:var(--blue);color:#0d1117}
 .sr.done{background:var(--sage-bg)}
 .sr.done .srn{color:var(--dim)} /* the sage wash lifts the backdrop — --muted would drop under AA exactly as the row completes */
 .sr.done.new{animation:srin .55s var(--ease)}
 @keyframes srin{from{background:rgba(127,176,105,.32);transform:scale(.97)}}
-.sr.done .dtx{font-size:17px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums;grid-column:2/4;text-align:center} /* a logged value is the permanent record · it must not shrink below the size it was entered at */
+.sr.done .dtx{font-size:28px;line-height:1;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;grid-column:2/4;text-align:center} /* a logged value is the permanent record · it must not shrink or fade below what it was entered at, so it matches .stv exactly and sits at full ink */
 .sr.done .dck{height:44px;display:flex;align-items:center;justify-content:center;color:var(--sage)}
 .sr.done .dck svg{width:18px;height:18px}
 .adds{font-size:14px;font-weight:600;color:var(--muted);padding:13px 8px 13px 4px;display:inline-block;margin:-6px 0 -8px;white-space:nowrap}
