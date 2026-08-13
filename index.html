@@ -4,487 +4,500 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BLOCKS</title>
-<meta name="theme-color" content="#0a0b0e">
+<meta name="theme-color" content="#0A0A0A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Blocks">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0b0e'/%3E%3Crect x='12.2' y='7.5' width='7.6' height='4.6' rx='1.3' fill='%23ff6f2e'/%3E%3Crect x='9.8' y='13.7' width='12.4' height='4.6' rx='1.3' fill='%23ff6f2e'/%3E%3Crect x='7.2' y='19.9' width='17.6' height='4.6' rx='1.3' fill='%23ff6f2e'/%3E%3C/svg%3E">
 <style>
+/* ═══════════ DEPARTURE BOARD ═══════════
+   Swiss departure board, ember variant. The system, so a future edit doesn't erode it:
+   · Two rule weights only: 1px --border hairline between rows, 2px --border-h paper rule at
+     section breaks. Rules bleed full width past the 16px margins. Nothing gets a box it
+     doesn't need; structure comes from rules, not cards.
+   · Size ladder is 46 / 28 / 20 / 16. Nothing below 16px, ever.
+   · Two weights: 500 and 700. Two trackings: 0, and .12em on 16px uppercase labels only.
+   · Ember is a FILL colour only, never small coloured text (Lc 50.0 on the ground, under the
+     Lc 60 floor). Small accents use --ember-hot (Lc 64.5). ONE ember-filled block on screen
+     at a time: the live set's slab. Green is never a second filled block on the session
+     screen; it marks logged rows as bare numerals and thin rules.
+   · No border-radius, no box-shadow, no gradients, no backdrop-filter, no glow, no grain.
+   · Never a condensed face. Helvetica Neue digits are 556/1000 em in every weight here, so
+     figures are natively tabular; .num is kept for the Arial fallback. */
 :root{
---bg:#0a0b0e;--surface:#14161b;--surface2:#1b1e25;--border:#262a33;--border-h:#3a3f4c;
---text:#edeef2;--dim:#a3aab5;--muted:#808894;
+--bg:#0A0A0A;--surface:#121213;--surface2:#2B2B2E;--border:#5E5F62;--border-h:#E6E6E1;
+--text:#F5F5F0;--muted:#CDCDC8;
 --ember:#ff6f2e;--ember-hot:#ffa14d;--ember-soft:rgba(255,111,46,.12);--ember-line:rgba(255,111,46,.35);
---sage:#85b66f;--sage-bg:rgba(127,176,105,.1);--sage-line:rgba(127,176,105,.36);
---blue:#85a3c7;--blue-soft:rgba(126,156,192,.12);--blue-line:rgba(126,156,192,.3);
---danger:#e0604f;--danger-soft:rgba(224,96,79,.09);--danger-line:rgba(224,96,79,.3);
---f:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-/* was Barlow Condensed · condensed measures 11.2% slower to read at a glance and this token carries
-   exercise names and phrase-length strings, not isolated labels · dropping it also deletes the Google
-   Fonts <link> and makes the PWA fully offline in a basement gym · left as a token so the display face
-   is still a one-line repoint later. Never fall through to a condensed face (Avenir Next Condensed
-   ships on device and was the old fallback). */
---fd:var(--f);
+--sage:#79E3A0;--sage-bg:rgba(121,227,160,.1);--sage-line:rgba(121,227,160,.4);
+--blue:#A8CDEE;--blue-soft:rgba(168,205,238,.12);--blue-line:rgba(168,205,238,.35);
+--danger:#FF9A87;--danger-soft:rgba(255,154,135,.09);--danger-line:rgba(255,154,135,.35);
+--f:'Helvetica Neue',HelveticaNeue,Helvetica,Arial,sans-serif;
+--fd:var(--f); /* the display face is still a one-line repoint · never condensed */
 --ease:cubic-bezier(.22,1,.36,1);
---card-g:linear-gradient(180deg,#181b21 0%,#14161b 100%);
---card-sh:inset 0 1px 0 rgba(255,255,255,.035),0 1px 2px rgba(0,0,0,.22);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg)}
-body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased;min-height:100vh;touch-action:manipulation;overscroll-behavior-y:none}
-body::before{content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(120% 55% at 50% -10%,rgba(255,111,46,.07),transparent 58%),radial-gradient(80% 45% at 108% 106%,rgba(126,156,192,.055),transparent 62%)}
-body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.45;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");background-size:160px 160px}
-button{font-family:var(--f);color:inherit;background:none;border:none;cursor:pointer;font-size:inherit;touch-action:manipulation}
-a{color:var(--ember);text-decoration:none}
+body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:16px;font-weight:500;line-height:1.45;-webkit-font-smoothing:antialiased;min-height:100vh;touch-action:manipulation;overscroll-behavior-y:none}
+button{font-family:var(--f);color:inherit;background:none;border:none;cursor:pointer;font-size:inherit;font-weight:inherit;touch-action:manipulation}
+a{color:var(--ember-hot);text-decoration:none}
 .num{font-variant-numeric:tabular-nums}
 ::selection{background:var(--ember-soft)}
 :focus-visible{outline:2px solid var(--ember);outline-offset:2px}
 ::-webkit-scrollbar{width:12px}
-::-webkit-scrollbar-thumb{background:var(--border);border:3.5px solid var(--bg);border-radius:7px}
+::-webkit-scrollbar-thumb{background:var(--border);border:3.5px solid var(--bg)}
 ::-webkit-scrollbar-track{background:transparent}
 
-/* ── chrome ── */
-.hd{position:sticky;top:0;z-index:50;background:rgba(10,11,14,.82);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid rgba(38,42,51,.8)}
+/* ── chrome · opaque, ruled ── */
+.hd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border)}
 .hdi{max-width:560px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;padding-top:max(13px,env(safe-area-inset-top));padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
-.wm{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-size:15.5px;font-weight:700;letter-spacing:.3em;color:#b9bfc9;text-indent:.04em}
-.wm svg{filter:drop-shadow(0 0 6px rgba(255,111,46,.28))}
-.hbt{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:11px;color:var(--dim);transition:background .2s,color .2s}
+.wm{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;letter-spacing:.12em;color:var(--muted)}
+.hbt{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .2s,color .2s}
 .hbt:active{background:var(--surface2);color:var(--text)}
-.tb{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(10,11,14,.86);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid rgba(38,42,51,.8)}
+.tb{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--bg);border-top:1px solid var(--border)}
 .tbi{max-width:560px;margin:0 auto;display:flex;padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
-.tbb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 8px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.05em;transition:color .25s}
+.tbb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 9px;color:var(--muted);font-size:16px;font-weight:500;transition:color .25s}
 .tbb svg{display:block}
-.tbb .ic{width:52px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;transition:background .25s}
-.tbb.on{color:var(--ember)}
-.tbb.on .ic{background:var(--ember-soft)}
+.tbb .ic{width:52px;height:30px;display:flex;align-items:center;justify-content:center}
+.tbb.on{color:var(--ember-hot);font-weight:700}
 .tbb.on.navpop .ic{animation:icpop .35s var(--ease)}
 @keyframes icpop{45%{transform:scale(1.14)}}
-.co{max-width:560px;margin:0 auto;padding:20px 16px calc(90px + env(safe-area-inset-bottom));padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+.co{max-width:560px;margin:0 auto;padding:20px 16px calc(96px + env(safe-area-inset-bottom));padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
 .co.nopad{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
-body:has(.tb~.restc:not(.hide)) .co{padding-bottom:calc(170px + env(safe-area-inset-bottom))} /* while a rest timer floats on a tab view, keep the last row clear of the chip (mirrors the toast rule below) */
+body:has(.tb~.restc:not(.hide)) .co{padding-bottom:calc(220px + env(safe-area-inset-bottom))} /* while a rest timer bar sits on a tab view, keep the last row clear of it (mirrors the toast rule below) */
 
-/* ── view entrance — one fade on the container, only on view change ── */
-/* the per-child stagger ran .21s of delay + .42s of duration with fill-mode both, so everything below
-   the 6th child sat at opacity 0 for .63s on EVERY tab tap · one short container fade instead */
+/* ── view entrance · one fade on the container, only on view change ── */
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .co.fresh{animation:rise .18s var(--ease)}
 
-/* ── banners ── */
-.ban{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--card-g);border:1px solid var(--border);border-radius:14px;padding:13px 15px;margin-bottom:16px;font-size:15px;color:var(--dim);box-shadow:var(--card-sh)}
-.ban b{color:var(--text);font-weight:600}
+/* ── banners · full-bleed ruled strips ── */
+.co>.ban:first-child{margin-top:-20px}
+.ban{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:0 -16px 16px;padding:13px 16px;font-size:16px;color:var(--muted)}
+.ban b{color:var(--text);font-weight:700}
 .ban .bba{margin-left:auto;display:flex;gap:8px;flex-shrink:0}
-.ban.em{border-color:var(--ember-line);background:linear-gradient(180deg,rgba(255,111,46,.14),rgba(255,111,46,.07))}
-.bbtn{font-size:14px;font-weight:650;color:var(--ember);padding:11px 14px;border-radius:9px;background:rgba(255,111,46,.14);white-space:nowrap;transition:transform .12s var(--ease)}
+.ban.em{border-left:2px solid var(--ember);padding-left:14px}
+.bbtn{font-size:16px;font-weight:700;color:var(--text);padding:11px 14px;border:1px solid var(--border);white-space:nowrap;transition:transform .12s var(--ease)}
 .bbtn:active{transform:scale(.95)}
-.bbtn.q{background:transparent;color:var(--muted)}
+.bbtn.q{border-color:transparent;color:var(--muted)}
 
 /* ── hero ── */
-.hero{display:flex;align-items:center;gap:18px;margin:4px 0 22px}
+.hero{display:flex;align-items:center;gap:18px;margin:8px 0 24px}
 .rw{position:relative;width:72px;height:72px;flex-shrink:0}
-.rt{fill:none;stroke:#1d2027;stroke-width:6}
-.rf{fill:none;stroke-width:6;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset .6s var(--ease);filter:drop-shadow(0 0 6px rgba(255,111,46,.38))}
-.rf.full{stroke:var(--sage);filter:drop-shadow(0 0 8px rgba(133,182,111,.5))}
-.rn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:21px;font-weight:700}
-.rn span{font-size:13px;color:var(--muted);font-weight:600;margin-left:2px}
-.eyebrow{font-size:12.5px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
-.eyebrow b{color:var(--ember);font-weight:650}
-.title{font-family:var(--fd);font-size:32px;font-weight:700;letter-spacing:.008em;line-height:1.09}
-.hsub{font-size:14px;color:var(--muted);margin-top:5px}
-.hsub .sg{color:var(--sage);font-weight:600}
+.rt{fill:none;stroke:var(--surface2);stroke-width:6}
+.rf{fill:none;stroke:var(--ember);stroke-width:6;stroke-linecap:butt;stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset .6s var(--ease)}
+.rf.full{stroke:var(--sage)}
+.rn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
+.rn span{color:var(--muted);font-weight:500;margin-left:2px}
+.eyebrow{font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.title{font-size:28px;font-weight:700;letter-spacing:0;line-height:1.1}
+.hsub{font-size:16px;color:var(--muted);margin-top:5px}
+.hsub .sg{color:var(--sage);font-weight:500}
 
 /* ── week strip ── */
 .week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:24px}
-.day{background:var(--card-g);border:1px solid var(--border);border-radius:12px;padding:10px 2px 13px;text-align:center;position:relative;transition:border-color .2s,background .2s,transform .15s var(--ease);box-shadow:var(--card-sh)}
+.day{background:var(--surface);border:1px solid transparent;padding:9px 2px 11px;text-align:center;position:relative;transition:border-color .2s,transform .15s var(--ease)}
 .day:active{transform:scale(.94)}
-.day .dl{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
-.day .dw{font-size:10.5px;font-weight:650;color:var(--dim);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.day.lift .dw{color:var(--ember)}
-.day.cardio .dw{color:var(--blue)}
+.day .dl{font-size:16px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:3px}
+.day .dw{font-size:16px;font-weight:500;color:var(--text);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .day.off .dw{color:var(--muted)}
-.day.on{border-color:var(--border-h);background:linear-gradient(180deg,#21252d,#1b1e25);box-shadow:0 0 0 1.5px var(--border-h),var(--card-sh)}
-.day .td{position:absolute;top:6px;right:6px;width:5px;height:5px;border-radius:50%;background:var(--ember);box-shadow:0 0 6px rgba(255,111,46,.8)}
-.day .cd{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:14px;height:3px;border-radius:2px;background:var(--sage);opacity:.9}
+/* today is a lit cell, the same language as the segmented control's active state · never a
+   thin outline, which reads as a focus ring rather than a designed state */
+.day.on{background:var(--text)}
+.day.on .dl,.day.on .dw{color:var(--bg)}
+.day .td{position:absolute;top:5px;right:5px;width:5px;height:5px;background:var(--ember)}
+.day .cd{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:14px;height:3px;background:var(--sage)}
 
-/* ── sections ── */
-.sl{display:flex;align-items:baseline;gap:10px;margin:28px 0 10px}
+/* ── sections · 2px paper rule, full bleed ── */
+.sl{display:flex;align-items:baseline;gap:10px;margin:32px -16px 12px;padding:0 16px 7px;border-bottom:2px solid var(--border-h)}
 .sl:first-child{margin-top:0}
-.sl .lt{font-family:var(--fd);font-size:15px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--dim)}
-.sl .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--border) 0%,rgba(38,42,51,.2) 100%)}
-.sl .cnt{font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.sl .lt{font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text)}
+.sl .rule{flex:1}
+.sl .cnt{font-size:16px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 .xrm{position:relative;background:none;border:none;color:var(--muted);font-size:18px;line-height:1;padding:0 4px;cursor:pointer}
 .xrm::after{content:'';position:absolute;inset:-13px -10px}
 .sl.done .lt,.sl.done .cnt{color:var(--sage)}
-.note{font-size:14.5px;color:var(--dim);line-height:1.55;margin:-2px 0 12px}
+.note{font-size:16px;color:var(--muted);line-height:1.5;margin:-2px 0 12px}
 .note:empty{display:none} /* an unset Morning/Evening note must not reserve a phantom gap */
 
-/* ── cards & buttons ── */
-.card{background:var(--card-g);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:var(--card-sh)}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:14px;font-size:16.5px;font-weight:650;transition:transform .15s var(--ease),opacity .15s,box-shadow .25s,filter .15s}
+/* ── cards flattened · plain blocks, structure comes from the section rules ── */
+.card{padding:2px 0 6px;margin-bottom:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:56px;font-size:20px;font-weight:700;transition:transform .15s var(--ease),opacity .15s,filter .15s}
 .btn:active{transform:scale(.98)}
-.btn-p{background:linear-gradient(180deg,#ff8445 0%,#f96526 100%);color:#1a0d05;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 8px 22px -8px rgba(255,111,46,.55)}
-.btn-p:active{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 10px -6px rgba(255,111,46,.45)}
-.btn-o{border:1px solid var(--border-h);color:var(--text);background:linear-gradient(180deg,#21252d,#1b1e25);box-shadow:var(--card-sh)}
-.btn-d{color:#e8796a;background:var(--danger-soft);border:1px solid var(--danger-line)}
-.scard-t{font-family:var(--fd);font-size:21px;font-weight:700;letter-spacing:.01em;line-height:1.25}
-.scard-m{font-size:14px;color:var(--muted);margin:3px 0 14px}
-.lnk{font-size:14.5px;font-weight:600;color:var(--ember);padding:11px 2px;display:inline-block}
-.sl .lnk{font-size:13px;padding:10px 8px;margin:-10px -8px}
+.btn-p{background:var(--ember);color:#0A0A0A}
+.btn-o{border:1px solid var(--border);color:var(--text)}
+.btn-d{color:var(--danger);border:1px solid var(--danger-line)}
+.scard-t{font-size:20px;font-weight:700;line-height:1.25}
+.scard-m{font-size:16px;color:var(--muted);margin:3px 0 14px}
+.lnk{font-size:16px;font-weight:700;color:var(--ember-hot);padding:11px 2px;display:inline-block}
+.sl .lnk{padding:10px 8px;margin:-10px -8px}
 .lnk:active,.savedl .ed:active,.rowx:active,.vl:active,.xrm:active,.prmin:active{opacity:.55}
 .btn-q{color:var(--muted)}
 
-/* ── check rows ── */
-.ck{display:flex;align-items:center;gap:14px;background:var(--card-g);border:1px solid var(--border);border-radius:13px;padding:12px 14px;margin-bottom:7px;min-height:54px;user-select:none;-webkit-user-select:none;transition:border-color .2s,background .2s;box-shadow:var(--card-sh)}
+/* ── check rows · ruled, full bleed ── */
+.ck{display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border);margin:0 -16px;padding:12px 16px;min-height:56px;user-select:none;-webkit-user-select:none;transition:background .2s}
 .ck:active{background:var(--surface2)}
 .ck.ro{pointer-events:none} /* reference-only rows must not offer a press state they can't honour */
-.ck.ro .vl{pointer-events:auto;display:inline-flex;align-items:center;min-height:44px;padding:0 10px;margin:-11px -6px -11px 0} /* on a non-pressable row the video link is the sole target · give it a full 44px without changing row height */
-.ck.done{border-color:var(--sage-line);background:linear-gradient(180deg,rgba(127,176,105,.13),rgba(127,176,105,.06))}
-.cb{width:27px;height:27px;border-radius:8px;border:2px solid #666d7b;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--bg);transition:background .2s,border-color .2s} /* unchecked outline lifted to ~3.4:1 so the empty box reads as tappable; done/on states below override to sage */
+.ck.ro .vl{pointer-events:auto;display:inline-flex;align-items:center;min-height:44px;padding:0 10px;margin:-11px -6px -11px 0}
+.ck.done{border-left:2px solid var(--sage);padding-left:14px}
+.cb{width:27px;height:27px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--bg);transition:background .2s,border-color .2s}
 .cb svg{width:14px;height:14px}
 .cb path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .25s ease .04s}
 @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.16)}100%{transform:scale(1)}}
 .ck.done .cb,.mc.done .cb,.hb.on .cb{background:var(--sage);border-color:var(--sage);animation:pop .3s var(--ease)}
 .ck.done .cb path,.mc.done .cb path,.hb.on .cb path{stroke-dashoffset:0}
 .ckm{flex:1;min-width:0}
-.ckn{font-size:15.5px;font-weight:600;line-height:1.3}
-.ck.done .ckn{color:var(--dim)}
-.ckr{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.45}
-.vl{font-size:13px;font-weight:600;color:var(--ember);white-space:nowrap;display:inline-block;padding:9px 8px;margin:-9px -4px -9px 0}
+.ckn{font-size:16px;font-weight:500;line-height:1.3}
+.ck.done .ckn{color:var(--muted)}
+.ckr{font-size:16px;color:var(--muted);margin-top:2px;line-height:1.45}
+.vl{font-size:16px;font-weight:700;color:var(--ember-hot);white-space:nowrap;display:inline-block;padding:9px 8px;margin:-9px -4px -9px 0}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 22px}
-.mc{display:flex;align-items:center;gap:12px;padding:9px 2px;border-radius:10px;min-height:46px;user-select:none;-webkit-user-select:none;transition:background .2s}
+.mc{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px solid var(--border);min-height:48px;user-select:none;-webkit-user-select:none;transition:background .2s}
 .mc:active{background:var(--surface)}
-.mc .cb{width:24px;height:24px;border-radius:7px}
+.mc .cb{width:24px;height:24px}
 .mc .cb svg{width:12px;height:12px}
-.mcn{font-size:15px;color:var(--dim);line-height:1.35}
+.mcn{font-size:16px;color:var(--text);line-height:1.35}
 .mc.done .mcn{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--sage-line)}
 @media(max-width:480px){.mgrid{grid-template-columns:1fr}}
 
 /* ── daily habits ── */
 .habits{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:6px}
-.hb{background:var(--card-g);border:1px solid var(--border);border-radius:15px;padding:13px 14px 12px;box-shadow:var(--card-sh);user-select:none;-webkit-user-select:none;transition:border-color .2s,background .2s,transform .15s var(--ease)}
+.hb{background:var(--surface);border:1px solid transparent;padding:13px 14px 12px;user-select:none;-webkit-user-select:none;transition:border-color .2s,transform .15s var(--ease)}
 .hb:active{transform:scale(.97)}
-.hb.on{border-color:var(--sage-line);background:linear-gradient(180deg,rgba(127,176,105,.14),rgba(127,176,105,.05))}
+.hb.on{border-color:var(--sage-line)}
 .hbtop{display:flex;align-items:center;gap:8px;margin-bottom:9px}
 .hbic{color:var(--muted);display:flex;flex-shrink:0;transition:color .2s}
 .hb.on .hbic{color:var(--sage)}
-.hbl{font-family:var(--fd);font-size:16.5px;font-weight:600;letter-spacing:.01em;flex:1;min-width:0}
-.hb .cb{width:24px;height:24px;border-radius:7px}
+.hbl{font-size:16px;font-weight:500;flex:1;min-width:0}
+.hb .cb{width:24px;height:24px}
 .hb .cb svg{width:12px;height:12px}
-.hbs{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.hbs{font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums}
 .hbs b{font-weight:700}
 .hb.on .hbs{color:var(--sage)}
 .bedstat{display:flex;align-items:center;gap:13px;padding:14px 16px;margin-bottom:10px}
-.bsf{display:flex;align-items:center;flex-shrink:0;color:var(--muted);opacity:.6;transition:color .2s,opacity .2s}
-.bsf.on{color:var(--ember-hot);opacity:1}
-.bsn{font-family:var(--fd);font-size:18px;font-weight:600;letter-spacing:.01em}
-.bsn b{color:var(--ember-hot)}
-.bss{font-size:12.5px;color:var(--muted);margin-top:1px}
+.bsf{display:flex;align-items:center;flex-shrink:0;color:var(--muted);transition:color .2s}
+.bsf.on{color:var(--ember-hot)}
+.bsn{font-size:20px;font-weight:500}
+.bsn b{color:var(--ember-hot);font-weight:700}
+.bss{font-size:16px;color:var(--muted);margin-top:1px}
 
-/* ── session header ── */
-.shd{position:sticky;top:0;z-index:50;background:rgba(10,11,14,.84);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid rgba(38,42,51,.8)}
+/* ── session header · opaque, ruled ── */
+.shd{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border)}
 .shdi{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:12px 12px;padding-top:max(12px,env(safe-area-inset-top));padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
-.shd .bk{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:11px;color:var(--dim);transition:background .2s,color .2s}
+.shd .bk{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .2s,color .2s}
 .shd .bk:active{background:var(--surface2);color:var(--text)}
 .shm{flex:1;min-width:0}
-.sht{font-family:var(--fd);font-size:20px;font-weight:700;letter-spacing:.012em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.shs{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
-/* scoped to button — .fin is also the "exercise complete" modifier on .exc (a div), which would otherwise inherit this button's dark-on-ember text colour */
-button.fin{background:linear-gradient(180deg,#ff8445,#f96526);color:#1a0d05;font-size:15px;font-weight:700;padding:10px 16px;border-radius:11px;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 6px 16px -6px rgba(255,111,46,.5);transition:transform .12s var(--ease),box-shadow .2s}
-button.fin:active{transform:scale(.96);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 3px 8px -5px rgba(255,111,46,.4)}
-button.fin.q{background:var(--surface2);color:var(--text);border:1px solid var(--border-h);box-shadow:none}
+.sht{font-size:20px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shs{font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
+/* Finish is a bounded text control, NOT an ember fill: on the session screen the live slab is
+   the one filled block, and the header must not compete with it. Scoped to button · .fin is
+   also the "exercise complete" modifier on .exc (a div). */
+button.fin{border:1px solid var(--border-h);color:var(--text);font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:12px 14px;flex-shrink:0;transition:transform .12s var(--ease),background .15s}
+button.fin:active{transform:scale(.96);background:var(--surface2)}
+button.fin.q{border-color:var(--border);color:var(--muted)}
 
-/* ── exercise card & set rows ── */
-/* padding trimmed 14 -> 10, and the set grid below rebalanced to 22px/1.42fr/1fr/48px, buying the load
-   column the 85px that a 28px tabular "302.5" needs (79.7px) · measured, not guessed: at 26px/1.2fr the
-   column held 63px and clipped every NNN.5 load · no touch target shrank to pay for it, the log button
-   is still 48x54 */
-.exc{background:var(--card-g);border:1px solid var(--border);border-radius:16px;padding:15px 10px 12px;margin-bottom:12px;box-shadow:var(--card-sh);transition:border-color .35s}
-/* the old opacity:.62 did not "recede" a finished exercise, it erased it: logged values composited to
-   Lc 24.8 and their labels to Lc 16.5, a point above the floor where anything is visible at all, in a
-   log meant to be re-read for years. Finished is marked by a 2px rule down the left edge instead, and
-   the permanent record stays at full ink forever. */
-.exc.fin{border-color:var(--sage-line);border-left:2px solid var(--sage);padding-left:9px} /* 9 + the extra 1px of border keeps the content flush with an unfinished card */
-.exh{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
-.exh .tpes{color:var(--dim);font-weight:600} /* the live set count is the primary per-card glance · lift it to at least match the rest pill beside it */
-/* the name identifies, the numbers are what you act on · the name steps back so .stv can lead */
-.exn{font-family:var(--fd);font-size:17px;font-weight:600;letter-spacing:.012em;flex:1;min-width:0;line-height:1.25}
-.chip{font-size:11px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:6px;flex-shrink:0;text-transform:uppercase}
-.chip.em{color:var(--ember);background:var(--ember-soft)}
-.chip.bl{color:var(--blue);background:var(--blue-soft)}
-.chip.off{color:var(--muted);background:var(--surface2)}
-.chip.rest{text-transform:none}
-button.chip{position:relative;border:1px solid var(--border-h);color:var(--dim);padding:2px 7px} /* border eats the 1px, so the pill matches a plain .chip */
+/* ── exercise sections & set rows · the board itself ── */
+.exc{border-top:2px solid var(--border-h);margin:14px -16px 0;padding:14px 16px 8px;transition:border-color .35s}
+.sl+.exc{border-top:none;margin-top:0;padding-top:4px} /* the section label above already drew the paper rule */
+/* a finished exercise keeps full ink forever · done is a 2px green rule down the left edge */
+.exc.fin{border-left:2px solid var(--sage);padding-left:14px}
+.exh{display:flex;align-items:baseline;gap:10px;margin-bottom:2px}
+.exh .tpes{color:var(--muted);font-weight:700}
+/* the name identifies, the numbers are what you act on · medium name, bold numerals */
+.exn{font-size:20px;font-weight:500;flex:1;min-width:0;line-height:1.25}
+.chip{font-size:16px;font-weight:700;letter-spacing:.12em;flex-shrink:0;text-transform:uppercase}
+.chip.em{color:var(--ember-hot)}
+.chip.bl{color:var(--blue)}
+.chip.off{color:var(--muted)}
+.chip.rest{text-transform:none;letter-spacing:0}
+button.chip{position:relative;border:1px solid var(--border);color:var(--muted);padding:3px 8px}
 button.chip::after{content:'';position:absolute;inset:-12px -6px}
-.exs{font-size:13px;color:var(--dim);margin-bottom:2px}
-.ghost{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;margin-bottom:10px}
-.ghost b{color:var(--dim);font-weight:600}
-.cols{display:grid;grid-template-columns:22px 1.42fr 1fr 48px;gap:5px;padding:0 2px;margin:8px 0 5px}
-.cols span{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;text-align:center}
+.exs{font-size:16px;color:var(--muted);margin-bottom:2px}
+.ghost{font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums;margin-bottom:8px}
+.ghost b{color:var(--muted);font-weight:700}
+/* one shared grid for the column caps and every set row · the caps are drawn ONCE per session */
+.cols{display:grid;grid-template-columns:40px 1.35fr 1fr 56px;gap:6px;margin:2px -16px 0;padding:0 16px 7px;border-bottom:1px solid var(--border)}
+.cols span{font-size:16px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;text-align:center}
 .cols span:first-child{text-align:left}
-.sr{display:grid;grid-template-columns:22px 1.42fr 1fr 48px;gap:5px;align-items:center;padding:5px 2px;border-radius:12px}
-.sr+.sr{margin-top:2px}
-.srn{font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;text-align:left}
+.sr{display:grid;grid-template-columns:40px 1.35fr 1fr 56px;gap:6px;align-items:center;margin:0 -16px;padding:6px 16px;border-bottom:1px solid var(--border)}
+.sr.edit{background:var(--surface2)}
+.srn{font-size:16px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;text-align:left}
 .sr.wu .srn{color:var(--blue)}
-/* overflow:hidden used to clip .stb::after, killing the outward half of the hit expander — a tap 4px
-   outside the ± landed on the row, not the button. The pill corners now come from the children. */
-.stp{display:flex;align-items:stretch;background:var(--surface2);border:1px solid var(--border);border-radius:12px;height:54px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
-.stp>*:first-child{border-radius:11px 0 0 11px}
-.stp>*:last-child{border-radius:0 11px 11px 0}
-.stb{width:30px;position:relative;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:19px;font-weight:500;flex-shrink:0;user-select:none;-webkit-user-select:none;transition:background .15s,color .15s}
+/* steppers lose their pills · bare glyphs at the row edges, the well is bounded by the row rules */
+.stp{display:flex;align-items:stretch;height:56px}
+.stb{width:34px;position:relative;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:26px;font-weight:500;flex-shrink:0;user-select:none;-webkit-user-select:none;transition:background .15s,color .15s}
+.stb:active{color:var(--text)}
 .stb::after{content:'';position:absolute;top:0;bottom:0;left:-6px;right:-6px}
 /* expand outward only · the inward 6px used to eat the value's own tap-to-type target */
 .stp>.stb:first-child::after{left:-8px;right:0}
 .stp>.stb:last-child::after{left:0;right:-8px}
-/* 19px put the one number you act on at 11.1 arcmin from the bench and 8.7 from the floor, under the
-   ISO 9241-303 floor of 16 · 28px holds 32.8 at arm's length and 16.4 at the bench */
-.stv{flex:1;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums;min-width:0;letter-spacing:-.01em;transition:background .15s}
+/* a standalone stepper (sheets, cardio fields) has no row rules around it · it keeps a bounding rule */
+.fld .stp,.strow .stp,.sheet .stp{border:1px solid var(--border)}
+/* optical centring · HN seats the math-axis glyphs (+ − ↑ ↓ ‹ ›) 0.11-0.17em below a flex-centred
+   box's true centre (ascent-heavy line box vs the glyph's low maths axis) · the asymmetric bottom
+   padding re-seats the ink on the centre · values measured per class via canvas actualBoundingBox
+   against the border box (Aug 2026), not eyeballed · ✕ and digits reach cap height and need none */
+.stb,.setb{padding-bottom:6px}
+.exmv{padding-bottom:7px}
+.mvb{padding-bottom:5px}
+.calnav button{padding-bottom:4px}
+.car2{position:relative;top:-2px}
+.stv{flex:1;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums;min-width:0;letter-spacing:0;transition:background .15s}
 .stv.tick{animation:vtick .2s var(--ease)}
-.stv:active{background:var(--border)}
+.stv:active{background:var(--surface2)}
 @keyframes vtick{from{transform:scale(1.22)}}
-.vin{width:100%;background:transparent;border:none;color:var(--text);font-size:28px;line-height:1;font-weight:700;letter-spacing:-.01em;text-align:center;font-family:var(--f);font-variant-numeric:tabular-nums}
+.vin{width:100%;background:transparent;border:none;color:var(--text);font-size:28px;line-height:1;font-weight:700;letter-spacing:0;text-align:center;font-family:var(--f);font-variant-numeric:tabular-nums}
 .vin:focus{outline:none}
-.lg{height:54px;border-radius:12px;border:1.5px solid var(--ember-line);background:rgba(255,111,46,.08);display:flex;align-items:center;justify-content:center;color:var(--ember);transition:transform .12s var(--ease),background .15s,border-color .15s,color .15s}
-.lg svg{width:20px;height:20px}
-.lg:active{background:var(--ember);border-color:var(--ember);color:#1a0d05;transform:scale(.93)}
-/* --border-h drew this at Lc 0.0 on the card: the control was not there at all. --muted is Lc 37.1,
-   present but plainly recessed, and it stays under the live button beside it (ember glyph Lc 46.8 on
-   its own warm fill). Same call as .calc.fut. */
-.lg.fut{border-color:var(--muted);color:var(--muted);background:transparent}
-.lg.fut:active{background:transparent;border-color:var(--muted);color:var(--muted);transform:none}
-.sr.wu .lg{border-color:var(--blue-line);background:var(--blue-soft);color:var(--blue)}
-.sr.wu .lg:active{background:var(--blue);border-color:var(--blue);color:#0d1117}
-.sr.done{background:var(--sage-bg)}
-.sr.done .srn{color:var(--dim)} /* the sage wash lifts the backdrop — --muted would drop under AA exactly as the row completes */
+/* the log check on a non-live row · bare muted glyph, present but plainly recessed.
+   .go is the committed accent (edit-save, sprint live rep) · ember-hot, never ember text */
+.lg{height:56px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:transform .12s var(--ease),color .15s}
+.lg svg{width:22px;height:22px}
+.lg:active{color:var(--text);transform:scale(.93)}
+.lg.go{color:var(--ember-hot)}
+.lg.fut{color:var(--muted)}
+.sr.wu .lg{color:var(--blue)}
+.sr.done{background:none}
+.sr.done .srn{color:var(--muted)}
 .sr.done.new{animation:srin .55s var(--ease)}
-@keyframes srin{from{background:rgba(127,176,105,.32);transform:scale(.97)}}
-.sr.done .dtx{font-size:28px;line-height:1;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;grid-column:2/4;text-align:center} /* a logged value is the permanent record · it must not shrink or fade below what it was entered at, so it matches .stv exactly and sits at full ink */
+@keyframes srin{from{background:rgba(121,227,160,.3);transform:scale(.97)}}
+/* a logged value is the permanent record · full size, green ink, never shrunk, never faded */
+.sr.done .dtx{font-size:28px;line-height:1;font-weight:700;color:var(--sage);font-variant-numeric:tabular-nums;grid-column:2/4;text-align:center}
 .sr.done .dck{height:44px;display:flex;align-items:center;justify-content:center;color:var(--sage)}
 .sr.done .dck svg{width:18px;height:18px}
-.adds{font-size:14px;font-weight:600;color:var(--muted);padding:13px 8px 13px 4px;display:inline-block;margin:-6px 0 -8px;white-space:nowrap}
-.adds:active{color:var(--dim)}
-.rowx{font-size:13px;font-weight:600;color:var(--danger);padding:12px}
-.exf{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;row-gap:2px} /* Add/Remove-set + reorder + Remove can't always share one line on a narrow phone · wrap cleanly instead of breaking a label mid-word */
-/* Remove deletes a whole exercise · quarantine it from the reorder arrows it used to sit 1px from */
-.exrm{font-size:13px;font-weight:600;color:var(--muted);padding:13px 10px;margin:-6px -6px -8px 16px}
-.exmv{font-size:18px;font-weight:700;color:var(--muted);min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;margin:-6px 0 -8px} /* the -4px horizontal pull made ↑ and ↓ physically overlap */
-.exmv:active{color:var(--dim)}
-.exmv:disabled,.mvb:disabled,.calnav button:disabled{opacity:.3;pointer-events:none}
+/* ── the live set · a full-bleed ember slab, the one filled block on screen, and it IS the
+   commit target. 96px tall, black 46px numerals · Lc 51.8 as a 46px/700 display pair. ── */
+.sr.live{border-bottom:none}
+.slab{display:flex;align-items:center;justify-content:center;gap:14px;width:calc(100% + 32px);margin:0 -16px;height:96px;background:var(--ember);color:#0A0A0A;font-size:46px;font-weight:700;line-height:1;border-bottom:1px solid var(--border);transition:transform .12s var(--ease),background .15s}
+.slab:active{background:var(--ember-hot);transform:scale(.99)}
+.slab svg{width:26px;height:26px;flex-shrink:0} /* the log check rides the slab so it reads as a button, not a readout */
+.setb{width:48px;height:48px;border:1px solid var(--border);color:var(--muted);font-size:26px;font-weight:500;display:flex;align-items:center;justify-content:center;margin:2px 0 4px;transition:background .15s,color .15s}
+.setb:active{background:var(--surface2);color:var(--text)}
+.rowx{font-size:16px;font-weight:500;color:var(--danger);padding:12px}
+.exf{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;row-gap:2px}
+.exrm{font-size:16px;font-weight:500;color:var(--muted);padding:13px 10px;margin:-4px -6px -6px 16px}
+.exmv{font-size:20px;font-weight:700;color:var(--muted);min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;margin:-4px 0 -6px}
+.exmv:active{color:var(--text)}
+/* disabled stays perceivable · colour steps down, nothing goes translucent */
+.exmv:disabled,.mvb:disabled,.calnav button:disabled{color:var(--border);pointer-events:none}
 .exrm:active{color:var(--danger)}
 
-/* ── rest chip ── */
-.restc{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:60;width:min(92vw,420px);background:rgba(27,30,37,.92);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border:1px solid var(--border-h);border-radius:18px;padding:11px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 18px 44px -10px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
+/* ── rest bar · full-width, opaque, ruled · never an ember fill ── */
+.restc{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--surface);border-top:2px solid var(--border-h);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:14px}
 .restc.hide{display:none}
-.tb~.restc{bottom:calc(78px + env(safe-area-inset-bottom))} /* clear the tab bar when one exists (tabs views) · session views have no .tb, chip stays low */
-.restc.zero{border-color:var(--sage-line);background:rgba(27,37,25,.92)}
-/* the pulse rides a pseudo-element on opacity (compositor) instead of animating the chip's own box-shadow (a per-frame repaint over the scrolling set list) · the chip keeps its static float shadow untouched */
+.tb~.restc{bottom:calc(70px + env(safe-area-inset-bottom));padding-bottom:10px} /* clear the tab bar when one exists · session views have no .tb, the bar sits on the floor */
+.restc.zero{border-top-color:var(--sage)}
 @keyframes pulse{0%,100%{opacity:0}50%{opacity:1}}
-.restc.zero::before{content:'';position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 0 7px rgba(127,176,105,.16);animation:pulse 1.2s ease-in-out infinite;pointer-events:none}
+.restc.zero::before{content:'';position:absolute;inset:0;background:rgba(121,227,160,.1);animation:pulse 1.2s ease-in-out infinite;pointer-events:none}
 .rcm{flex:1;min-width:0}
-.rcl{font-size:12px;font-weight:650;letter-spacing:.01em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis} /* holds an exercise name, not an eyebrow — caps mangled "Landmine Press (kneeling)" */
-/* the one number read at arm's length between sets · the chip has ~187px of free width at 375, so the
-   negative tracking was density optimisation where there is no density problem. Raising this grows the
-   chip ~8px, which is why the toast offset below moves in the same edit. */
-.rct{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:0;line-height:1.06}
+.rcl{font-size:16px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* the one number read at arm's length between sets · slab-class size */
+.rct{font-size:46px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:0;line-height:1.04}
 .restc.zero .rct{color:var(--sage)}
-.rcp{height:4px;background:rgba(58,63,76,.55);border-radius:2px;margin-top:7px;overflow:hidden}
-.rcpf{height:100%;background:linear-gradient(90deg,var(--ember-hot),var(--ember));border-radius:2px;transition:width .25s linear}
+.rcp{height:3px;background:var(--surface2);margin-top:7px;overflow:hidden}
+.rcpf{height:100%;background:var(--ember);transition:width .25s linear}
 .restc.zero .rcpf{background:var(--sage)}
-.rcb{font-size:14px;font-weight:700;color:var(--text);background:var(--surface2);border:1px solid var(--border-h);padding:11px 13px;border-radius:12px;flex-shrink:0;min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;transition:transform .12s var(--ease),background .15s}
-.rcb:active{background:var(--border);transform:scale(.94)}
+.rcb{font-size:16px;font-weight:700;color:var(--text);border:1px solid var(--border);padding:11px 13px;flex-shrink:0;min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;transition:transform .12s var(--ease),background .15s}
+.rcb:active{background:var(--surface2);transform:scale(.94)}
 
 /* ── field steppers (cardio) ── */
 .fgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0 12px}
-.fld .fl2{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;text-align:center;margin-bottom:5px}
-.seg{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:3px;gap:3px;box-shadow:inset 0 1px 2px rgba(0,0,0,.2)}
-.sgb{flex:1;min-height:44px;border-radius:8px;font-size:14.5px;font-weight:650;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
-.sgb.on{background:var(--border-h);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06)}
-.sgb:not(.on):active{background:var(--border);color:var(--dim)}
-.sgb .sgc{margin-left:7px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.sgb.on .sgc{color:var(--dim)}
+.fld .fl2{font-size:16px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;text-align:left;margin-bottom:5px}
+.seg{display:flex;border:1px solid var(--border)}
+.sgb{flex:1;min-height:48px;font-size:16px;font-weight:500;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
+.sgb+.sgb{border-left:1px solid var(--border)}
+.sgb.on{background:var(--text);color:var(--bg);font-weight:700}
+.sgb:not(.on):active{background:var(--surface2);color:var(--text)}
+.sgb .sgc{margin-left:7px;font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums}
 .sgb.done .sgc{color:var(--sage)}
-.savedl{display:flex;align-items:center;gap:10px;font-size:15.5px;color:var(--dim);font-variant-numeric:tabular-nums}
-.rxc{background:linear-gradient(180deg,rgba(255,111,46,.10),rgba(255,111,46,.04));border:1px solid var(--ember-line);border-radius:15px;padding:13px 15px;margin-bottom:12px;box-shadow:var(--card-sh)}
+.sgb.on .sgc{color:var(--bg)}
+.savedl{display:flex;align-items:center;gap:10px;font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums}
+.savedl b{color:var(--text);font-weight:700}
+.savedl .ed{margin:-12px -10px -12px auto;font-size:16px;font-weight:700;color:var(--ember-hot);padding:12px 10px}
+.rxc{border:1px solid var(--border);border-left:2px solid var(--ember);padding:13px 15px;margin-bottom:12px}
 .rxh{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:8px}
-.rxp{font-family:var(--fd);font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ember)}
-.rxt{font-size:23px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.rxe{font-size:14px;font-weight:600;color:var(--dim)}
-.rxr{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.45}
-.rxl{font-size:13px;color:var(--dim);margin-top:9px;padding-top:9px;border-top:1px solid var(--border)}
+.rxp{font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ember-hot)}
+.rxt{font-size:28px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:0}
+.rxe{font-size:16px;font-weight:500;color:var(--muted)}
+.rxr{font-size:16px;color:var(--muted);margin-top:4px;line-height:1.45}
+.rxl{font-size:16px;color:var(--muted);margin-top:9px;padding-top:9px;border-top:1px solid var(--border)}
 .smenu{margin-bottom:12px}
-.smh{font-family:var(--fd);font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ember);margin-bottom:9px}
-.schip{display:block;width:100%;text-align:left;background:var(--surface2);border:1px solid var(--border-h);border-radius:13px;padding:11px 13px;margin-bottom:8px;transition:background .15s,border-color .15s}
+.smh{font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ember-hot);margin-bottom:9px}
+.schip{display:block;width:100%;text-align:left;border:1px solid var(--border);padding:11px 13px;margin-bottom:8px;transition:background .15s,border-color .15s}
 button.schip:active{background:var(--surface)}
-.schip.on{border-color:var(--ember-line);background:var(--ember-soft)}
-.schip.lk{opacity:.55}
+.schip.on{border-color:var(--ember-line);border-left:2px solid var(--ember);padding-left:12px}
+/* locked steps down in colour · never in opacity */
+.schip.lk{border-color:var(--surface2)}
+.schip.lk .scht,.schip.lk .schd,.schip.lk .schr{color:var(--muted)}
 .schn{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
-.scht{font-size:15.5px;font-weight:650;color:var(--text);flex:1 1 auto;min-width:56%}
-.schd{font-size:13px;color:var(--dim);white-space:nowrap;margin-left:auto}
-.schr{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.45}
-.schp{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.45;padding-left:2px}
-.savedl b{color:var(--text);font-weight:650}
-.savedl .ed{margin:-12px -10px -12px auto;font-size:14px;font-weight:650;color:var(--ember);padding:12px 10px}
+.scht{font-size:16px;font-weight:700;color:var(--text);flex:1 1 auto;min-width:56%}
+.schd{font-size:16px;color:var(--muted);white-space:nowrap;margin-left:auto}
+.schr{font-size:16px;color:var(--muted);margin-top:4px;line-height:1.45}
+.schp{font-size:16px;color:var(--muted);margin-top:2px;line-height:1.45;padding-left:2px}
 
-/* ── history ── */
-.hrow{display:flex;align-items:center;gap:13px;background:var(--card-g);border:1px solid var(--border);border-radius:14px;padding:13px 15px;margin-bottom:8px;min-height:62px;box-shadow:var(--card-sh);transition:border-color .2s,background .2s,transform .15s var(--ease)}
-.hrow:active{background:var(--surface2);transform:scale(.985)}
-.hico{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fd);font-size:13.5px;font-weight:700;letter-spacing:.04em;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
-.hico.lift{background:linear-gradient(180deg,rgba(255,111,46,.18),rgba(255,111,46,.08));color:var(--ember)}
-.hico.cardio{background:linear-gradient(180deg,rgba(126,156,192,.18),rgba(126,156,192,.08));color:var(--blue)}
+/* ── history · ruled rows ── */
+.hrow{display:flex;align-items:center;gap:13px;border-bottom:1px solid var(--border);margin:0 -16px;padding:13px 16px;min-height:62px;transition:background .2s}
+.hrow:active{background:var(--surface2)}
+.hico{width:40px;height:40px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:700}
+.hico.lift{color:var(--ember-hot)}
+.hico.cardio{color:var(--blue)}
 .hm{flex:1;min-width:0}
-.ht{font-family:var(--fd);font-size:18px;font-weight:600;letter-spacing:.012em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hs{font-size:13px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
-.hd2{font-size:12px;color:var(--muted);text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums;line-height:1.4}
-.mlab{font-family:var(--fd);font-size:14px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin:22px 0 9px}
-.empty{text-align:center;color:var(--muted);font-size:15px;padding:48px 20px;line-height:1.6}
-.empty .eb{margin-bottom:14px;filter:drop-shadow(0 6px 18px rgba(255,111,46,.3))}
-.empty .empty-t{font-family:var(--fd);font-size:20px;font-weight:600;color:var(--dim);letter-spacing:.012em;margin-bottom:2px}
+.ht{font-size:20px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs{font-size:16px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.hd2{font-size:16px;color:var(--muted);text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums;line-height:1.4}
+.mlab{font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 9px}
+.empty{text-align:center;color:var(--muted);font-size:16px;padding:48px 20px;line-height:1.6}
+.empty .eb{margin-bottom:14px}
+.empty .empty-t{font-size:20px;font-weight:500;color:var(--text);margin-bottom:2px}
 
 /* ── detail ── */
 .dex{margin-bottom:16px}
-.dexn{font-family:var(--fd);font-size:17.5px;font-weight:600;letter-spacing:.012em;margin-bottom:7px;line-height:1.25}
+.dexn{font-size:20px;font-weight:500;margin-bottom:7px;line-height:1.25}
 .dline{display:flex;gap:8px;flex-wrap:wrap}
-.dpill{font-size:14px;font-weight:600;color:var(--dim);background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:5px 10px;font-variant-numeric:tabular-nums;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
-.dpill.wu{color:var(--blue);opacity:.8}
+.dpill{font-size:16px;font-weight:700;color:var(--text);border:1px solid var(--border);padding:5px 10px;font-variant-numeric:tabular-nums}
+.dpill.wu{color:var(--blue);border-color:var(--blue-line)}
 
 /* ── program tab ── */
-.pdet{background:var(--card-g);border:1px solid var(--border);border-radius:14px;margin-bottom:9px;overflow:hidden;box-shadow:var(--card-sh)}
-.pdet summary{list-style:none;display:flex;align-items:center;gap:10px;padding:15px 16px;font-size:15.5px;font-weight:650;cursor:pointer;user-select:none;-webkit-user-select:none;transition:background .2s}
+.sl+.pdet{border-top:none}
+.pdet{border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:0 -16px -1px;overflow:hidden}
+.pdet summary{list-style:none;display:flex;align-items:center;gap:10px;padding:15px 16px;font-size:16px;font-weight:500;cursor:pointer;user-select:none;-webkit-user-select:none;transition:background .2s}
 .pdet summary:active{background:var(--surface2)}
 .pdet summary::-webkit-details-marker{display:none}
-.pdet summary .cnt2{margin-left:auto;font-size:13px;color:var(--muted);font-weight:600}
+.pdet summary .cnt2{margin-left:auto;font-size:16px;color:var(--muted);font-weight:500}
 .pdet summary .car{color:var(--muted);transition:transform .25s var(--ease)}
 .pdet[open] summary .car{transform:rotate(90deg)}
 .pdb{padding:2px 16px 14px}
 .tpe{display:flex;align-items:baseline;gap:8px;padding:8px 0;border-top:1px solid var(--border)}
 .tpe:first-child{border-top:none}
-.tpen{font-size:15px;font-weight:600;flex:1;min-width:0}
-.tpes{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.tpe.offed .tpen,.tpe.offed .tpes{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border-h)}
-.md p{font-size:14.5px;color:var(--dim);line-height:1.65;margin:8px 0}
-.md strong{color:var(--text);font-weight:650}
+.tpen{font-size:16px;font-weight:500;flex:1;min-width:0}
+.tpes{font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tpe.offed .tpen,.tpe.offed .tpes{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border)}
+.md p{font-size:20px;color:var(--text);line-height:1.6;margin:10px 0}
+.md strong{font-weight:700}
 .md ul{margin:6px 0 10px 2px;list-style:none}
-.md li{font-size:14.5px;color:var(--dim);line-height:1.6;padding:3px 0 3px 18px;position:relative}
+.md li{font-size:20px;color:var(--text);line-height:1.55;padding:3px 0 3px 20px;position:relative}
 .md li::before{content:'–';position:absolute;left:2px;color:var(--muted)}
-.md table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
-.md th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:7px 8px;border-bottom:1px solid var(--border)}
-.md td{padding:8px;color:var(--dim);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5;font-variant-numeric:tabular-nums}
+.md table{width:100%;border-collapse:collapse;margin:10px 0;font-size:16px}
+.md th{text-align:left;font-size:16px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:7px 8px;border-bottom:2px solid var(--border-h)}
+.md td{padding:8px;color:var(--text);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5;font-variant-numeric:tabular-nums}
 .md tr:last-child td{border-bottom:none}
 
-/* ── sheets / overlay ── */
-.ov{position:fixed;inset:0;z-index:80;background:rgba(3,4,6,.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;animation:fdin .22s ease}
+/* ── sheets / overlay · opaque, ruled ── */
+.ov{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;animation:fdin .22s ease}
 @keyframes fdin{from{opacity:0}to{opacity:1}}
 @keyframes shup{from{transform:translateY(36px);opacity:.5}to{transform:none;opacity:1}}
 .ov.out{animation:fdout .19s ease forwards}
 .ov.out .sheet{animation:shdn .19s ease forwards}
 @keyframes fdout{to{opacity:0}}
 @keyframes shdn{to{transform:translateY(44px);opacity:0}}
-.sheet{position:relative;width:100%;max-width:560px;background:linear-gradient(180deg,#1c1f27,#17191f);border:1px solid var(--border-h);border-bottom:none;border-radius:24px 24px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));animation:shup .3s var(--ease);max-height:86vh;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 -12px 48px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05)}
-.grab{width:40px;height:4.5px;border-radius:3px;background:var(--border-h);margin:5px auto 15px}
-.shx{position:absolute;top:11px;right:12px;width:34px;height:34px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-h);color:var(--dim);font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;z-index:3;transition:transform .12s var(--ease),background .15s}
-.shx:active{background:var(--border);transform:scale(.94)}
-.shx::before{content:'';position:absolute;inset:-6px;border-radius:50%}
-.sht2{font-family:var(--fd);font-size:23px;font-weight:700;letter-spacing:.01em;margin-bottom:4px;line-height:1.2}
-.shs2{font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.sheet{position:relative;width:100%;max-width:560px;background:var(--surface);border-top:2px solid var(--border-h);padding:10px 18px calc(22px + env(safe-area-inset-bottom));animation:shup .3s var(--ease);max-height:86vh;overflow-y:auto;overscroll-behavior:contain}
+.grab{width:40px;height:4.5px;background:var(--border);margin:5px auto 15px}
+.shx{position:absolute;top:11px;right:12px;width:36px;height:36px;border:1px solid var(--border);color:var(--muted);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;z-index:3;transition:transform .12s var(--ease),background .15s}
+.shx:active{background:var(--surface2);transform:scale(.94)}
+.shx::before{content:'';position:absolute;inset:-6px}
+.sht2{font-size:20px;font-weight:700;margin-bottom:4px;line-height:1.2}
+.shs2{font-size:16px;color:var(--muted);margin-bottom:16px;line-height:1.5}
 .strow{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border);min-height:56px}
 .strow:last-of-type{border-bottom:none}
-.stn{flex:1;font-size:16px;font-weight:600}
-.stn small{display:block;font-size:13px;color:var(--muted);font-weight:500;margin-top:1px}
+.stn{flex:1;font-size:16px;font-weight:500}
+.stn small{display:block;font-size:16px;color:var(--muted);font-weight:500;margin-top:1px}
 .strow .seg{width:128px;flex-shrink:0}
 .shbtns{display:flex;flex-direction:column;gap:9px;margin-top:16px}
 
 /* ── toast ── */
-.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(6px);bottom:calc(86px + env(safe-area-inset-bottom));z-index:90;background:rgba(27,30,37,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--border-h);color:var(--text);font-size:14.5px;font-weight:600;padding:12px 18px;border-radius:13px;box-shadow:0 12px 32px -6px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;transition:opacity .28s,transform .32s var(--ease)}
-/* pointer-events stays none on the pill · only the action inside it is tappable, so an informational
-   toast stops parking a ~250px dead zone over the set rows underneath it */
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(6px);bottom:calc(92px + env(safe-area-inset-bottom));z-index:90;background:var(--surface2);border:1px solid var(--border-h);color:var(--text);font-size:16px;font-weight:500;padding:12px 18px;display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;transition:opacity .28s,transform .32s var(--ease);max-width:min(92vw,420px)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
 .toast.show .tb2{pointer-events:auto}
-body:has(.tb~.restc:not(.hide)) .toast{bottom:calc(180px + env(safe-area-inset-bottom))} /* clear the rest chip instead of landing on top of it · 180 tracks the taller .rct above */
-body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(108px + env(safe-area-inset-bottom))} /* session views have no tab bar · keep the same gap above the low-floating chip */
-.toast .tb2{color:var(--ember);font-weight:700;font-size:14.5px;padding:12px 10px;margin:-12px -10px -12px -6px}
+body:has(.tb~.restc:not(.hide)) .toast{bottom:calc(220px + env(safe-area-inset-bottom))} /* clear the rest bar instead of landing on top of it */
+body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(150px + env(safe-area-inset-bottom))} /* session views have no tab bar · keep the same gap above the floor-level bar */
+.toast .tb2{color:var(--ember-hot);font-weight:700;font-size:16px;padding:12px 10px;margin:-12px -10px -12px -6px}
 
 /* ── editors ── */
-.tin{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:11px;color:var(--text);font-family:var(--f);font-size:16px;font-weight:600;padding:11px 13px;-webkit-appearance:none;transition:border-color .2s,box-shadow .2s}
-.tin:focus{outline:none;border-color:var(--ember-line);box-shadow:0 0 0 3px rgba(255,111,46,.07)}
+.tin{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--f);font-size:16px;font-weight:500;padding:11px 13px;-webkit-appearance:none;transition:border-color .2s}
+.tin:focus{outline:none;border-color:var(--ember)}
 .tin::placeholder{color:var(--muted);font-weight:500}
 .tin.fx{flex:1;width:auto;min-width:0}
-.tarea{width:100%;min-height:110px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:var(--f);font-size:16px;line-height:1.6;padding:12px 13px;resize:vertical;-webkit-appearance:none;transition:border-color .2s,box-shadow .2s}
-.tarea:focus{outline:none;border-color:var(--ember-line);box-shadow:0 0 0 3px rgba(255,111,46,.07)}
-.flab{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin:14px 0 5px}
-.sr.s3,.cols.s3{grid-template-columns:26px 1fr 54px}
+.tarea{width:100%;min-height:110px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--f);font-size:16px;line-height:1.6;padding:12px 13px;resize:vertical;-webkit-appearance:none;transition:border-color .2s}
+.tarea:focus{outline:none;border-color:var(--ember)}
+.flab{font-size:16px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin:14px 0 5px}
+.sr.s3,.cols.s3{grid-template-columns:40px 1fr 56px}
 .sr.s3.done .dtx{grid-column:2/3}
-.prsl{cursor:pointer;-webkit-user-select:none;user-select:none;padding:9px 0;margin:19px 0 1px}
-.prsl:active .lt{color:var(--text)}
-.prtog{color:var(--muted);font-size:12px;margin-left:9px;font-weight:800}
-.prmin{color:var(--muted);font-size:13px;padding:2px 2px 6px;cursor:pointer}
-.seg.tight .sgb{font-size:13px}
-.rpehint{font-size:12.5px;color:var(--muted);margin-top:8px}
+.prsl{cursor:pointer;-webkit-user-select:none;user-select:none;padding:9px 16px;margin:19px -16px 1px}
+.prsl:active .lt{color:var(--muted)}
+.prtog{color:var(--muted);font-size:16px;margin-left:9px;font-weight:700}
+.prmin{color:var(--muted);font-size:16px;padding:2px 2px 6px;cursor:pointer}
+.seg.tight .sgb{font-size:16px}
+.rpehint{font-size:16px;color:var(--muted);margin-top:8px}
 .hsrow{display:flex;align-items:center;gap:10px;padding:5px 0}
-.hsn{flex:0 0 32%;font-size:13.5px;color:var(--dim);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hsbar{flex:1;height:8px;background:var(--surface2);border-radius:5px;overflow:hidden}
-.hsfill{display:block;height:100%;border-radius:5px}
+.hsn{flex:0 0 32%;font-size:16px;color:var(--muted);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hsbar{flex:1;height:8px;background:var(--surface2);overflow:hidden}
+.hsfill{display:block;height:100%}
 .hsfill.in{background:var(--sage)}
-.hsfill.lo{background:var(--muted)}
+.hsfill.lo{background:var(--border)}
 .hsfill.hi{background:var(--ember)}
-.hsc{flex:0 0 auto;font-size:13.5px;color:var(--text);font-weight:650;min-width:18px;text-align:right}
-.erow{display:flex;align-items:center;gap:9px;background:var(--card-g);border:1px solid var(--border);border-radius:13px;padding:10px 12px;margin-bottom:7px;min-height:56px;box-shadow:var(--card-sh);transition:border-color .2s,background .2s}
+.hsc{flex:0 0 auto;font-size:16px;color:var(--text);font-weight:700;min-width:18px;text-align:right}
+.erow{display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border);margin:0 -16px;padding:10px 16px;min-height:56px;transition:background .2s}
 .erow:active{background:var(--surface2)}
 .erow .em2{flex:1;min-width:0}
-.erow .en2,.en2{font-size:15.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.erow .es2,.es2{font-size:12.5px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.erow.offed .en2{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border-h)}
+.erow .en2,.en2{font-size:16px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.erow .es2,.es2{font-size:16px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.erow.offed .en2{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border)}
 .mvc{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
-.mvb{width:36px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:7px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);font-size:10px;transition:background .15s,color .15s}
-.mvb:active{color:var(--text);background:var(--border)}
-.addb{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:50px;border-radius:13px;border:1.5px dashed var(--border-h);color:var(--dim);font-size:15px;font-weight:600;margin:2px 0 10px;transition:transform .15s var(--ease),background .15s}
-.addb:active{background:var(--surface2);transform:scale(.98)}
+.mvb{width:38px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid var(--border);font-size:16px;transition:background .15s,color .15s}
+.mvb:active{color:var(--text);background:var(--surface2)}
+.addb{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:52px;border:1px solid var(--border);color:var(--muted);font-size:16px;font-weight:500;margin:8px 0 10px;transition:transform .15s var(--ease),background .15s,color .15s}
+.addb:active{background:var(--surface2);color:var(--text);transform:scale(.98)}
 .car2{color:var(--muted);flex-shrink:0;font-size:18px;padding:0 2px}
 
 /* ── trends ── */
 .calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.calnav .cm{font-family:var(--fd);font-size:18px;font-weight:600;letter-spacing:.012em}
-.calnav button{min-width:44px;min-height:44px;border-radius:9px;color:var(--dim);background:var(--surface2);border:1px solid var(--border);font-size:16px;transition:background .2s}
-.calnav button:active{background:var(--border)}
+.calnav .cm{font-size:20px;font-weight:500}
+.calnav button{min-width:44px;min-height:44px;color:var(--muted);border:1px solid var(--border);font-size:16px;transition:background .2s}
+.calnav button:active{background:var(--surface2)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4.5px}
-.calh{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-align:center;text-transform:uppercase;padding:2px 0 4px}
-.calc{aspect-ratio:1;min-height:42px;border-radius:9px;background:var(--surface2);border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;position:relative;transition:transform .15s var(--ease)}
+.calh{font-size:16px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-align:center;text-transform:uppercase;padding:2px 0 4px}
+.calc{aspect-ratio:1;min-height:42px;background:var(--surface);border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums;position:relative;transition:transform .15s var(--ease)}
 .calc.out{visibility:hidden}
 .calc.tod{border-color:var(--ember)}
-.calc.fut{background:rgba(27,30,37,.55);color:#7a828f} /* lifted from ~2.9:1 so upcoming dates stay readable while still clearly recessed */
-.calc.tr{background:linear-gradient(180deg,rgba(127,176,105,.5),rgba(127,176,105,.3));border-color:var(--sage-line);color:var(--text);font-weight:700}
+.calc.fut{background:none;color:var(--border)} /* upcoming dates recede by colour, not opacity */
+.calc.tr{background:var(--sage);color:#0A0A0A;font-weight:700} /* the trained-day mark · calendar cells are the chart here, not a competing signal block */
 .calc:not(.out):not(.fut):active{transform:scale(.9)}
 .cmk{position:absolute;bottom:3px;left:0;right:0;display:flex;gap:3px;justify-content:center;pointer-events:none}
-.cmk i{width:5px;height:5px;border-radius:50%}
+.cmk i{width:5px;height:5px}
 .cm-bed{background:var(--blue)}
+.calc.tr .cm-bed{background:#0A0A0A}
 .cm-fast{background:transparent;border:1.5px solid var(--ember-hot);box-sizing:border-box}
-.leg2{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:13px;justify-content:center;font-size:11px;color:var(--muted)}
+.calc.tr .cm-fast{border-color:#0A0A0A}
+.leg2{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:13px;justify-content:center;font-size:16px;color:var(--muted)}
 .leg2 span{display:inline-flex;align-items:center;gap:5px}
-.leg2 i{width:9px;height:9px;border-radius:50%;display:inline-block}
-.leg2 .lg-tr{width:11px;height:11px;border-radius:3px;background:linear-gradient(180deg,rgba(127,176,105,.6),rgba(127,176,105,.35));border:1px solid var(--sage-line)}
+.leg2 i{width:9px;height:9px;display:inline-block}
+.leg2 .lg-tr{width:11px;height:11px;background:var(--sage)}
 .prw{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--border)}
 .prw:last-child{border-bottom:none}
-.prw .pri{width:32px;height:32px;border-radius:9px;background:linear-gradient(180deg,rgba(255,111,46,.2),rgba(255,111,46,.08));color:var(--ember-hot);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.prw .pri{width:32px;height:32px;border:1px solid var(--border);color:var(--ember-hot);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .prw .prm{flex:1;min-width:0}
-.prw .prn{font-size:14.5px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.prw .prs{font-size:12.5px;color:var(--muted)}
-.prw .prd{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
+.prw .prn{font-size:16px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prw .prs{font-size:16px;color:var(--muted)}
+.prw .prd{font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
 .chartw svg{display:block;width:100%;height:auto}
 .dpill.pr{border-color:var(--ember-line);color:var(--ember-hot)}
-.chip.sg{color:var(--sage);background:var(--sage-bg)}
+.chip.sg{color:var(--sage)}
 
-.fl{text-align:center;margin-top:34px;font-family:var(--fd);font-size:12px;font-weight:600;letter-spacing:.22em;text-indent:.22em;text-transform:uppercase;color:#3f4450}
+.fl{text-align:center;margin-top:34px;font-size:16px;font-weight:500;letter-spacing:.12em;text-indent:.12em;text-transform:uppercase;color:var(--border)}
 
 /* ── desktop hover ── */
 @media(hover:hover){
-.hrow:hover,.ck:hover,.erow:hover,.day:hover{border-color:var(--border-h)}
-.pdet summary:hover{background:var(--surface2)}
+.hrow:hover,.ck:hover,.erow:hover{background:var(--surface)}
+.day:hover{border-color:var(--border)}
+.pdet summary:hover{background:var(--surface)}
 .hbt:hover{color:var(--text);background:var(--surface2)}
-.tbb:hover{color:var(--dim)}
-.tbb.on:hover{color:var(--ember)}
-.btn-p:hover,button.fin:hover{filter:brightness(1.06)}
-.stb:hover{background:var(--border);color:var(--text)}
-.lg:hover{background:rgba(255,111,46,.16)}
-.sgb:hover{color:var(--dim)}
-.bbtn:hover{filter:brightness(1.1)}
-.calnav button:hover{background:var(--border)}
+.tbb:hover{color:var(--text)}
+.tbb.on:hover{color:var(--ember-hot)}
+.btn-p:hover,.slab:hover{filter:brightness(1.06)}
+.stb:hover{color:var(--text)}
+.lg:hover{color:var(--text)}
+.sgb:hover{color:var(--text)}
+.sgb.on:hover{color:var(--bg)}
+.bbtn:hover{background:var(--surface2)}
+.calnav button:hover{background:var(--surface2)}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -1696,7 +1709,6 @@ function startRest(sec,label){if(!sec||sec<=0)return;
 T={ends:Date.now()+sec*1000,total:sec,label:label||'Rest',fired:false};saveRest();
 clearInterval(TINT);TINT=setInterval(tickT,250);tickT()}
 function killRest(){T=null;saveRest();clearInterval(TINT);const c=document.getElementById('restc');if(c)c.classList.add('hide')}
-function t30(){if(!T)return;T.ends+=30000;T.total+=30;T.fired=false;saveRest();const c=document.getElementById('restc');if(c)c.classList.remove('zero');tickT()}
 function tickT(){const c=document.getElementById('restc');if(!T){if(c)c.classList.add('hide');return}
 const left=T.ends-Date.now();
 if(c){c.classList.remove('hide');
@@ -1932,7 +1944,7 @@ return{ex,n:e.n,lastDate:e.lastDate,lastTxt}}).sort((a,b)=>a.lastDate<b.lastDate
 <script>
 /* ═══════════ ICONS ═══════════ */
 const I_BACK='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
-const I_GEAR='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2.6" fill="#0a0b0e"/><circle cx="15" cy="16" r="2.6" fill="#0a0b0e"/></svg>';
+const I_GEAR='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2.6" fill="#0A0A0A"/><circle cx="15" cy="16" r="2.6" fill="#0A0A0A"/></svg>';
 const I_TODAY='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="2.8" fill="currentColor" stroke="none"/></svg>';
 const I_HIST='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.5V12l3 2.2"/></svg>';
 const I_PROG='<svg width="21" height="21" viewBox="0 0 24 24"><g fill="currentColor"><rect x="8.2" y="4.6" width="7.6" height="4.1" rx="1.3"/><rect x="6" y="10" width="12" height="4.1" rx="1.3"/><rect x="3.8" y="15.4" width="16.4" height="4.1" rx="1.3"/></g></svg>';
@@ -1957,7 +1969,7 @@ function openMobility(from){S.mobFrom=from;S.view='mobility';rn()}
 function hdr(){return'<div class="hd"><div class="hdi"><div class="wm">'+WM+'BLOCKS</div><button class="hbt" onclick="gear()" aria-label="Settings">'+I_GEAR+'</button></div></div>'}
 function tabbar(){const b=(t,ic,l)=>'<button class="tbb '+(S.tab===t?'on':'')+'" onclick="nav(\''+t+'\')"><span class="ic">'+ic+'</span>'+l+'</button>';
 return'<div class="tb"><div class="tbi">'+b('today',I_TODAY,'Today')+b('history',I_HIST,'History')+b('trends',I_TREND,'Trends')+b('program',I_PROG,'Program')+'</div></div>'}
-function restChip(){return'<div id="restc" class="restc hide"><div class="rcm"><div class="rcl" id="rcL" aria-live="polite">Rest</div><div class="rct num" id="rcT">0:00</div><div class="rcp"><div class="rcpf" id="rcPf" style="width:100%"></div></div></div><button class="rcb num" onclick="t30()">+30s</button><button class="rcb" onclick="killRest()" aria-label="Dismiss timer">✕</button></div>'}
+function restChip(){return'<div id="restc" class="restc hide"><div class="rcm"><div class="rcl" id="rcL" aria-live="polite">Rest</div><div class="rct num" id="rcT">0:00</div><div class="rcp"><div class="rcpf" id="rcPf" style="width:100%"></div></div></div><button class="rcb" onclick="killRest()" aria-label="Dismiss timer">✕</button></div>'}
 /* Every full-screen view, keyed by S.view · anything unlisted (including the '' default) falls
    through to vTabs, the tab shell. Add a view by adding a line here, not a branch in rn(). */
 const VIEWS={session:vSession,sprint:vSprint,mobility:vMobility,detail:vDetail,trend:vTrend,
@@ -2052,7 +2064,7 @@ ord.forEach((d,i)=>{
  const isToday=d===dow,sel=(S.sel==null?isToday:d===S.sel);
  const ddk=tk(new Date(Y,M-1,D+i-ti));
  const trained=i<=ti&&sessionsFor(ddk).some(s=>s.finishedAt);
- h+='<div class="day '+kind+(sel?' on':'')+'" onclick="selDay('+d+')" aria-label="'+DY[d]+' · '+esc(lbl)+(isToday?' · today':'')+(trained?' · trained':'')+'">'+(isToday?'<div class="td"></div>':'')+'<div class="dl">'+DAB[d]+'</div><div class="dw">'+esc(lbl)+'</div>'+(trained?'<div class="cd"></div>':'')+'</div>'});
+ h+='<div class="day '+kind+(sel?' on':'')+'" onclick="selDay('+d+')" aria-label="'+DY[d]+' · '+esc(lbl)+(isToday?' · today':'')+(trained?' · trained':'')+'">'+(isToday&&!sel?'<div class="td"></div>':'')+'<div class="dl">'+DAB[d][0]+'</div><div class="dw">'+esc(lbl)+'</div>'+(trained?'<div class="cd"></div>':'')+'</div>'});
 return h+'</div>'}
 function ckRow(item,checks,extra){
 const on=checks.includes(item.id);
@@ -2145,10 +2157,16 @@ if(n)h+='<div class="ban em"><span><b>'+n+' session'+(n>1?'s':'')+'</b> since la
 if(calfAmDue(dk)&&!(S.sel!=null&&S.sel!==dow)&&!(dow===0&&!sunTracked(dk)))h+='<div class="ban"><span><b>Calf</b> this morning?</span><div class="seg" style="flex-basis:100%">'+[[0,'Normal'],[1,'Stiff'],[2,'Sore']].map(o=>'<button class="sgb" onclick="setCalfAm('+o[0]+')">'+o[1]+'</button>').join('')+'</div></div>'; /* same seg as Sprint readiness · one look for "pick one of three" */
 /* Same suppression guards as the calf read · a morning question belongs on today's screen, never on a day preview or the untracked Sunday. It stays a banner and stays at the top: it is perishable, and a skipped one is a datum nothing else can recover. */
 const act=activeSession();
-if(act&&!(S.sel!=null&&S.sel!==dow))h+='<div class="ban"><span><b>'+esc(dayTitle(act.name))+'</b> in progress'+(act.date!==dk?' · '+fmtDk(act.date):'')+'</span><span class="bba"><button class="bbtn" onclick="resumeSession(\''+act.id+'\')">Resume</button><button class="bbtn q" onclick="finishQuickAsk(\''+act.id+'\')">End</button></span></div>';
+/* the banner is a POINTER to a session this screen would otherwise hide: another day's, or one
+   today's areas can't surface. When the day card right below offers the same Continue, the
+   banner said the same thing twice in two voices ten lines apart, so it stands down. */
+const actShown=(()=>{if(!act||act.date!==dk||(dow===0&&!sunTracked(dk)))return false;
+ const tt=tplForDate(dk);
+ return(tt&&tt.kind==='lift')?act.templateId===tt.id:!!tpl(act.templateId)})();
+if(act&&!actShown&&!(S.sel!=null&&S.sel!==dow))h+='<div class="ban"><span><b>'+esc(dayTitle(act.name))+'</b> in progress'+(act.date!==dk?' · '+fmtDk(act.date):'')+'</span><span class="bba"><button class="bbtn" onclick="resumeSession(\''+act.id+'\')">Resume</button><button class="bbtn q" onclick="finishQuickAsk(\''+act.id+'\')">End</button></span></div>';
 if(S.sel!=null&&S.sel!==dow)return h+vPreview(dk,dow);
 if(dow===0&&!sunTracked(dk)){
-h+='<header class="hero"><div class="rw" style="display:grid;place-items:center"><span style="display:flex;color:var(--muted);opacity:.8">'+moonAt(34)+'</span></div>'
+h+='<header class="hero"><div class="rw" style="display:grid;place-items:center"><span style="display:flex;color:var(--muted)">'+moonAt(34)+'</span></div>'
 +'<div><div class="eyebrow"><b>'+DY[dow]+'</b> · '+fmtDk(dk)+'</div><h1 class="title">Sacred Rest</h1><div class="hsub">Untracked by design</div></div></header>';
 h+=weekStrip(dk);
 h+='<div class="sl"><span class="lt">Rest</span><span class="rule"></span></div>'
@@ -2157,7 +2175,7 @@ h+='<div class="sl"><span class="lt">Rest</span><span class="rule"></span></div>
 return h}
 const t=tplForDate(dk),ov=DB.dayOverrides[dk]!=null,sunOv=dow===0&&!!(DB.days[dk]&&DB.days[dk].sunOn);
 const title=t?dayTitle(t.name):'Rest Day';
-h+='<header class="hero"><div class="rw"><svg width="72" height="72" viewBox="0 0 72 72"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffa14d"/><stop offset="1" stop-color="#ff5f1f"/></linearGradient></defs><circle class="rt" cx="36" cy="36" r="31"/><circle class="rf" id="ringF" cx="36" cy="36" r="31" pathLength="100" stroke="url(#rg)" transform="rotate(-90 36 36)"/></svg><div class="rn num" id="ringN"></div></div>'
+h+='<header class="hero"><div class="rw"><svg width="72" height="72" viewBox="0 0 72 72"><circle class="rt" cx="36" cy="36" r="31"/><circle class="rf" id="ringF" cx="36" cy="36" r="31" pathLength="100" transform="rotate(-90 36 36)"/></svg><div class="rn num" id="ringN"></div></div>'
 +'<div><div class="eyebrow"><b>'+DY[dow]+'</b> · '+fmtDk(dk)+'</div><h1 class="title">'+esc(title)+'</h1>'
 +'<div class="hsub" id="heroSub">'+(ov?'Swapped in · <a href="#" onclick="event.preventDefault();unswap()">undo</a>':sunOv?'Tracking today · <a href="#" onclick="event.preventDefault();sunRest(\''+dk+'\')">make it a rest day</a>':'')+'</div></div></header>';
 h+=weekStrip(dk);
@@ -2176,7 +2194,8 @@ const live=t.entries.filter(e=>e.enabled);
 const cnt=live.length,setsN=live.reduce((a,e)=>a+e.warmups+prescSets(e,dk),0); /* prescSets returns the template count untouched when the engine is off */
 const _rid=(act||fin[fin.length-1]||{}).id||'';
 let h='<div class="sl" id="'+(xtra?'sl-xlift':'sl-work')+'"><span class="lt">'+esc(t.name)+'</span><span class="rule"></span>'+(xtra?'<button class="xrm" onclick="rmExtraLift(\''+_rid+'\')" aria-label="Remove">✕</button>':'<span class="cnt num" id="cnt-work"></span>')+'</div>';
-if(t.note&&!xtra)h+='<div class="note">'+esc(t.note)+'</div>';
+/* the template note (static coaching prose) stays off Today's board · it lives in the Program
+   tab and the day preview, where you go to read about a day rather than run one */
 h+='<div class="card">';
 if(act)h+='<div class="scard-t">Session in progress</div><div class="scard-m num">'+pl(act.sets.length,'set')+' logged · started '+mmss(Date.now()-act.startedAt)+' ago</div><button class="btn btn-p" onclick="resumeSession(\''+act.id+'\')">Continue session</button>';
 else if(fin.length){const multi=fin.length>1,totSets=fin.reduce((a,s)=>a+s.sets.length,0),totMin=fin.reduce((a,s)=>a+sessMins(s),0);
@@ -2263,7 +2282,7 @@ h+='<div class="card">';
 if(t.kind==='lift')t.entries.forEach(e=>{h+=entryRow(e)});
 else{h+='<div class="tpe"><span class="tpen">Dynamic Warm-Up</span><span class="tpes num">'+wuDef(t)+' min · zone 2</span></div>'
  +'<div class="tpe"><span class="tpen">Sprint Run-Throughs</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>'
- +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:12px;letter-spacing:.08em">— or —</div>'
+ +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:16px;letter-spacing:.12em">— or —</div>'
  +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>';
  (t.checks||[]).forEach(c=>{h+='<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>'})}
 h+='</div>';
@@ -2373,12 +2392,12 @@ function pvClamp(f,v){const b=PV_BOUNDS[f]||[0,1e5];return Math.min(b[1],Math.ma
 function fmtVal(key,f,bw){const p=PV[key]||{};return f==='w'?fmtW(p.w,bw):f==='h'?(+p.h||0)+'s':f==='e'?(+p.e||0)+'%':String(p.r)}
 function stepPV(key,f,d,bw){const p=PV[key];if(!p)return;
 p[f]=pvClamp(f,Math.round(((+p[f]||0)+d)*10)/10);
-setV(document.getElementById('v-'+key+'-'+f),fmtVal(key,f,bw))}
+setV(document.getElementById('v-'+key+'-'+f),fmtVal(key,f,bw));updSlab(key)}
 function editPV(key,f,el,bw){if(el.querySelector('input'))return;const p=PV[key];if(!p)return;
 const cur=+p[f]||0;
 el.innerHTML='<input class="vin num" type="text" inputmode="decimal" value="'+(cur||'')+'">';
 const inp=el.firstChild;inp.focus();try{inp.select()}catch(e){}
-const commit=()=>{const n=parseFloat(inp.value);p[f]=isNaN(n)?cur:pvClamp(f,n);el.textContent=fmtVal(key,f,bw)};
+const commit=()=>{const n=parseFloat(inp.value);p[f]=isNaN(n)?cur:pvClamp(f,n);el.textContent=fmtVal(key,f,bw);updSlab(key)};
 inp.addEventListener('blur',commit);
 inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur()})}
 function stepGroup(key,f,step,bw){
@@ -2387,13 +2406,24 @@ return'<div class="stp"><button class="stb" data-hold data-fn="stepPV" data-args
 +'<button class="stb" data-hold data-fn="stepPV" data-args=\''+JSON.stringify([key,f,step,bw])+'\'>+</button></div>'}
 function seedPV(key,ex,entry,i,sess){if(PV[key])return;
 const p=prefill(entry,ex,i,sess);PV[key]={w:p.w,r:p.reps}}
-function pendRow(ex,entry,i,sess){
+/* after a commit the next slab renders in nearly the same spot, so a fast double-tap would log
+   two sets with prefill values · consecutive SLAB commits inside 400ms are one tap. The small
+   per-row checks stay on logSet directly, so deliberate out-of-order logging is untouched. */
+let SLAB_T=0;
+function slabLog(exId,i){const n=Date.now();if(n-SLAB_T<400)return;SLAB_T=n;logSet(exId,i)}
+function slabTxt(key,bw){const p=PV[key]||{};return((+p.w>0)?fmtVal(key,'w',bw)+' × ':'')+String(p.r||'')} /* zero load is reps-only, matching setTxt on the done rows · never "0 × 8" */
+function updSlab(key){const el=document.getElementById('sv-'+key);if(!el)return;el.textContent=slabTxt(key,el.dataset.bw==='1')}
+function pendRow(ex,entry,i,sess,live){
 const key=ex.id+'_'+i;
 seedPV(key,ex,entry,i,sess);
 const isWu=i<entry.warmups,wIdx=i-entry.warmups+1,wstep=unit()==='kg'?2.5:5;
-return'<div class="sr'+(isWu?' wu':'')+'"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
+const row='<div class="sr'+(isWu?' wu':'')+(live?' live':'')+'"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
 +stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false)
-+'<button class="lg" id="lg-'+ex.id+'-'+i+'" onclick="logSet(\''+ex.id+'\','+i+')" aria-label="Log set">'+CHECK+'</button></div>'} /* stable id · lets rn() hand focus to the next pending set instead of dropping it */
++(live?'<span></span>':'<button class="lg" id="lg-'+ex.id+'-'+i+'" onclick="logSet(\''+ex.id+'\','+i+')" aria-label="Log set">'+CHECK+'</button>')+'</div>'; /* stable id · lets rn() hand focus to the next pending set instead of dropping it */
+if(!live)return row;
+/* the live set's data line is followed by the full-bleed slab, and the slab IS the commit target ·
+   it carries the same log check the row buttons use (outside the sv- span, so updSlab can't wipe it) */
+return row+'<button class="slab num" id="lg-'+ex.id+'-'+i+'" onclick="slabLog(\''+ex.id+'\','+i+')" aria-label="Log set"><span id="sv-'+key+'" data-bw="'+(ex.bw?'1':'0')+'">'+slabTxt(key,ex.bw)+'</span>'+CHECK+'</button>'}
 function doneRow(ex,entry,st){
 const wIdx=(st.n-1)-entry.warmups+1;
 return'<div class="sr done'+(st.warmup?' wu':'')+(S.flash===ex.id+'_'+st.n?' new':'')+'" onclick="editLogged(\''+ex.id+'\','+st.n+')"><div class="srn num">'+(st.warmup?'W':wIdx)+'</div>'
@@ -2402,15 +2432,29 @@ function editRow(ex,entry,st){
 const key='e_'+ex.id+'_'+st.n;
 if(!PV[key])PV[key]={w:wInUnit(st.w),r:st.reps};
 const isWu=!!st.warmup,wIdx=(st.n-1)-entry.warmups+1,wstep=unit()==='kg'?2.5:5;
-return'<div class="sr'+(isWu?' wu':'')+'" style="background:var(--surface2);border-radius:12px"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
+return'<div class="sr edit'+(isWu?' wu':'')+'"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
 +stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false)
-+'<button class="lg" onclick="updateSet(\''+ex.id+'\','+st.n+')" style="border-color:var(--ember-line);color:var(--ember)">'+CHECK+'</button></div>'
++'<button class="lg go" onclick="updateSet(\''+ex.id+'\','+st.n+')" aria-label="Save set">'+CHECK+'</button></div>'
 +'<div style="display:flex;justify-content:flex-end;gap:2px;padding:2px 2px 4px"><button class="rowx" onclick="removeSet(\''+ex.id+'\','+st.n+')">Remove set</button><button class="rowx" style="color:var(--muted)" onclick="cancelEdit()">Cancel</button></div>'}
+/* the ONE ember slab on screen · the next pending set of the exercise you are actually in:
+   the exercise of the most recently logged set while it still has pending rows, else the
+   first exercise (in session order) with a pending row. Enforced here, in code, because the
+   slab only reads as a signal if it is the only filled block on the screen. */
+function liveKeyOf(sess,entries){
+const pend=e=>{const byN={};workingSets(sess,e.exId).forEach(x=>{byN[x.n]=x});
+ const tot=rowTotal(sess,e);for(let i=0;i<tot;i++)if(!byN[i+1])return i;return -1};
+let lastEx=null,lastTs=0;
+sess.sets.forEach(x=>{if(x.ts>=lastTs){lastTs=x.ts;lastEx=x.exId}});
+if(lastEx){const e=entries.find(x=>x.exId===lastEx);
+ if(e){const i=pend(e);if(i>=0)return e.exId+'_'+i}}
+for(const e of entries){const i=pend(e);if(i>=0)return e.exId+'_'+i}
+return null}
 function vSession(){
 const sess=sessById(S.sid);
 if(!sess){S.view='tabs';return vTabs()}
 const entries=entriesOf(sess);
-let body='';
+const liveKey=S.amend?null:liveKeyOf(sess,entries); /* an edit of a past day has no live set and no slab */
+let body='<div class="cols"><span>Set</span><span>Load</span><span>Reps</span><span></span></div>'; /* the column caps are drawn ONCE per session, not once per exercise */
 entries.forEach((entry,ei)=>{
 const ex=exOf(entry.exId),logged=workingSets(sess,entry.exId).sort((a,b)=>a.n-b.n);
 const maxN=logged.length?logged[logged.length-1].n:0;
@@ -2421,7 +2465,7 @@ const byN={};logged.forEach(x=>{byN[x.n]=x});
 for(let i=0;i<total;i++){const st=byN[i+1];
  if(st&&S.editKey===entry.exId+'_'+st.n)rows+=editRow(ex,entry,st);
  else if(st)rows+=doneRow(ex,entry,st);
- else rows+=pendRow(ex,entry,i,sess)}
+ else rows+=pendRow(ex,entry,i,sess,liveKey===entry.exId+'_'+i)}
 body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+esc(ex.name)
 +(ex.video?' <a class="vl" href="'+ex.video+'" target="_blank" aria-label="Watch video">▶</a>':'')+'</div>'
 +(entry.amrap?'<span class="chip em">max</span>':'')
@@ -2429,9 +2473,8 @@ body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+e
 +'<span class="tpes num">'+logged.length+'/'+total+'</span></div>'
 +'<div class="exs">'+esc(schemeEng(entry,sess.date))+(entry.cue?' · '+esc(entry.cue):'')+'</div>'
 +ghostLine(ex,sess)
-+'<div class="cols"><span>Set</span><span>'+(ex.bw?'Load':unit())+'</span><span>Reps</span><span></span></div>'
 +rows
-+'<div class="exf"><div style="display:flex;align-items:center;gap:2px"><button class="adds" onclick="addRow(\''+entry.exId+'\')">+ Add set</button>'+(total>1?'<button class="adds" onclick="rmRow(\''+entry.exId+'\')">− Remove set</button>':'')+'</div><div style="display:flex;align-items:center;gap:5px;margin-left:auto">'+(entries.length>1?'<button class="exmv" onclick="moveEx(\''+entry.exId+'\',-1)"'+(ei===0?' disabled':'')+' aria-label="Move up">↑</button><button class="exmv" onclick="moveEx(\''+entry.exId+'\',1)"'+(ei===entries.length-1?' disabled':'')+' aria-label="Move down">↓</button>':'')+'<button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div></div>'});
++'<div class="exf"><div style="display:flex;align-items:center;gap:8px"><button class="setb" onclick="addRow(\''+entry.exId+'\')" aria-label="Add set">+</button>'+(total>1?'<button class="setb" onclick="rmRow(\''+entry.exId+'\')" aria-label="Remove set">−</button>':'')+'</div><div style="display:flex;align-items:center;gap:5px;margin-left:auto">'+(entries.length>1?'<button class="exmv" onclick="moveEx(\''+entry.exId+'\',-1)"'+(ei===0?' disabled':'')+' aria-label="Move up">↑</button><button class="exmv" onclick="moveEx(\''+entry.exId+'\',1)"'+(ei===entries.length-1?' disabled':'')+' aria-label="Move down">↓</button>':'')+'<button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div></div>'});
 body+='<button class="addb" onclick="pickExFor(\'session\')">+ Add exercise</button>';
 const elapsed=S.amend?fmtDk(sess.date):'<span id="elap">'+mmss(Date.now()-sess.startedAt)+'</span>';
 const hd='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="exitSession()">'+I_BACK+'</button>'
@@ -2457,7 +2500,7 @@ rn();S.flash=null}
 function restSheet(exId){
 const ex=exOf(exId);RSC={exId};
 sheet('Rest · '+esc(ex.name),'Counts down after each logged set. Saved to your program.',
-'<div class="stp" style="height:56px;margin-bottom:6px"><button class="stb" style="width:56px" data-hold data-fn="rscStep" data-args="[-15]">−</button><div class="stv num" id="rscV" style="font-size:21px">'+rscCur()+'s</div><button class="stb" style="width:56px" data-hold data-fn="rscStep" data-args="[15]">+</button></div>'
+'<div class="stp" style="height:56px;margin-bottom:6px"><button class="stb" style="width:56px" data-hold data-fn="rscStep" data-args="[-15]">−</button><div class="stv num" id="rscV">'+rscCur()+'s</div><button class="stb" style="width:56px" data-hold data-fn="rscStep" data-args="[15]">+</button></div>'
 +'<div class="shbtns"><button class="btn btn-p" onclick="closeOv();rn()">Done</button></div>')}
 function rscCur(){ /* the rest this exercise actually uses · matches the exercise-header chip */
 const sess=sessById(S.sid),ex=exOf(RSC.exId);
@@ -2835,7 +2878,7 @@ const p=prog(),h=p.horizonDate,ts=h?taperState(tk()):null,dt=h?dkDays(tk(),h):nu
 let inner;
 if(h&&dt>=0)inner='<b>Race · '+fmtDk(h)+'</b><span class="exs" style="padding:0;width:100%">'+(ts?ts.daysTo+' days out · volume '+Math.round(ts.scale*100)+'% · quality held':(dt-TAPER.LEN)+' days until the taper opens')+'</span><div style="width:100%;margin-top:2px"><button class="lnk" onclick="taperIcs()">Add to calendar</button> &nbsp; <button class="lnk" onclick="taperClear()">Clear race date</button></div>';
 else inner='<span class="exs" style="padding:0;width:100%">No race set · the last '+TAPER.LEN+' days before a race become a taper (quality held, volume cut)</span><div style="width:100%;margin-top:2px"><button class="lnk" onclick="taperSet()">Set a race date</button> &nbsp; <button class="lnk" onclick="taperToggle()">Start taper now</button></div>';
-return'<div class="sl"><span class="lt">Taper</span><span class="rule"></span></div><div class="card" style="display:flex;align-items:baseline;gap:10px;padding:14px 16px;margin-bottom:18px;flex-wrap:wrap">'+inner+'</div>'}
+return'<div class="sl"><span class="lt">Taper</span><span class="rule"></span></div><div class="card" style="display:flex;align-items:baseline;gap:10px;padding:2px 0;margin-bottom:18px;flex-wrap:wrap">'+inner+'</div>'}
 function taperSet(){sheet('Race day','The last '+TAPER.LEN+' days become a taper · quality held, volume cut','<input type="date" class="tin" id="raceIn" min="'+tk()+'" value="'+(prog().horizonDate||'')+'"><div class="shbtns"><button class="btn btn-p" onclick="taperSave()">Set race date</button><button class="btn btn-q" onclick="closeOv()">Cancel</button></div>')}
 function taperSave(){const el=document.getElementById('raceIn'),v=el?el.value:'';if(!v){toast('Pick a date');return}const e=engine();prog().horizonDate=v;delete e.taperFor;delete e.taperLen;CV=null;sv();closeOv();rn();toast('Race day · '+fmtDk(v))}
 function taperToggle(){const e=engine();prog().horizonDate=shiftDk(tk(),TAPER.LEN);delete e.taperFor;delete e.taperLen;CV=null;sv();rn();toast('Taper started · race in '+TAPER.LEN+' days')}
@@ -2854,13 +2897,12 @@ const sprLive=!!(SPR&&SPR.dk===dk&&!sprData);
 const fri=effDow(dk)===5;
 const sprShow=_det?true:xtra?(sprData||sprLive||!!S.addSpr):(fri||sprData||sprLive||!!S.addSpr); /* detail always offers both — a past day of either shape stays backfillable, and Today's add-flags can't leak phantom sections into old sessions */
 const aerShow=_det?true:xtra?(aerData||!!S.addAer):(!fri||aerData||!!S.addAer);
-let h='',first=true,xrm=xtra,noted=xtra||_det;
+let h='',first=true,xrm=xtra;
 const head=label=>{const pr=first&&!xtra&&!_det;first=false;let tail='';
-if(xrm){tail='<button class="xrm" onclick="rmExtraCardio()" aria-label="Remove">×</button>';xrm=false}
+if(xrm){tail='<button class="xrm" onclick="rmExtraCardio()" aria-label="Remove">✕</button>';xrm=false}
 else if(pr)tail='<span class="cnt num" id="cnt-work"></span>';
 let s2='<div class="sl"'+(pr?' id="sl-work"':'')+'><span class="lt">'+esc(label)+'</span><span class="rule"></span>'+tail+'</div>';
-if(!noted&&t.note){noted=true;s2+='<div class="note">'+esc(t.note)+'</div>'}
-return s2};
+return s2}; /* the template note stays off Today here too, same call as liftArea · Program and the preview keep it */
 /* ── Sprints · their own workout, logged rep by rep in their own window ── */
 if(sprShow){
 h+=head('Sprints');
@@ -2982,17 +3024,17 @@ const pick=CV.fallback?'Easy day · Run-Throughs':(it?it.name:'Sprints');
 const sub=(it&&!CV.fallback?it.disp+' · ':'')+(CV.fallback?'float down, nothing to prove · ':'')+'walk-back recovery, rest till springy';
 let rows='';
 for(let i=0;i<n;i++){
-if(i<k&&S.sprEdit===i)rows+='<div class="sr s3" style="background:var(--surface2);border-radius:12px"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)
-+'<button class="lg" onclick="sprRowDone()" style="border-color:var(--ember-line);color:var(--ember)">'+CHECK+'</button></div>'
+if(i<k&&S.sprEdit===i)rows+='<div class="sr s3 edit"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)
++'<button class="lg go" onclick="sprRowDone()" aria-label="Save rep">'+CHECK+'</button></div>'
 +'<div style="display:flex;justify-content:flex-end;gap:2px;padding:2px 2px 4px"><button class="rowx" onclick="sprRowRm('+i+')">Remove rep</button><button class="rowx" style="color:var(--muted)" onclick="sprRowDone()">Cancel</button></div>';
 else if(i<k)rows+='<div class="sr s3 done" onclick="sprEditRow('+i+')"><div class="srn num">'+(i+1)+'</div><div class="dtx num">'+CV.plan[i]+' m</div><div class="dck">'+CHECK+'</div></div>';
-else if(i===k)rows+='<div class="sr s3"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)+'<button class="lg" onclick="sprLog()" aria-label="Log rep">'+CHECK+'</button></div>';
+else if(i===k)rows+='<div class="sr s3"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)+'<button class="lg go" onclick="sprLog()" aria-label="Log rep">'+CHECK+'</button></div>';
 else rows+='<div class="sr s3"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)+'<button class="lg fut" onclick="toast(\'Reps go in order · tap the lit check\')" aria-label="Logged in order">'+CHECK+'</button></div>';}
 let body='<div class="exc'+(k>=n&&n>0?' fin':'')+'"><div class="exh"><div class="exn">'+esc(pick)+'</div><span class="chip bl">Sprint</span><span class="tpes num">'+k+'/'+n+'</span></div>'
 +'<div class="exs">'+esc(sub)+'</div>'
 +'<div class="cols s3"><span>Rep</span><span>Meters</span><span></span></div>'
 +rows
-+'<div class="exf"><div style="display:flex;align-items:center;gap:2px"><button class="adds" onclick="sprAddRep()">+ Add rep</button>'+(n>Math.max(1,k)?'<button class="adds" onclick="sprRmRep()">− Remove rep</button>':'')+'</div><div class="tpes num" style="padding-right:4px">'+tot+' m run</div></div></div>';
++'<div class="exf"><div style="display:flex;align-items:center;gap:8px"><button class="setb" onclick="sprAddRep()" aria-label="Add rep">+</button>'+(n>Math.max(1,k)?'<button class="setb" onclick="sprRmRep()" aria-label="Remove rep">−</button>':'')+'</div><div class="tpes num" style="padding-right:4px">'+tot+' m run</div></div></div>';
 body+='<div class="exc"><div class="fgrid" style="grid-template-columns:1fr;margin-top:2px">'+cfld('Effort %','eff',5,10,100)+'</div>'
 +'<div class="flab">Calf pain</div><div class="seg">'+[['None',0],['≤2',2],['>2',3]].map(p=>'<button class="sgb'+(CV.pain===p[1]?' on':'')+'" onclick="cseg(\'pain\','+p[1]+')">'+p[0]+'</button>').join('')+'</div></div>';
 const elapsed=live?'<span id="elap">'+mmss(Date.now()-((SPR&&SPR.startedAt)||Date.now()))+'</span>':fmtDk(CV.dk);
@@ -3106,27 +3148,27 @@ const _eng=engineOn();
 if(_eng)engTick();
 const _sk=p.season||'reset',_sn=SEASONS[_sk]||SEASONS.reset;
 h+='<div class="sl"><span class="lt">Season</span><span class="rule"></span><button class="lnk" onclick="seasonSheet()">Change</button></div>';
-h+='<div class="card" style="display:flex;align-items:baseline;gap:10px;padding:14px 16px;margin-bottom:18px;flex-wrap:wrap"><b>'+esc(_sn.name)+'</b><span class="exs" style="padding:0">'+esc(_sn.cal+' · '+_sn.ds)+'</span>'+(_eng?(function(){const _dl=deloadWk(),_dlOn=_dl&&_dl>=weekMon(tk()),_dlTxt=_dlOn?(inDeloadWeek(tk())?'Deload · this week':'Deload · week of '+fmtDk(_dl)):'Deload backstop · '+trainedWeeks()+' of '+deloadEvery()+' trained weeks';return'<span class="exs" style="padding:0;width:100%">'+esc(_dlTxt)+'</span>'})():'')+'</div>';
+h+='<div class="card" style="display:flex;align-items:baseline;gap:10px;padding:2px 0;margin-bottom:18px;flex-wrap:wrap"><b>'+esc(_sn.name)+'</b><span class="exs" style="padding:0">'+esc(_sn.cal+' · '+_sn.ds)+'</span>'+(_eng?(function(){const _dl=deloadWk(),_dlOn=_dl&&_dl>=weekMon(tk()),_dlTxt=_dlOn?(inDeloadWeek(tk())?'Deload · this week':'Deload · week of '+fmtDk(_dl)):'Deload backstop · '+trainedWeeks()+' of '+deloadEvery()+' trained weeks';return'<span class="exs" style="padding:0;width:100%">'+esc(_dlTxt)+'</span>'})():'')+'</div>';
 h+=taperCard(); /* E4 · Speed-season race taper (empty string otherwise) */
 h+='<div class="sl"><span class="lt">Week</span><span class="rule"></span><button class="lnk" onclick="openEd(\'edsched\')">Edit</button></div>';
 h+='<div class="week" style="margin-bottom:18px">'+[1,2,3,4,5,6,0].map(d=>{
 const tid=p.schedule[d],t=tid?tpl(tid):null;
-return'<div class="day '+(t?t.kind:'off')+'" style="cursor:default;pointer-events:none"><div class="dl">'+DAB[d]+'</div><div class="dw">'+(t?esc(t.name.split(' ')[0]):'Off')+'</div></div>'}).join('')+'</div>';
+return'<div class="day '+(t?t.kind:'off')+'" style="cursor:default;pointer-events:none"><div class="dl">'+DAB[d][0]+'</div><div class="dw">'+(t?esc(t.name.split(' ')[0]):'Off')+'</div></div>'}).join('')+'</div>';
 h+='<div class="sl"><span class="lt">Templates</span><span class="rule"></span><button class="lnk" onclick="newTplSheet()">+ New</button></div>';
 p.templates.forEach(t=>{
 let b='';
 if(t.kind==='lift')b=t.entries.map(e=>entryRow(e)).join('');
 else{b='<div class="tpe"><span class="tpen">Dynamic Warm-Up</span><span class="tpes num">'+wuDef(t)+' min · zone 2</span></div>'
  +sprintMenuHtml(prog().season||'reset')
- +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:12px;letter-spacing:.08em">— or —</div>'
+ +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:16px;letter-spacing:.12em">— or —</div>'
  +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>'
  +(t.checks||[]).map(c=>'<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>').join('')}
-if(t.note)b+='<p style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:10px">'+esc(t.note)+'</p>';
+if(t.note)b+='<p style="font-size:16px;color:var(--muted);line-height:1.55;margin-top:10px">'+esc(t.note)+'</p>';
 b+='<button class="lnk" onclick="openEdT(\''+t.id+'\')">Edit template →</button>';
 h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled).length+' moves':'sprint + aerobic'),b)});
 h+='<div class="sl"><span class="lt">Checklists</span><span class="rule"></span></div>';
 h+=det('Daily Block',p.checklists.daily.filter(d=>!d.paused).length+' items · morning + evening',p.checklists.daily.map(d=>'<div class="tpe'+(d.paused?' offed':'')+'"><span class="tpen">'+esc(d.name)+(d.paused?' <span class="chip off">paused</span>':'')+(d.skipOnTraining?' <span class="chip off">rest days</span>':'')+(d.skipIfHang?' <span class="chip off">no-hang days</span>':'')+'</span><span class="tpes">'+esc(d.detail||'')+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'eddaily\')">Edit →</button>');
-h+=det('Mobility',p.checklists.mobility.reduce((a,g)=>a+g.items.length,0)+' items',p.checklists.mobility.map(g=>'<p style="margin:10px 0 4px"><strong style="color:var(--text);font-size:13px;letter-spacing:.06em;text-transform:uppercase">'+esc(g.group)+'</strong></p>'+g.items.map(i=>'<div class="tpe"><span class="tpen" style="font-weight:500;color:var(--dim)">'+esc(i.name)+'</span></div>').join('')).join('')+'<button class="lnk" onclick="openMobility(\'program\')">Open today\'s checklist →</button> <button class="lnk" onclick="openEd(\'edmob\')">Edit →</button>');
+h+=det('Mobility',p.checklists.mobility.reduce((a,g)=>a+g.items.length,0)+' items',p.checklists.mobility.map(g=>'<p style="margin:10px 0 4px"><strong style="color:var(--text);font-size:16px;letter-spacing:.12em;text-transform:uppercase">'+esc(g.group)+'</strong></p>'+g.items.map(i=>'<div class="tpe"><span class="tpen" style="font-weight:500;color:var(--muted)">'+esc(i.name)+'</span></div>').join('')).join('')+'<button class="lnk" onclick="openMobility(\'program\')">Open today\'s checklist →</button> <button class="lnk" onclick="openEd(\'edmob\')">Edit →</button>');
 h+=det('Therapist Nerve Flossing','',p.checklists.therapist.map(t=>'<div class="tpe"><span class="tpen">'+esc(t.name)+(t.video?' <a class="vl" href="'+t.video+'" target="_blank" aria-label="Watch video">▶</a>':'')+'</span><span class="tpes">'+esc(t.note)+'</span></div>').join('')+'<button class="lnk" onclick="openEd(\'edther\')">Edit →</button>');
 h+='<div class="sl"><span class="lt">Reference</span><span class="rule"></span><button class="lnk" onclick="openEd(\'edref\')">Edit</button></div>';
 (p.reference||[]).forEach(r=>{h+=det(esc(r.t),'',md(r.b))});
@@ -3138,7 +3180,7 @@ return h}
 /* Season · the one quarterly dial. E1 stores it; E2 keys the volume bands and re-anchor off it. */
 function seasonSheet(){const cur=prog().season||'reset';
 let b='<div class="shbtns">'+Object.keys(SEASONS).map(k=>{const s=SEASONS[k];
-return'<button class="btn '+(cur===k?'btn-p':'btn-o')+'" onclick="setSeason(\''+k+'\')">'+s.name+' · '+s.cal+'<span style="display:block;font-size:12.5px;font-weight:500;opacity:.75;margin-top:2px">'+s.ds+'</span></button>'}).join('')+'</div>';
+return'<button class="btn '+(cur===k?'btn-p':'btn-o')+'" onclick="setSeason(\''+k+'\')">'+s.name+' · '+s.cal+'<span style="display:block;font-size:16px;font-weight:500;margin-top:2px">'+s.ds+'</span></button>'}).join('')+'</div>';
 sheet('Season','The one quarterly dial · sprint stays the spine',b)}
 function setSeason(k){if(!SEASONS[k])return;const p=prog();
 if((p.season||'reset')===k){closeOv();return}
@@ -3278,7 +3320,7 @@ h+='<div class="strow"><div class="stn">Enabled<small>off = parked, hidden from 
 h+='<div class="flab">Rest after sets</div>';
 h+='<div class="fgrid" style="grid-template-columns:1.3fr 1fr;margin-top:0">'
 +'<div class="fld"><div class="stp"><button class="stb" data-hold data-fn="eRest" data-args="[-15]">−</button><div class="stv num" id="ev-rest">'+(e.rest?e.rest+'s':'Default · '+(ex.rest||rD())+'s')+'</div><button class="stb" data-hold data-fn="eRest" data-args="[15]">+</button></div></div>'
-+'<button class="btn btn-o" style="min-height:54px;font-size:14.5px" onclick="eRestDef()">Use default</button></div>';
++'<button class="btn btn-o" style="min-height:54px;font-size:16px" onclick="eRestDef()">Use default</button></div>';
 h+='<div class="flab">Scheme label · blank shows “'+esc(autoScheme(e))+'”</div><input class="tin num" value="'+esc(e.scheme||'')+'" placeholder="'+esc(autoScheme(e))+'" onchange="curEntry().scheme=this.value.trim();sv()">';
 h+='<div class="flab">Cue</div><input class="tin" value="'+esc(e.cue||'')+'" onchange="curEntry().cue=this.value;sv()">';
 h+='<div class="shbtns" style="margin-top:18px"><button class="btn btn-d" onclick="rmEntryAsk()">Remove from template</button></div>';
@@ -3362,7 +3404,7 @@ h+='<div class="stp" style="height:56px"><button class="stb" style="width:56px" 
 h+='<div class="shbtns" style="margin-top:18px">';
 h+='<button class="btn btn-o" onclick="curEx().archived=!curEx().archived;sv();rn()">'+(e.archived?'Restore to library':'Archive exercise')+'</button>';
 if(!exUsed(e.id))h+='<button class="btn btn-d" onclick="delExAsk()">Delete exercise</button>';
-else h+='<div style="text-align:center;font-size:12.5px;color:var(--muted);line-height:1.5">In use by a template or logged history · archive hides it without breaking records.</div>';
+else h+='<div style="text-align:center;font-size:16px;color:var(--muted);line-height:1.5">In use by a template or logged history · archive hides it without breaking records.</div>';
 h+='</div></div>';return h}
 function delExAsk(){ovConfirm('Delete '+esc(curEx().name)+'?','It has no logged history · this just removes it from the library.',
 [{label:'Delete',click:'delEx()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
@@ -3493,7 +3535,7 @@ const _ss=sprintSeries();
 if(!_ss.length)h+='<div class="card"><div class="empty" style="padding:22px 12px">'+EB+'<div class="empty-t">No sprint days yet</div>Log a sprint Friday and the speed trend builds here.</div></div>';
 else{const _lsp=_ss[_ss.length-1]._sp,_sn=SEASONS[prog().season||'reset']||SEASONS.reset,_gp=prog().sprintPlan||{},_ft=fastWeeksTotal(_gp);
 h+='<div class="card">';
-h+='<div class="tpe"><span class="tpen" style="color:var(--ember)">'+esc(_sn.name)+' season</span><span class="tpes num">'+(sprintGateOpen(_gp)?'near-max open':(_ft+' / '+SPRINT_FLOOR_WEEKS+' wk to near-max'))+'</span></div>';
+h+='<div class="tpe"><span class="tpen" style="font-weight:700">'+esc(_sn.name)+' season</span><span class="tpes num">'+(sprintGateOpen(_gp)?'near-max open':(_ft+' / '+SPRINT_FLOOR_WEEKS+' wk to near-max'))+'</span></div>';
 h+='<div class="exs" style="padding:2px 2px 4px">Effort % across '+_ss.length+' sprint session'+(_ss.length>1?'s':'')+'</div>';
 h+=trendChart(_ss,true);
 h+='<div class="exs" style="padding:8px 2px 2px">Last: '+sprDistC(_lsp)+' @'+_lsp.effortPct+'%'+(_lsp.pain!=null?' · pain '+_lsp.pain:'')+'</div>';
@@ -3549,23 +3591,20 @@ const lo=Math.min(Y(p1.v),Y(p2.v)),hi=Math.max(Y(p1.v),Y(p2.v));
 const c1y=Math.max(lo,Math.min(hi,Y(p1.v)+(Y(p2.v)-Y(p0.v))/6)),c2y=Math.max(lo,Math.min(hi,Y(p2.v)-(Y(p3.v)-Y(p1.v))/6));
 d+='C'+(X(p1.t)+(X(p2.t)-X(p0.t))/6).toFixed(1)+' '+c1y.toFixed(1)+' '+(X(p2.t)-(X(p3.t)-X(p1.t))/6).toFixed(1)+' '+c2y.toFixed(1)+' '+X(p2.t).toFixed(1)+' '+Y(p2.v).toFixed(1)}
 return d};
-const FF='-apple-system,sans-serif';
+const FF="'Helvetica Neue',Arial,sans-serif"; /* chart type: the 520-unit box renders ~361px wide, a .69 scale · 23 SVG units land at ~16px, the ladder floor */
 let h='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
-h+='<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6f2e" stop-opacity=".22"/><stop offset="1" stop-color="#ff6f2e" stop-opacity="0"/></linearGradient></defs>';
 [vmax,(vmin+vmax)/2,vmin].forEach(v=>{const y=Y(v);
-h+='<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" stroke="#262a33" stroke-width="1"/><text x="'+(L-8)+'" y="'+(y+6).toFixed(1)+'" text-anchor="end" font-size="19" fill="#808894" font-family="'+FF+'">'+Math.round(v)+'</text>'});
-if(pts.length>1)h+='<path d="'+path(pts)+' L'+X(pts[pts.length-1].t).toFixed(1)+' '+(H-B)+' L'+X(pts[0].t).toFixed(1)+' '+(H-B)+' Z" fill="url(#ag)" stroke="none"/>';
-if(showE1)h+='<path d="'+path(pts.filter(p=>p.e1).map(p=>({t:p.t,v:p.e1})))+'" fill="none" stroke="#9aa1ac" stroke-width="1.6" stroke-dasharray="5 5" opacity=".7"/>';
+h+='<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" stroke="#2B2B2E" stroke-width="1"/><text x="'+(L-8)+'" y="'+(y+6).toFixed(1)+'" text-anchor="end" font-size="23" fill="#CDCDC8" font-family="'+FF+'">'+Math.round(v)+'</text>'});
+if(showE1)h+='<path d="'+path(pts.filter(p=>p.e1).map(p=>({t:p.t,v:p.e1})))+'" fill="none" stroke="#CDCDC8" stroke-width="1.6" stroke-dasharray="5 5" opacity=".7"/>';
 h+='<path d="'+path(pts)+'" fill="none" stroke="#ff6f2e" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
 pts.forEach((p,i)=>{const last=i===pts.length-1;
-if(last)h+='<circle cx="'+X(p.t).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="8.5" fill="rgba(255,111,46,.16)"/>';
-h+='<circle cx="'+X(p.t).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="'+(last?4.2:3.4)+'" fill="#0a0b0e" stroke="'+(last?'#ffa14d':'#ff6f2e')+'" stroke-width="2.2"/>'});
+h+='<circle cx="'+X(p.t).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="'+(last?4.2:3.4)+'" fill="#0A0A0A" stroke="'+(last?'#ffa14d':'#ff6f2e')+'" stroke-width="2.2"/>'});
 const lp=pts[pts.length-1],lx=X(lp.t),ly=Y(lp.v);
-h+='<text x="'+Math.min(lx,W-R-6).toFixed(1)+'" y="'+(ly-15).toFixed(1)+'" text-anchor="'+(lx>W-60?'end':'middle')+'" font-size="22" font-weight="700" fill="#ffa14d" font-family="'+FF+'">'+lp.v+'</text>';
+h+='<text x="'+Math.min(lx,W-R-6).toFixed(1)+'" y="'+(ly-15).toFixed(1)+'" text-anchor="'+(lx>W-60?'end':'middle')+'" font-size="26" font-weight="700" fill="#ffa14d" font-family="'+FF+'">'+lp.v+'</text>';
 const yr=ser[0].date.slice(0,4)!==ser[ser.length-1].date.slice(0,4);
-h+='<text x="'+L+'" y="'+(H-9)+'" font-size="19" fill="#808894" font-family="'+FF+'">'+fmtDk(ser[0].date)+(yr?' ’'+ser[0].date.slice(2,4):'')+'</text>';
-if(ser.length>1)h+='<text x="'+(W-R)+'" y="'+(H-9)+'" text-anchor="end" font-size="19" fill="#808894" font-family="'+FF+'">'+fmtDk(ser[ser.length-1].date)+(yr?' ’'+ser[ser.length-1].date.slice(2,4):'')+'</text>';
-if(showE1)h+='<text x="'+(W-R)+'" y="'+(Tp-6)+'" text-anchor="end" font-size="17" fill="#9aa1ac" font-family="'+FF+'">est 1RM – –</text>';
+h+='<text x="'+L+'" y="'+(H-9)+'" font-size="23" fill="#CDCDC8" font-family="'+FF+'">'+fmtDk(ser[0].date)+(yr?' ’'+ser[0].date.slice(2,4):'')+'</text>';
+if(ser.length>1)h+='<text x="'+(W-R)+'" y="'+(H-9)+'" text-anchor="end" font-size="23" fill="#CDCDC8" font-family="'+FF+'">'+fmtDk(ser[ser.length-1].date)+(yr?' ’'+ser[ser.length-1].date.slice(2,4):'')+'</text>';
+if(showE1)h+='<text x="'+(W-R)+'" y="'+(Tp-6)+'" text-anchor="end" font-size="23" fill="#CDCDC8" font-family="'+FF+'">est 1RM – –</text>';
 return'<div class="chartw">'+h+'</svg></div>'}
 function vTrend(){
 const ex=exOf(S.trEx),ser=seriesFor(ex.id);
@@ -3574,7 +3613,7 @@ const useReps=ser.every(p=>p.topW<=0);
 const pe=prScan().perEx[ex.id]||{};
 let h='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="S.view=\'tabs\';S.tab=\'trends\';rn()">'+I_BACK+'</button>'
 +'<div class="shm"><div class="sht">'+esc(ex.name)+'</div><div class="shs num">'+ser.length+' session'+(ser.length>1?'s':'')+' · '+(useReps?'best reps':'top set · '+unit())+'</div></div>'
-+(useReps?'':'<button class="fin q num" style="font-size:13px'+(S.e1?';border-color:var(--ember-line);color:var(--ember)':'')+'" onclick="S.e1=!S.e1;rn()">est 1RM</button>')+'</div></div>';
++(useReps?'':'<button class="fin q num" style="'+(S.e1?'border-color:var(--ember-line);color:var(--ember-hot)':'')+'" onclick="S.e1=!S.e1;rn()">est 1RM</button>')+'</div></div>';
 h+='<div class="co">';
 h+='<div class="card" style="padding:12px 10px 8px">'+trendChart(ser,useReps)+'</div>';
 h+='<div class="sl"><span class="lt">Personal Records</span><span class="rule"></span></div><div class="card">';
@@ -3657,12 +3696,12 @@ const body=
 +'<div class="strow"><div class="stn">Training guards<small>'+(engineOn()?'auto-deload and the race taper · both only ever cut volume':'off until you are cleared · your program stays exactly as you set it')+'</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],engineOn()?'1':'0','setEngineOn')+'</div>'
 +(engineOn()?'<div class="strow"><div class="stn">Recovery dial<small>how many trained weeks before an easy week lands · now <span id="sDialWks">'+deloadEvery()+'</span></small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sDial" data-args="[-0.1]">−</button><div class="stv num" id="sDialV">'+dial().toFixed(1)+'</div><button class="stb" data-hold data-fn="sDial" data-args="[0.1]">+</button></div></div>':'')
 +(engineOn()?'<div class="strow"><div class="stn">Start a fresh block<small>resets the easy-week clock, clears a pending deload and race date · program and history untouched</small></div><button class="btn btn-o" style="width:auto;min-height:44px;padding:0 18px;flex-shrink:0" onclick="resetAskEng()">Start fresh</button></div>':'')
-+'<div class="strow"><div class="stn">Bedtime target<small>what “bed by” aims for</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sBed" data-args="[-15]">−</button><div class="stv num" id="sBedV" style="font-size:14px">'+fmtTime12(bedTime())+'</div><button class="stb" data-hold data-fn="sBed" data-args="[15]">+</button></div></div>'
++'<div class="strow"><div class="stn">Bedtime target<small>what “bed by” aims for</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sBed" data-args="[-15]">−</button><div class="stv num" id="sBedV" style="font-size:16px">'+fmtTime12(bedTime())+'</div><button class="stb" data-hold data-fn="sBed" data-args="[15]">+</button></div></div>'
 +'<div class="shbtns" style="margin-top:20px"><button class="btn btn-p" onclick="closeOv()">Done</button></div>'
 +'<div class="sl"><span class="lt">Your data</span><span class="rule"></span></div>'
 +'<div class="shbtns">'
 +'<button class="btn btn-o" onclick="doExport()">Export data</button>'
-+'<div style="text-align:center;font-size:13px;color:var(--muted)">'+(le?'Last export · '+fmtDk(tk(new Date(le))):'Never exported · data lives only on this device')+'</div>'
++'<div style="text-align:center;font-size:16px;color:var(--muted)">'+(le?'Last export · '+fmtDk(tk(new Date(le))):'Never exported · data lives only on this device')+'</div>'
 +'<button class="btn btn-o" onclick="doImportPick()">Import backup</button>'
 +'<button class="btn btn-o" onclick="doImportCsvPick()">Import workout history · CSV</button>'
 +'<button class="btn btn-d" onclick="resetAsk()">Erase all data</button>'
