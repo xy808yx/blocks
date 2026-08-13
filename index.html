@@ -704,6 +704,10 @@ const templates=[
 {id:'t_pull',name:'A',kind:'lift',
  note:'Straight sets, full rest. Consistent reps across all 4 sets → add weight. Calf raises: this card is written for MONDAY. On Thursday log only 2 sets and drop the load yourself, so Friday sprints land fresh.',
  entries:[
+ /* the band Pallof opens the session as trunk prep · with no cable it cannot load-ratchet, so counted
+    volume it was not (A/B review, Aug 2026) · the counted anti-rotation slot returns to the tail when
+    there is a cable to load · landmine rainbows are the eligible loaded alternative (see Parked & Cut) */
+ en('cx_pallofpress',{warmups:2,sets:0,scheme:'2 × 8-10/side · warm-up',defReps:10,cue:'band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back · prep while band-only, a band cannot load-ratchet · counted volume again when there is a cable to load'}),
  en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,cue:'full range, controlled down, no kipping'}),
  en('p2',{sets:3,scheme:'3 × 10/side',defReps:10,cue:'full rest'}),
  en('p3',{sets:3,scheme:'3 × 12-15/side',defReps:12,defW:5,cue:'1-arm · opp knee + hand on bench · plate · thumb up, arm straight · 2s hold at top · hips & shoulders square · all 3 sets hit 15 with a clean 2s hold, twice running → 10 lb'}),
@@ -713,7 +717,6 @@ const templates=[
  en('p6',{sets:4,scheme:'4 × 6-8/leg',defReps:8,cue:'deficit · palpated midportion, so the deficit is correct · 1s up, 3s down · start ~25-30 lb, build to ~55 · all 4 sets hit 8 twice running → +5 lb'}),
  en('h90',{sets:3,scheme:'3 × 5/side',defReps:5,defW:25,cue:'both shins ~90° · sit tall, plate at the chest · settle into the position 20-30s, then 5 slow knee lift-offs, front leg then back leg · torso stays upright, no falling back · add plate before adding reps'}),
  en('s3',{sets:3,scheme:'3 × 8-10',defReps:8,cue:'ab straps · no grip at all · slow down, no swing · easy at 10 → plate between the feet, back to 8'}),
- en('cx_pallofpress',{sets:3,scheme:'3 × 8-10/side',defReps:10,cue:'band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back'}),
 ]},
 {id:'t_push',name:'B',kind:'lift',
  note:'Straight sets, full rest 90-120s. Top of rep range for 2 consecutive sessions → add 5 lbs. BSS: bodyweight first, then hold plates.',
@@ -726,7 +729,7 @@ const templates=[
  en('cx_abwheelrollout',{sets:3,scheme:'3 × 8',defReps:8,cue:'kneeling · ribs down, no sag in the low back · roll only as far as you can still reverse · knees → longer reach → toes, in that order'}),
  en('s4',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'BW → hold plates'}),
  en('bk',{sets:3,scheme:'3 × 10-12/leg',defReps:12,cue:'knee ~90° · plate on the distal thigh · full ROM, controlled · runs Wed + Sat, so twice a week · if Saturday morning\'s calf read came back sore, EASE this set, do not skip it'}),
- en('cx_singlelegromaniandeadlift',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'hinge, ribs down · reach long, no rotation · light and clean before heavy'}),
+ en('cx_singlelegromaniandeadlift',{sets:2,scheme:'2 × 8-10/leg',defReps:8,cue:'hinge, ribs down · reach long, no rotation · light and clean before heavy · 2 crisp sets by design · a control lift, the third set bought wobble, not load'}),
 ]},
 {id:'t_cardio',name:'C',kind:'cardio',
  note:'Friday opens with the 30-45 min dynamic warm-up at 125-155 bpm · that is the day\'s zone 2 · then sprints, run rep by rep from the sprint window. Tuesday is the fasted recovery day (easy aerobic + mobility). Running is sprints and speed endurance ONLY, nothing continuous · zone 2 is otherwise the bike or the pool. Quality before volume.',
@@ -837,7 +840,7 @@ const reference=[
 - Fast calf raises · 3 × 10 light and crisp, now carded as the warm-up ramp into the heavy raises rather than as counted volume. The old "speed-of-contraction bridge" framing and the ~132bpm metronome figure were both unsourceable and are gone.
 - Friday calf primer · ~40-60 contacts before sprints, while fresh. Low pogos, stiff ankle, toes up. Stop when the contacts get loud.
 - 15-20 single-leg hops stay in place as a permanent pre-sprint probe. Not training · a 20-second symptom check. Hop pain and heel-raise pain measure different things.
-- Right-side hip/glute hinge is live: single-leg RDL 3 × 8-10/leg on B days (Wed + Sat). It shares load across the posterior chain and trains right-side single-leg control, which is the point of it. (The old "the proximal chain carries ≈30% of plantarflexion force" line could not be traced to any source and was mechanically incoherent as phrased · removed, same as the untraceable soleus figure in the Sources card. The exercise stands without it.)
+- Right-side hip/glute hinge is live: single-leg RDL 2 × 8-10/leg on B days (Wed + Sat), cut from 3 sets Aug 2026 · a control lift rather than a loading driver, and the third set was buying wobble, not load. It shares load across the posterior chain and trains right-side single-leg control, which is the point of it. (The old "the proximal chain carries ≈30% of plantarflexion force" line could not be traced to any source and was mechanically incoherent as phrased · removed, same as the untraceable soleus figure in the Sources card. The exercise stands without it.)
 - Loaded 90/90 hold + lift-offs · 3 × 5/side on A days, plate at the chest. The mobility thread's first loaded, logged, progressible entry. Loaded end-range work is the one mobility modality with a real effect anchor, and it is load-dependent, so the plate is the active ingredient, not the position.
 - Running is sprints and speed endurance ONLY · nothing continuous, ever. Ceiling of 400m in any single rep, and that is an outer bound rather than a target. Zone 2 is the bike or the pool. Speed endurance past 150m waits behind Gate 4 and the bent-knee capacity check, because running fast while fatigued is the exact exposure a healing soleus tolerates worst.
 **Gate 4 · Return to Sport · Full Return · Wk 20-24**
@@ -914,7 +917,7 @@ The four rungs that are also carded exercises (heavy deficit raises, bent-knee r
 **The right shoulder · ✓ CLEARED Aug 2026, park lifted**
 - Med-ball slams, sprint-day throws and decline push-ups are back on. Landmine press is both arms again. The coaching frame that drove the park was right and is worth keeping: the risky axis was never push-versus-pull, it was loaded × end-range × ballistic.
 - Decline push-ups (s2) had been switched off inside a migration with no note anywhere · that is why nothing here explained them. Back on, and now they are the only right-side pressing in the week.
-- Landmine rainbows · still never shipped, now eligible rather than parked. The Pallof press is no longer standing in for them, it holds Day A's anti-rotation slot on its own merit.
+- Landmine rainbows · still never shipped, still eligible. The band Pallof moved to the front of Day A as trunk prep (A/B review, Aug 2026): with no cable it cannot load-ratchet, so as counted volume it was counted in name only. The counted anti-rotation slot is open again the day there is a cable to load a Pallof at the tail · until then, rainbows are the plate-progressible way to fill it, off equipment already in the room.
 - **Pull-ups are back on** (contentRev 32). They had been held a second time for the right elbow after the shoulder cleared them; that protocol was cut, so they and dead hangs resumed together, which is the only way they were ever going to move.
 **Cut Aug 2026 · the right elbow isometric protocol**
 The whole thing is gone: the neutral-grip holds off Day A, the ache and jolt logging, the elbow card in Trends and its 28-day review, and the reference card that carried them. Dead hangs and pull-ups both came back in the same edit. The daily right ulnar floss (d2) is untouched and stays · that was always a separate decision about a daily ritual on a symptomatic nerve. The off-the-mat measures the card carried are worth remembering without an app to hold them: avoid sustained end-range elbow flexion in the day, and sleep with the elbow near 45°.
@@ -952,7 +955,7 @@ Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then
 ];
 return{
 schemaVersion:1,
-contentRev:32,
+contentRev:33,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0,hangPausedAt:0}, /* hangPausedAt 0 · the resume clock falls back to meta.created on a fresh install (see hangResumeDue), so it is never measured against undefined */
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -999,7 +1002,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=32)return;
+let cr=DB.contentRev||0;if(cr>=33)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 if(cr<1){
@@ -1581,6 +1584,29 @@ if(cr<32){
  patchRef('Timeline');     /* the Aug 25 elbow review line is replaced */
  patchRef('Phase Gates');  /* the physio open list drops its elbow question */
  cr=32;
+}
+if(cr<33){
+ /* A/B review, Aug 2026 · two changes. (1) The band Pallof is reclassified honestly: with no cable it
+    cannot load-ratchet, so as counted volume it was counted in name only. It moves to the FRONT of A as
+    trunk prep (2 × 8-10/side · warm-up), the same standing face pulls and fast calf raises have. The
+    counted anti-rotation slot re-opens the day there is a cable · landmine rainbows stay the eligible
+    loaded alternative (Parked & Cut). (2) The single-leg RDL drops 3 → 2 sets · a control lift, not a
+    loading driver, and the third set was buying wobble, not load. Cue swaps are guarded on the old seed
+    text, so a hand-edited cue stays J's. */
+ const _f33l=(fp.templates||[]).find(x=>x.id==='t_pull'),_f33p=_f33l&&_f33l.entries.find(e=>e.exId==='cx_pallofpress');
+ const _f33b=(fp.templates||[]).find(x=>x.id==='t_push'),_f33r=_f33b&&_f33b.entries.find(e=>e.exId==='cx_singlelegromaniandeadlift');
+ (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(t=>{
+  if(t.id==='t_pull'&&_f33p){const i=t.entries.findIndex(e=>e.exId==='cx_pallofpress');
+   if(i>=0){const e=t.entries.splice(i,1)[0];e.warmups=_f33p.warmups;e.sets=0;e.scheme=_f33p.scheme;
+    if(e.cue==='band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back')e.cue=_f33p.cue;
+    t.entries.unshift(e)}}
+  if(t.id==='t_push'&&_f33r){const e=t.entries.find(x=>x.exId==='cx_singlelegromaniandeadlift');
+   if(e){e.sets=2;e.scheme=_f33r.scheme;
+    if(e.cue==='hinge, ribs down · reach long, no rotation · light and clean before heavy')e.cue=_f33r.cue}}
+ }));
+ patchRef('Phase Gates');  /* the SL RDL bullet drops to 2 sets */
+ patchRef('Parked & Cut'); /* the rainbows line records the Pallof reclassification */
+ cr=33;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('Couldn’t save · storage may be full. Export a backup from Settings.')}}
