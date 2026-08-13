@@ -492,6 +492,7 @@ body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(150px + env(safe-a
 .wkv span{font-size:16px;font-weight:500;color:var(--muted);margin-left:4px}
 .wkd{font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wkd.up{color:var(--sage)}
+.wkd.dn{color:var(--danger)}
 .wkt svg{display:block;width:100%;height:36px;margin-top:auto;padding-top:6px}
 .yrs{display:block;width:100%;height:auto;margin:4px 0 6px}
 .yrx{display:flex;justify-content:space-between;font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -2024,15 +2025,27 @@ return cnt}
    fm = every sprint rep's meters · z2 = warm-up + bike + swim minutes · ton = display-only tonnage, the known caveats
    (blind to bodyweight work, conflates heavy-low-rep with light-high-rep) are accepted, it never ranks or
    PRs anything. Buckets key on s.date because backfills append out of order. */
+function wkAdd(r,s){
+if(s.kind==='lift')(s.sets||[]).forEach(function(st){if(st.warmup)return;r.ton+=toLb(st.w)*(st.reps||0)});
+if(s.sprints&&s.sprints.legs)r.fm+=s.sprints.legs.reduce(function(a,b){return a+(+b||0)},0);
+if(s.warmup)r.z2+=(+s.warmup.durMin||0);
+if(s.aerobic)r.z2+=(+s.aerobic.durMin||0)}
 function weeklyAgg(n){
 const cur=weekMon(tk()),ix={},rows=[];
 for(let i=n-1;i>=0;i--){const k=shiftDk(cur,-7*i);ix[k]=rows.length;rows.push({wk:k,fm:0,z2:0,ton:0})}
 DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){
+const i=ix[weekMon(s.date)];if(i==null)return;
+wkAdd(rows[i],s)});
+return rows}
+/* Pace cut: the current week plus the last 4 complete weeks, each truncated at today's weekday,
+   so a Thursday reads against what Thursdays usually hold rather than against whole weeks. */
+function paceAgg(){
+const cur=weekMon(tk()),off=(dowOf(tk())+6)%7,ix={},rows=[];
+for(let i=4;i>=0;i--){const k=shiftDk(cur,-7*i);ix[k]=rows.length;rows.push({wk:k,end:shiftDk(k,off),fm:0,z2:0,ton:0})}
+DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){
 const i=ix[weekMon(s.date)];if(i==null)return;const r=rows[i];
-if(s.kind==='lift')(s.sets||[]).forEach(function(st){if(st.warmup)return;r.ton+=toLb(st.w)*(st.reps||0)});
-if(s.sprints&&s.sprints.legs)r.fm+=s.sprints.legs.reduce(function(a,b){return a+(+b||0)},0);
-if(s.warmup)r.z2+=(+s.warmup.durMin||0);
-if(s.aerobic)r.z2+=(+s.aerobic.durMin||0)});
+if(s.date>r.end)return;
+wkAdd(r,s)});
 return rows}
 /* Counters under the year strip. Streak = most consecutive calendar weeks with 3+ distinct trained days ·
    weeks with zero sessions never appear in the keys, so consecutiveness is checked by date math, not adjacency. */
@@ -3693,25 +3706,30 @@ h+='<div class="wkt"><div class="wkl">Sessions</div><div class="wkv num">'+st.to
 h+='</div>';
 h+='<div class="ckr" style="margin-top:8px">Streak · most weeks in a row with 3+ trained days</div>';
 return h+'</div>'}
-/* This-week tiles. The delta line compares the LAST COMPLETE week to the 4 before it · comparing a
-   half-finished week against whole ones would read as a slump every Monday through Thursday. */
+/* This-week tiles. The delta line is a pace read: this week so far against the average of the
+   last 4 complete weeks cut at the same weekday · comparing a half-finished week against whole
+   ones would read as a slump every Monday through Thursday. The guard hides the line only when
+   the last 4 complete weeks hold nothing at all, so a first sprint of the week still reads
+   against a zero-by-this-weekday usual. Sparklines plot complete weeks only · the live week is
+   the big number, not a chart point that nosedives until Sunday. */
 function weekCard(swk){
 if(!swk&&!DB.sessions.some(function(s){return s.finishedAt}))
 return'<div class="card"><div class="empty" style="padding:22px 12px">'+EB+'<div class="empty-t">No training logged yet</div>Finish a session · your week in numbers builds here.</div></div>';
 const A=weeklyAgg(12),u=unit();
 const sFM=A.map(function(r){return r.fm}),sZ2=A.map(function(r){return Math.round(r.z2)}),sTN=A.map(function(r){return Math.round(toU(r.ton,'lb',u))});
+const PC=paceAgg();
+const pFM=PC.map(function(r){return r.fm}),pZ2=PC.map(function(r){return Math.round(r.z2)}),pTN=PC.map(function(r){return Math.round(toU(r.ton,'lb',u))});
 const fmtN=function(n){return n.toLocaleString('en-US')};
-function dl(ser){
-const base=ser[ser.length-2],P=ser.slice(-6,-2);
-if(P.length<4||!P.some(function(v){return v>0}))return'';
-const avg=P.reduce(function(a,b){return a+b},0)/P.length,d=Math.round(base-avg);
-if(!d)return'<div class="wkd">level with avg</div>';
-return'<div class="wkd'+(d>0?' up':'')+' num">'+(d>0?'+':'−')+fmtN(Math.abs(d))+' vs avg</div>'}
-function tile(lbl,ser,gid){
-return'<div class="wkt"><div class="wkm"><div class="wkl">'+lbl+'</div><div class="wkv num">'+fmtN(ser[ser.length-1])+'</div>'+dl(ser)+'</div>'+sparkSvg(ser,gid,220,76)+'</div>'}
+function dl(pc,hist){
+if(!hist.slice(-5,-1).some(function(v){return v>0}))return'';
+const avg=pc.slice(0,4).reduce(function(a,b){return a+b},0)/4,d=Math.round(pc[4]-avg);
+if(!d)return'<div class="wkd">level with usual</div>';
+return'<div class="wkd'+(d>0?' up':' dn')+' num">'+(d>0?'+':'−')+fmtN(Math.abs(d))+' vs usual</div>'}
+function tile(lbl,ser,pc,gid){
+return'<div class="wkt"><div class="wkm"><div class="wkl">'+lbl+'</div><div class="wkv num">'+fmtN(ser[ser.length-1])+'</div>'+dl(pc,ser)+'</div>'+sparkSvg(ser.slice(0,-1),gid,220,76)+'</div>'}
 let h='<div class="card">';
-h+='<div class="wk4">'+tile('Fast meters',sFM,'wfm')+tile('Zone-2 min',sZ2,'wz2')+tile(u==='kg'?'Kg lifted':'Lb lifted',sTN,'wtn')+'</div>';
-h+='<div class="ckr" style="margin:8px 2px 0">Fast meters add every sprint rep · zone-2 is warm-up + bike + swim minutes · vs avg reads the last full week against the 4 before it</div>';
+h+='<div class="wk4">'+tile('Fast meters',sFM,pFM,'wfm')+tile('Zone-2 min',sZ2,pZ2,'wz2')+tile(u==='kg'?'Kg lifted':'Lb lifted',sTN,pTN,'wtn')+'</div>';
+h+='<div class="ckr" style="margin:8px 2px 0">Fast meters add every sprint rep · zone-2 is warm-up + bike + swim minutes · vs usual reads this week so far against your average by this weekday over the last 4 weeks · charts show complete weeks</div>';
 return h+'</div>'}
 /* Most-trained lifts as tap-through tiles above the Strength Trends list · session count picks them,
    warm-up-only reclassifications are skipped, and under two qualifiers the row stays hidden. */
