@@ -479,7 +479,10 @@ body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(150px + env(safe-a
 .dpill.pr{border-color:var(--ember-line);color:var(--ember-hot)}
 .chip.sg{color:var(--sage)}
 /* week-in-numbers tiles · year strip · most-trained tiles */
-.wk4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 2px}
+.wk4{display:grid;grid-template-columns:1fr;gap:8px;margin:4px 0 2px}
+.wk4 .wkt{flex-direction:row;align-items:center;gap:14px;padding:12px 14px}
+.wkm{display:flex;flex-direction:column;gap:2px;flex:0 0 122px;min-width:0}
+.wk4 .wkt svg{flex:1 1 0%;width:auto;min-width:0;height:76px;margin:0;padding:0}
 .mt3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:2px 0 14px}
 .wkt{border:1px solid var(--border);padding:11px 12px 9px;display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left}
 .wkt.tap{cursor:pointer;transition:background .2s}
@@ -2044,9 +2047,10 @@ else{run=0;prev=null}});
 return{thisYear:thisYear,best:best,total:DB.sessions.filter(function(s){return s.finishedAt}).length}}
 /* Small area sparkline · same clamped-curve construction as trendChart, stripped of axes. gid keeps the
    gradient ids unique per tile or the first def on the page silently owns them all. */
-function sparkSvg(vals,gid){
+function sparkSvg(vals,gid,W,H){
 if(vals.length<2)return'';
-const W=100,H=34,P=4;
+W=W||100;H=H||34; /* callers pass a box near the on-screen px size · marks scale with it so strokes render ~2px either way */
+const P=4,big=W>100,lw=big?2.2:1.8,dr=big?3.2:2.6,dw=big?2:1.6;
 let mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);if(mn===mx){mn-=1;mx+=1}
 const X=function(i){return P+i/(vals.length-1)*(W-2*P)};
 const Y=function(v){return P+(1-(v-mn)/(mx-mn))*(H-2*P-3)};
@@ -2060,8 +2064,8 @@ d+='C'+(X(i)+(X(i+1)-X(Math.max(0,i-1)))/6).toFixed(1)+' '+c1y.toFixed(1)+' '+(X
 return'<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
 +'<defs><linearGradient id="sg-'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6f2e" stop-opacity=".26"/><stop offset="1" stop-color="#ff6f2e" stop-opacity="0"/></linearGradient></defs>'
 +'<path d="'+d+' L'+X(vals.length-1).toFixed(1)+' '+H+' L'+X(0).toFixed(1)+' '+H+' Z" fill="url(#sg-'+gid+')"/>'
-+'<path d="'+d+'" fill="none" stroke="#ff6f2e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
-+'<circle cx="'+X(vals.length-1).toFixed(1)+'" cy="'+Y(vals[vals.length-1]).toFixed(1)+'" r="2.6" fill="#0A0A0A" stroke="#ffa14d" stroke-width="1.6"/></svg>'}
++'<path d="'+d+'" fill="none" stroke="#ff6f2e" stroke-width="'+lw+'" stroke-linecap="round" stroke-linejoin="round"/>'
++'<circle cx="'+X(vals.length-1).toFixed(1)+'" cy="'+Y(vals[vals.length-1]).toFixed(1)+'" r="'+dr+'" fill="#0A0A0A" stroke="#ffa14d" stroke-width="'+dw+'"/></svg>'}
 function trendExs(){
 const m={};
 DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
@@ -3704,7 +3708,7 @@ const avg=P.reduce(function(a,b){return a+b},0)/P.length,d=Math.round(base-avg);
 if(!d)return'<div class="wkd">level with avg</div>';
 return'<div class="wkd'+(d>0?' up':'')+' num">'+(d>0?'+':'−')+fmtN(Math.abs(d))+' vs avg</div>'}
 function tile(lbl,ser,gid){
-return'<div class="wkt"><div class="wkl">'+lbl+'</div><div class="wkv num">'+fmtN(ser[ser.length-1])+'</div>'+dl(ser)+sparkSvg(ser,gid)+'</div>'}
+return'<div class="wkt"><div class="wkm"><div class="wkl">'+lbl+'</div><div class="wkv num">'+fmtN(ser[ser.length-1])+'</div>'+dl(ser)+'</div>'+sparkSvg(ser,gid,220,76)+'</div>'}
 let h='<div class="card">';
 h+='<div class="wk4">'+tile('Fast meters',sFM,'wfm')+tile('Zone-2 min',sZ2,'wz2')+tile(u==='kg'?'Kg lifted':'Lb lifted',sTN,'wtn')+'</div>';
 h+='<div class="ckr" style="margin:8px 2px 0">Fast meters add every sprint rep · zone-2 is warm-up + bike + swim minutes · vs avg reads the last full week against the 4 before it</div>';
