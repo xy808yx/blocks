@@ -704,10 +704,10 @@ const templates=[
 {id:'t_pull',name:'A',kind:'lift',
  note:'Straight sets, full rest. Consistent reps across all 4 sets → add weight. Calf raises: this card is written for MONDAY. On Thursday log only 2 sets and drop the load yourself, so Friday sprints land fresh.',
  entries:[
- /* the band Pallof opens the session as trunk prep · with no cable it cannot load-ratchet, so counted
-    volume it was not (A/B review, Aug 2026) · the counted anti-rotation slot returns to the tail when
-    there is a cable to load · landmine rainbows are the eligible loaded alternative (see Parked & Cut) */
- en('cx_pallofpress',{warmups:2,sets:0,scheme:'2 × 8-10/side · warm-up',defReps:10,cue:'band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back · prep while band-only, a band cannot load-ratchet · counted volume again when there is a cable to load'}),
+ /* the band Pallof opens the session as trunk prep (A/B review, Aug 2026) · the why and the un-park
+    criterion live on the Parked & Cut card, which patchRef keeps current · the cue stays execution-only
+    because every cue doubles as the guard string a future migration must match byte-for-byte (cr34) */
+ en('cx_pallofpress',{warmups:2,sets:0,scheme:'2 × 8-10/side · warm-up',defReps:10,cue:'band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back · prep, not counted volume'}),
  en('p1',{sets:4,scheme:'4 × max',amrap:true,defReps:8,cue:'full range, controlled down, no kipping'}),
  en('p2',{sets:3,scheme:'3 × 10/side',defReps:10,cue:'full rest'}),
  en('p3',{sets:3,scheme:'3 × 12-15/side',defReps:12,defW:5,cue:'1-arm · opp knee + hand on bench · plate · thumb up, arm straight · 2s hold at top · hips & shoulders square · all 3 sets hit 15 with a clean 2s hold, twice running → 10 lb'}),
@@ -729,7 +729,7 @@ const templates=[
  en('cx_abwheelrollout',{sets:3,scheme:'3 × 8',defReps:8,cue:'kneeling · ribs down, no sag in the low back · roll only as far as you can still reverse · knees → longer reach → toes, in that order'}),
  en('s4',{sets:3,scheme:'3 × 8-10/leg',defReps:8,cue:'BW → hold plates'}),
  en('bk',{sets:3,scheme:'3 × 10-12/leg',defReps:12,cue:'knee ~90° · plate on the distal thigh · full ROM, controlled · runs Wed + Sat, so twice a week · if Saturday morning\'s calf read came back sore, EASE this set, do not skip it'}),
- en('cx_singlelegromaniandeadlift',{sets:2,scheme:'2 × 8-10/leg',defReps:8,cue:'hinge, ribs down · reach long, no rotation · light and clean before heavy · 2 crisp sets by design · a control lift, the third set bought wobble, not load'}),
+ en('cx_singlelegromaniandeadlift',{sets:2,scheme:'2 × 8-10/leg',defReps:8,cue:'hinge, ribs down · reach long, no rotation · light and clean before heavy · 2 crisp sets by design'}),
 ]},
 {id:'t_cardio',name:'C',kind:'cardio',
  note:'Friday opens with the 30-45 min dynamic warm-up at 125-155 bpm · that is the day\'s zone 2 · then sprints, run rep by rep from the sprint window. Tuesday is the fasted recovery day (easy aerobic + mobility). Running is sprints and speed endurance ONLY, nothing continuous · zone 2 is otherwise the bike or the pool. Quality before volume.',
@@ -955,7 +955,7 @@ Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then
 ];
 return{
 schemaVersion:1,
-contentRev:33,
+contentRev:34,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0,hangPausedAt:0}, /* hangPausedAt 0 · the resume clock falls back to meta.created on a fresh install (see hangResumeDue), so it is never measured against undefined */
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -1002,9 +1002,17 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=33)return;
+let cr=DB.contentRev||0;if(cr>=34)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
+/* cr21/cr23 installed some seed entries by NAME match (_ensure/_ens return a pre-existing library
+   row's id), so a template entry for a seed exercise does not always carry the seed id. Any step that
+   edits an entry by exId has to accept the aliased ids too · the same hazard cr24 and cr32 handle with
+   the iso flag. Misses here are silent AND permanent: contentRev still advances, so the step never
+   re-runs, while patchRef rewrites the cards to describe a change that never landed. */
+const aliasIds=sid=>{const ids=new Set([sid]),se=(seedDB().library||[]).find(e=>e.id===sid);
+if(se)(DB.library||[]).forEach(e=>{if(!e.archived&&normEx(e.name)===normEx(se.name))ids.add(e.id)});
+return ids};
 if(cr<1){
  patchRef('Phase Gates');
  (DB.programs||[]).forEach(p=>{const ft=(fp.templates||[]).find(x=>x.id==='t_cardio'),ot=(p.templates||[]).find(x=>x.id==='t_cardio');if(ft&&ot){ot.note=ft.note;ot.aerCue=ft.aerCue}});
@@ -1449,7 +1457,7 @@ if(cr<27){
   if(si>=0&&!tl.entries.some(x=>x.exId==='s3')){
    const moved=tp.entries.splice(si,1)[0];
    const pi=tl.entries.findIndex(x=>x.exId==='cx_pallofpress');
-   if(pi>=0)tl.entries.splice(pi,0,moved);else tl.entries.push(moved); /* ahead of the Pallof · the harder trunk move goes first */
+   if(pi>=0)tl.entries.splice(pi,0,moved);else tl.entries.push(moved); /* ahead of the Pallof · the harder trunk move goes first (this step's era · cr33 later moved the Pallof to the front of A as prep) */
   }
   /* indexes recomputed after the splice above */
   const s2i=tp.entries.findIndex(x=>x.exId==='s2'),ai=tp.entries.findIndex(x=>x.exId==='cx_abwheelrollout');
@@ -1586,27 +1594,57 @@ if(cr<32){
  cr=32;
 }
 if(cr<33){
- /* A/B review, Aug 2026 · two changes. (1) The band Pallof is reclassified honestly: with no cable it
-    cannot load-ratchet, so as counted volume it was counted in name only. It moves to the FRONT of A as
-    trunk prep (2 × 8-10/side · warm-up), the same standing face pulls and fast calf raises have. The
-    counted anti-rotation slot re-opens the day there is a cable · landmine rainbows stay the eligible
-    loaded alternative (Parked & Cut). (2) The single-leg RDL drops 3 → 2 sets · a control lift, not a
-    loading driver, and the third set was buying wobble, not load. Cue swaps are guarded on the old seed
-    text, so a hand-edited cue stays J's. */
- const _f33l=(fp.templates||[]).find(x=>x.id==='t_pull'),_f33p=_f33l&&_f33l.entries.find(e=>e.exId==='cx_pallofpress');
- const _f33b=(fp.templates||[]).find(x=>x.id==='t_push'),_f33r=_f33b&&_f33b.entries.find(e=>e.exId==='cx_singlelegromaniandeadlift');
+ /* A/B review, Aug 2026 · two changes. (1) The band Pallof becomes Day A's opening trunk prep
+    (2 × 8-10/side · warm-up). (2) The single-leg RDL drops 3 → 2 sets. The why lives on the two cards
+    this step patches. All-or-nothing, the cr21 rule: each swap fires only on the exact shipped cue AND
+    set count, so a hand-tuned entry stays J's entirely · cue, dose and slot. Entries are matched via
+    aliasIds across every template, so a name-aliased id or a duplicated program reshapes too instead of
+    silently keeping the old prescription under freshly patched cards. */
+ const _fl33=(fp.templates||[]).find(x=>x.id==='t_pull'),_f33p=_fl33&&(_fl33.entries||[]).find(e=>e.exId==='cx_pallofpress');
+ const _fb33=(fp.templates||[]).find(x=>x.id==='t_push'),_f33r=_fb33&&(_fb33.entries||[]).find(e=>e.exId==='cx_singlelegromaniandeadlift');
+ const _C_PAL32='band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back';
+ const _C_RDL32='hinge, ribs down · reach long, no rotation · light and clean before heavy';
+ const _PAL=aliasIds('cx_pallofpress'),_RDL=aliasIds('cx_singlelegromaniandeadlift');
  (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(t=>{
-  if(t.id==='t_pull'&&_f33p){const i=t.entries.findIndex(e=>e.exId==='cx_pallofpress');
-   if(i>=0){const e=t.entries.splice(i,1)[0];e.warmups=_f33p.warmups;e.sets=0;e.scheme=_f33p.scheme;
-    if(e.cue==='band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back')e.cue=_f33p.cue;
-    t.entries.unshift(e)}}
-  if(t.id==='t_push'&&_f33r){const e=t.entries.find(x=>x.exId==='cx_singlelegromaniandeadlift');
-   if(e){e.sets=2;e.scheme=_f33r.scheme;
-    if(e.cue==='hinge, ribs down · reach long, no rotation · light and clean before heavy')e.cue=_f33r.cue}}
+  if(!Array.isArray(t.entries))return;
+  const pi=t.entries.findIndex(e=>_PAL.has(e.exId));
+  if(pi>=0&&_f33p){const e=t.entries[pi];
+   if(e.cue===_C_PAL32&&e.sets===3){e.warmups=_f33p.warmups;e.sets=_f33p.sets;e.scheme=_f33p.scheme;e.cue=_f33p.cue}
+   /* cr23 appends a freshly seeded Pallof at the TAIL, already in the new shape, so the move to the
+      front rides on the entry being stock (its cue and sets match the current seed), not on the dose
+      swap above having fired · a hand-tuned entry keeps its slot along with everything else */
+   if(pi>0&&e.cue===_f33p.cue&&e.sets===_f33p.sets){t.entries.splice(pi,1);t.entries.unshift(e)}}
+  const er=_f33r&&t.entries.find(e=>_RDL.has(e.exId));
+  if(er&&er.cue===_C_RDL32&&er.sets===3){er.sets=_f33r.sets;er.scheme=_f33r.scheme;er.cue=_f33r.cue}
  }));
  patchRef('Phase Gates');  /* the SL RDL bullet drops to 2 sets */
  patchRef('Parked & Cut'); /* the rainbows line records the Pallof reclassification */
  cr=33;
+}
+if(cr<34){
+ /* cr33 review pass · no prescription change. (1) The two cr33 cues shed their rationale tails: a cue
+    doubles as the guard string every later migration must reproduce byte-for-byte, so it stays
+    execution-only and the why lives on the cards. Guarded on the exact cr33 text · an install that ran
+    the hardened cr33 above already holds the short cue and no-ops here. (2) Amend repair: the shipped
+    v65 logSet stamped warmup:true on any row filled into a pre-cr33 Day A (it read the reshaped entry,
+    not the session's own rows), silently dropping that set from Trends, PRs and weekly volume. A warm-up
+    flag on a Pallof row in a session dated before the cr33 release (Aug 12 2026) can only be that bug ·
+    the reshape did not exist yet · so the flag comes off and the set counts again. The render side of
+    the same bug (pre-cr33 sessions numbering -1/0/1) is fixed in code by sessWu, not in data. */
+ const _C_PAL33='band anchored at chest height · anti-rotation · stand tall, press straight out, do not let the band turn you · slow out, slow back · prep while band-only, a band cannot load-ratchet · counted volume again when there is a cable to load';
+ const _C_RDL33='hinge, ribs down · reach long, no rotation · light and clean before heavy · 2 crisp sets by design · a control lift, the third set bought wobble, not load';
+ const _fl34=(fp.templates||[]).find(x=>x.id==='t_pull'),_f34p=_fl34&&(_fl34.entries||[]).find(e=>e.exId==='cx_pallofpress');
+ const _fb34=(fp.templates||[]).find(x=>x.id==='t_push'),_f34r=_fb34&&(_fb34.entries||[]).find(e=>e.exId==='cx_singlelegromaniandeadlift');
+ const _PAL=aliasIds('cx_pallofpress'),_RDL=aliasIds('cx_singlelegromaniandeadlift');
+ (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(t=>{
+  if(!Array.isArray(t.entries))return;
+  t.entries.forEach(e=>{
+   if(_f34p&&_PAL.has(e.exId)&&e.cue===_C_PAL33)e.cue=_f34p.cue;
+   if(_f34r&&_RDL.has(e.exId)&&e.cue===_C_RDL33)e.cue=_f34r.cue});
+ }));
+ (DB.sessions||[]).forEach(s=>{if(s.date<'2026-08-12')(s.sets||[]).forEach(st=>{
+  if(st.warmup&&_PAL.has(st.exId))delete st.warmup})});
+ cr=34;
 }
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('Couldn’t save · storage may be full. Export a backup from Settings.')}}
@@ -1641,6 +1679,20 @@ function cardioIsSprint(dk,cs){return cs&&cs.sprints?true:cs&&cs.aerobic?false:e
 function activeSession(){return DB.sessions.find(s=>!s.finishedAt)||null}
 function sessById(sid){return DB.sessions.find(s=>s.id===sid)||null}
 function workingSets(sess,exId){return sess.sets.filter(s=>s.exId===exId)}
+/* The warm-up count a SESSION actually answers to, as opposed to the one the live entry prescribes.
+   Sets store their own warmup flag at log time, and sessions render against the LIVE template, so when
+   an entry is reclassified after history was logged (the Pallof at cr33, face pulls and fast calf
+   raises at cr26) the stored rows and the entry disagree. A working set sitting on a row the entry now
+   calls a warm-up marks the session as pre-reshape and its own rows win · otherwise the entry speaks,
+   floored on the warm-ups already logged. Everything that numbers, labels or logs a row reads this, so
+   a reclassification can never renumber history, mislabel the remove-set confirm, or stamp a set logged
+   into an old session as a warm-up. */
+function sessWu(sess,entry){
+const logged=workingSets(sess,entry.exId);
+if(!logged.length)return entry.warmups;
+const wu=logged.filter(st=>st.warmup).length;
+if(logged.some(st=>!st.warmup&&st.n<=entry.warmups))return wu;
+return Math.max(entry.warmups,wu)}
 /* Row-count delta against the prescribed set count, per exercise, per session. Lives on the session
    (not a module global) so a mid-workout reload can't quietly restore a row you removed · losing that
    was the whole reason "− Remove set" felt broken. Negative is legal; rowTotal floors on the highest
@@ -1651,7 +1703,7 @@ function setXtra(sess,exId,v){if(!sess)return;if(!sess.extra)sess.extra={};
 if(v)sess.extra[exId]=v;else delete sess.extra[exId]}
 function rowTotal(sess,entry){
 const logged=workingSets(sess,entry.exId),maxN=logged.length?Math.max.apply(null,logged.map(x=>x.n)):0;
-return Math.max(entry.warmups+prescSets(entry,sess.date)+xtra(sess,entry.exId),maxN)}
+return Math.max(sessWu(sess,entry)+prescSets(entry,sess.date)+xtra(sess,entry.exId),maxN)}
 function rD(){return DB.settings.restDefault||90}
 function restFor(entry,ex){return(entry&&entry.rest)||ex.rest||rD()}
 function toLb(w){if(!w||!w.v)return 0;return w.u==='lb'?w.v:w.v/KG}
@@ -1689,7 +1741,8 @@ for(const s of DB.sessions){if(s.id===excludeSid||!s.finishedAt)continue;
  if(s.sets.some(x=>x.exId===exId)){if(!best||s.startedAt>best.startedAt)best=s}}
 return best}
 function prefill(entry,ex,rowIdx,sess){
-const isWu=rowIdx<entry.warmups;
+const wu=sess?sessWu(sess,entry):entry.warmups;
+const isWu=rowIdx<wu;
 /* The band this row is held to. A warm-up row, an AMRAP row and a synthesised entry each declare no
    meaningful rep range, so they stay unclamped in BOTH directions — an AMRAP that clamped would be
    the one row where beating the number is the whole point. */
@@ -1697,8 +1750,8 @@ const band=(sess&&!isWu&&!entry.amrap&&!entry.synth)?repBand(entry):null;
 const prior=lastSessionWith(ex.id,sess?sess.id:null);
 if(prior){const rows=workingSets(prior,ex.id).sort((a,b)=>a.n-b.n);
  const pool=rows.filter(r=>!!r.warmup===isWu);
- const idx=isWu?rowIdx:rowIdx-entry.warmups;
- const src=pool[idx]||pool[pool.length-1];
+ const idx=isWu?rowIdx:rowIdx-wu;
+ const src=pool[idx]||pool[pool.length-1]||rows[idx]||rows[rows.length-1]; /* an entry reclassified after its history was logged has no rows of this kind yet · carry the other kind rather than opening at the defaults under a ghost line showing real loads */
  /* Carried reps are held to the band's TOP as well as its bottom. Without the ceiling a single 11
     logged against a "3 × 10" — a good day, a stray + tap, an imported row — prefilled that set
     position at 11 forever, above the template's own ceiling, while the scheme line above it still
@@ -1871,8 +1924,8 @@ toast(n+' workouts added to history')}
 function liftCounts(dk,t){
 const s=sessionsFor(dk).find(x=>x.kind!=='cardio'&&x.templateId===t.id);
 let d=0,tot=0;
-if(s)entriesOf(s).filter(e=>e.enabled).forEach(e=>{const log=workingSets(s,e.exId).length,rows=Math.max(e.warmups+prescSets(e,dk),log);tot+=rows;d+=Math.min(rows,log)});
-else t.entries.filter(e=>e.enabled).forEach(e=>{tot+=e.warmups+prescSets(e,dk)}); /* the ring counts the guard-eased prescription, same as the session view · template counts when the engine is off */
+if(s)entriesOf(s).filter(e=>e.enabled).forEach(e=>{const log=workingSets(s,e.exId).length,rows=rowTotal(s,e);tot+=rows;d+=Math.min(rows,log)});
+else t.entries.filter(e=>e.enabled).forEach(e=>{tot+=e.warmups+prescSets(e,dk)}); /* with a session, the ring counts rowTotal · the exact rows the session view draws (guard-eased prescription, the footer's +/− row delta, the stored warm-up shape) · without one, the template's prescription */
 return{d,tot}}
 
 /* ═══════════ PR ENGINE ═══════════ */
@@ -1961,9 +2014,16 @@ const p=per[x.exId]=per[x.exId]||{w:0,r:0,mx:0};
 if(w>p.w||(w===p.w&&x.reps>p.r)){p.w=w;p.r=x.reps}
 if(x.reps>p.mx)p.mx=x.reps});
 Object.keys(per).forEach(xid=>{const e=m[xid]=m[xid]||{n:0};e.n++;e.lastDate=s.date;e.top=per[xid]})});
+/* An exercise whose every live entry is now warm-up-only (the Pallof at cr33, face pulls and fast calf
+   raises at cr26) stops producing counted rows, so its trend freezes at the reclassification date. The
+   chip says why, so the row reads as reclassified rather than abandoned · the history stays reachable. */
+const wuOnly={};
+(prog().templates||[]).forEach(t=>(t.entries||[]).forEach(e=>{
+const w=e.enabled!==false&&e.warmups>0&&!(e.sets>0);
+wuOnly[e.exId]=(e.exId in wuOnly)?(wuOnly[e.exId]&&w):w}));
 return Object.keys(m).map(xid=>{const e=m[xid],ex=exOf(xid);
 const lastTxt=e.top.w>0?rndDisp(toU(e.top.w,'lb',unit()),unit())+' '+unit()+' × '+e.top.r:e.top.mx+' reps';
-return{ex,n:e.n,lastDate:e.lastDate,lastTxt}}).sort((a,b)=>a.lastDate<b.lastDate?1:-1)}
+return{ex,n:e.n,lastDate:e.lastDate,lastTxt,wuNow:!!wuOnly[xid]}}).sort((a,b)=>a.lastDate<b.lastDate?1:-1)}
 </script>
 <script>
 /* ═══════════ ICONS ═══════════ */
@@ -2440,7 +2500,7 @@ function updSlab(key){const el=document.getElementById('sv-'+key);if(!el)return;
 function pendRow(ex,entry,i,sess,live){
 const key=ex.id+'_'+i;
 seedPV(key,ex,entry,i,sess);
-const isWu=i<entry.warmups,wIdx=i-entry.warmups+1,wstep=unit()==='kg'?2.5:5;
+const wu=sessWu(sess,entry),isWu=i<wu,wIdx=i-wu+1,wstep=unit()==='kg'?2.5:5;
 const row='<div class="sr'+(isWu?' wu':'')+(live?' live':'')+'"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
 +stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false)
 +(live?'<span></span>':'<button class="lg" id="lg-'+ex.id+'-'+i+'" onclick="logSet(\''+ex.id+'\','+i+')" aria-label="Log set">'+CHECK+'</button>')+'</div>'; /* stable id · lets rn() hand focus to the next pending set instead of dropping it */
@@ -2448,14 +2508,14 @@ if(!live)return row;
 /* the live set's data line is followed by the full-bleed slab, and the slab IS the commit target ·
    it carries the same log check the row buttons use (outside the sv- span, so updSlab can't wipe it) */
 return row+'<button class="slab num" id="lg-'+ex.id+'-'+i+'" onclick="slabLog(\''+ex.id+'\','+i+')" aria-label="Log set"><span id="sv-'+key+'" data-bw="'+(ex.bw?'1':'0')+'">'+slabTxt(key,ex.bw)+'</span>'+CHECK+'</button>'}
-function doneRow(ex,entry,st){
-const wIdx=(st.n-1)-entry.warmups+1;
+function doneRow(ex,entry,st,wu){
+const wIdx=Math.max(1,st.n-wu); /* floored · a row a past bug mis-stamped must degrade to a repeated number, never 0 or a negative */
 return'<div class="sr done'+(st.warmup?' wu':'')+(S.flash===ex.id+'_'+st.n?' new':'')+'" onclick="editLogged(\''+ex.id+'\','+st.n+')"><div class="srn num">'+(st.warmup?'W':wIdx)+'</div>'
 +'<div class="dtx num">'+setTxt(st,ex.bw)+'</div><div class="dck">'+CHECK+'</div></div>'}
-function editRow(ex,entry,st){
+function editRow(ex,entry,st,wu){
 const key='e_'+ex.id+'_'+st.n;
 if(!PV[key])PV[key]={w:wInUnit(st.w),r:st.reps};
-const isWu=!!st.warmup,wIdx=(st.n-1)-entry.warmups+1,wstep=unit()==='kg'?2.5:5;
+const isWu=!!st.warmup,wIdx=Math.max(1,st.n-wu),wstep=unit()==='kg'?2.5:5;
 return'<div class="sr edit'+(isWu?' wu':'')+'"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
 +stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false)
 +'<button class="lg go" onclick="updateSet(\''+ex.id+'\','+st.n+')" aria-label="Save set">'+CHECK+'</button></div>'
@@ -2482,13 +2542,13 @@ let body='<div class="cols"><span>Set</span><span>Load</span><span>Reps</span><s
 entries.forEach((entry,ei)=>{
 const ex=exOf(entry.exId),logged=workingSets(sess,entry.exId).sort((a,b)=>a.n-b.n);
 const maxN=logged.length?logged[logged.length-1].n:0;
-const total=rowTotal(sess,entry);
+const total=rowTotal(sess,entry),wu=sessWu(sess,entry);
 const fin=logged.length>=total&&total>0;
 let rows='';
 const byN={};logged.forEach(x=>{byN[x.n]=x});
 for(let i=0;i<total;i++){const st=byN[i+1];
- if(st&&S.editKey===entry.exId+'_'+st.n)rows+=editRow(ex,entry,st);
- else if(st)rows+=doneRow(ex,entry,st);
+ if(st&&S.editKey===entry.exId+'_'+st.n)rows+=editRow(ex,entry,st,wu);
+ else if(st)rows+=doneRow(ex,entry,st,wu);
  else rows+=pendRow(ex,entry,i,sess,liveKey===entry.exId+'_'+i)}
 body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+esc(ex.name)
 +(ex.video?' <a class="vl" href="'+ex.video+'" target="_blank" aria-label="Watch video">▶</a>':'')+'</div>'
@@ -2514,7 +2574,8 @@ seedPV(key,ex,entry,i,sess);
 const pv=PV[key];
 const ts=S.backfill?sess.startedAt+sess.sets.length*45000:Date.now();
 if(!pv.r||pv.r<1){toast('Reps can\'t be 0');return}
-sess.sets.push({exId,n:i+1,w:{v:+pv.w||0,u:unit()},reps:Math.round(pv.r),warmup:i<entry.warmups||undefined,amrap:entry.amrap||undefined,ts});
+const wu=sessWu(sess,entry); /* the session's own shape, not the live entry's · a set added to a pre-reshape session logs as what that session was doing */
+sess.sets.push({exId,n:i+1,w:{v:+pv.w||0,u:unit()},reps:Math.round(pv.r),warmup:i<wu||undefined,amrap:entry.amrap||undefined,ts});
 delete PV[key];sv();vibe(12);S.flash=exId+'_'+(i+1);
 if(!S.amend){let rem=0;
 entriesOf(sess).filter(e=>e.enabled).forEach(e=>{const tot=rowTotal(sess,e);
@@ -2560,13 +2621,13 @@ function moveEx(exId,dir){const s=sessById(S.sid);if(!s)return;const order=entri
    "Remove" (the exercise), so the footer can never delete recorded work on a single tap. The floor is
    one row, NOT one working set: a warm-up-only entry (Face Pulls is 2 warm-ups and 0 working sets)
    would otherwise be able to add a row and never take it back, which is the asymmetry all over again. */
-function rowLabel(entry,n){return n<=entry.warmups?'warm-up set':'set '+(n-entry.warmups)}
+function rowLabel(entry,n,wu){return n<=wu?'warm-up set':'set '+(n-wu)}
 function rmRow(exId){const sess=sessById(S.sid);if(!sess)return;
 const entry=entryFor(sess,exId);if(!entry)return;
 const cur=rowTotal(sess,entry);
 if(cur<=1){toast('Use Remove to drop the exercise');return}
 if(workingSets(sess,exId).some(x=>x.n===cur)){
- ovConfirm('Remove '+rowLabel(entry,cur)+'?','This set is logged. Removing it deletes what you recorded.',
+ ovConfirm('Remove '+rowLabel(entry,cur,sessWu(sess,entry))+'?','This set is logged. Removing it deletes what you recorded.',
  [{label:'Remove set',click:'rmRowGo(\''+exId+'\')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}]);return}
 rmRowGo(exId)}
 function rmRowGo(exId){const sess=sessById(S.sid);if(!sess)return;
@@ -2576,7 +2637,7 @@ const before=JSON.parse(JSON.stringify(sess.sets)),bx=xtra(sess,exId);
 const hit=sess.sets.find(x=>x.exId===exId&&x.n===cur);
 if(hit){sess.sets=sess.sets.filter(x=>!(x.exId===exId&&x.n===cur));delete PV['e_'+exId+'_'+cur]}
 delete PV[exId+'_'+(cur-1)]; /* pending-row PV key is the 0-based row index, so the row we just dropped */
-setXtra(sess,exId,(cur-1)-(entry.warmups+prescSets(entry,sess.date)));
+setXtra(sess,exId,(cur-1)-(sessWu(sess,entry)+prescSets(entry,sess.date))); /* inverts rowTotal's base exactly, so the footer leaves one fewer row · no more, no less */
 S.editKey=null;sv();closeOv();rn();
 if(hit)toastUndo('Set removed',()=>{sess.sets=before;setXtra(sess,exId,bx);sv()})}
 function rmExAsk(exId){const s=sessById(S.sid);if(!s)return;
@@ -3585,7 +3646,7 @@ h+='<div class="sl prsl" onclick="toggleST()"><span class="lt">Strength Trends</
 if(stMin)h+='<div class="prmin" onclick="toggleST()">'+(exs.length?exs.length+' exercise'+(exs.length>1?'s':'')+' charted · tap to show':'no charts yet')+'</div>';
 else if(!exs.length)h+='<div class="card"><div class="ckr">Charts unlock with your first finished session.</div></div>';
 else exs.forEach(x=>{
-h+='<div class="hrow" onclick="openTrend(\''+x.ex.id+'\')"><div class="hico lift">'+esc(initials(x.ex.name))+'</div><div class="hm"><div class="ht">'+esc(x.ex.name)+'</div><div class="hs num">'+x.n+' session'+(x.n>1?'s':'')+' · last '+esc(x.lastTxt)+'</div></div><div class="hd2 num">'+fmtDk(x.lastDate)+(x.lastDate.slice(0,4)!==tk().slice(0,4)?' ’'+x.lastDate.slice(2,4):'')+'</div></div>'});
+h+='<div class="hrow" onclick="openTrend(\''+x.ex.id+'\')"><div class="hico lift">'+esc(initials(x.ex.name))+'</div><div class="hm"><div class="ht">'+esc(x.ex.name)+(x.wuNow?' <span class="chip off">warm-up</span>':'')+'</div><div class="hs num">'+x.n+' session'+(x.n>1?'s':'')+' · last '+esc(x.lastTxt)+'</div></div><div class="hd2 num">'+fmtDk(x.lastDate)+(x.lastDate.slice(0,4)!==tk().slice(0,4)?' ’'+x.lastDate.slice(2,4):'')+'</div></div>'});
 h+='<div class="fl">Blocks · Stage 3</div>';
 return h}
 function initials(n){const p=String(n).replace(/\(.*?\)/g,'').trim().split(/\s+/);return((p[0]||'?')[0]+(p[1]?p[1][0]:(p[0]||'  ')[1]||'')).toUpperCase()}
@@ -3766,9 +3827,12 @@ if('serviceWorker'in navigator){
 window.addEventListener('load',()=>{
 navigator.serviceWorker.register('./sw.js').then(reg=>{
  UPD=reg;
- if(reg.waiting&&navigator.serviceWorker.controller)showUpd(); /* a worker that finished installing while the PWA slept would otherwise wait silently forever */
+ /* tabs only, the same rule the visibilitychange path applies: an update toast over a live session
+    invites a reload that migrates the store UNDER the open session. A suppressed toast is not lost ·
+    UPD.waiting persists and visibilitychange re-surfaces it on the next return to the tabs. */
+ if(reg.waiting&&navigator.serviceWorker.controller&&S.view==='tabs')showUpd(); /* a worker that finished installing while the PWA slept would otherwise wait silently forever */
  reg.addEventListener('updatefound',()=>{const nw=reg.installing;
-  if(nw)nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller)showUpd()})})
+  if(nw)nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller&&S.view==='tabs')showUpd()})})
 }).catch(()=>{});
 let refreshed=false;
 navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshed){refreshed=true;location.reload()}})})}
