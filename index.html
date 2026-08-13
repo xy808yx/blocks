@@ -2018,16 +2018,15 @@ ms.forEach(function(mu){if(!MUSCLE_MAP[String(mu).toLowerCase().trim()])cnt[mu]=
 return cnt}
 /* Week-by-week aggregates for the This-week tiles · last n calendar weeks ending with the current one.
    Weeks with nothing logged stay in the series as zeros · a skipped week is real data, not a gap to hide.
-   hs = raw non-warm-up set count on lift days (rest periods and wall clock never enter it) · fm = every
-   sprint rep's meters · z2 = warm-up + bike + swim minutes · ton = display-only tonnage, the known caveats
+   fm = every sprint rep's meters · z2 = warm-up + bike + swim minutes · ton = display-only tonnage, the known caveats
    (blind to bodyweight work, conflates heavy-low-rep with light-high-rep) are accepted, it never ranks or
    PRs anything. Buckets key on s.date because backfills append out of order. */
 function weeklyAgg(n){
 const cur=weekMon(tk()),ix={},rows=[];
-for(let i=n-1;i>=0;i--){const k=shiftDk(cur,-7*i);ix[k]=rows.length;rows.push({wk:k,hs:0,fm:0,z2:0,ton:0})}
+for(let i=n-1;i>=0;i--){const k=shiftDk(cur,-7*i);ix[k]=rows.length;rows.push({wk:k,fm:0,z2:0,ton:0})}
 DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){
 const i=ix[weekMon(s.date)];if(i==null)return;const r=rows[i];
-if(s.kind==='lift')(s.sets||[]).forEach(function(st){if(st.warmup)return;r.hs++;r.ton+=toLb(st.w)*(st.reps||0)});
+if(s.kind==='lift')(s.sets||[]).forEach(function(st){if(st.warmup)return;r.ton+=toLb(st.w)*(st.reps||0)});
 if(s.sprints&&s.sprints.legs)r.fm+=s.sprints.legs.reduce(function(a,b){return a+(+b||0)},0);
 if(s.warmup)r.z2+=(+s.warmup.durMin||0);
 if(s.aerobic)r.z2+=(+s.aerobic.durMin||0)});
@@ -3696,7 +3695,7 @@ function weekCard(swk){
 if(!swk&&!DB.sessions.some(function(s){return s.finishedAt}))
 return'<div class="card"><div class="empty" style="padding:22px 12px">'+EB+'<div class="empty-t">No training logged yet</div>Finish a session · your week in numbers builds here.</div></div>';
 const A=weeklyAgg(12),u=unit();
-const sHS=A.map(function(r){return r.hs}),sFM=A.map(function(r){return r.fm}),sZ2=A.map(function(r){return Math.round(r.z2)}),sTN=A.map(function(r){return Math.round(toU(r.ton,'lb',u))});
+const sFM=A.map(function(r){return r.fm}),sZ2=A.map(function(r){return Math.round(r.z2)}),sTN=A.map(function(r){return Math.round(toU(r.ton,'lb',u))});
 const fmtN=function(n){return n.toLocaleString('en-US')};
 function dl(ser){
 const base=ser[ser.length-2],P=ser.slice(-6,-2);
@@ -3707,11 +3706,8 @@ return'<div class="wkd'+(d>0?' up':'')+' num">'+(d>0?'+':'−')+fmtN(Math.abs(d)
 function tile(lbl,ser,gid){
 return'<div class="wkt"><div class="wkl">'+lbl+'</div><div class="wkv num">'+fmtN(ser[ser.length-1])+'</div>'+dl(ser)+sparkSvg(ser,gid)+'</div>'}
 let h='<div class="card">';
-h+='<div class="wk4">'+tile('Hard sets',sHS,'whs')+tile('Fast meters',sFM,'wfm')+tile('Zone-2 min',sZ2,'wz2')+tile(u==='kg'?'Kg lifted':'Lb lifted',sTN,'wtn')+'</div>';
-h+='<div class="ckr" style="margin:8px 2px 0">Hard sets count once each, rest periods never enter it · fast meters add every sprint rep · zone-2 is warm-up + bike + swim minutes · vs avg reads the last full week against the 4 before it</div>';
-const _hs=weekSets(),_hk=Object.keys(_hs).sort(function(a,b){return _hs[b]-_hs[a]});
-if(_hk.length){var _sb=[10,20];h+='<div class="exs" style="padding:12px 2px 4px">Hard sets this week · aim ~10-20 per muscle</div>';
-h+=_hk.slice(0,8).map(function(mu){var n=_hs[mu],band=n>=_sb[0]&&n<=_sb[1]?'in':(n<_sb[0]?'lo':'hi'),pct=Math.min(100,Math.round(n/_sb[1]*100));return'<div class="hsrow"><div class="hsn">'+esc(mu)+'</div><div class="hsbar"><i class="hsfill '+band+'" style="width:'+pct+'%"></i></div><div class="hsc num">'+n+'</div></div>'}).join('');}
+h+='<div class="wk4">'+tile('Fast meters',sFM,'wfm')+tile('Zone-2 min',sZ2,'wz2')+tile(u==='kg'?'Kg lifted':'Lb lifted',sTN,'wtn')+'</div>';
+h+='<div class="ckr" style="margin:8px 2px 0">Fast meters add every sprint rep · zone-2 is warm-up + bike + swim minutes · vs avg reads the last full week against the 4 before it</div>';
 return h+'</div>'}
 /* Most-trained lifts as tap-through tiles above the Strength Trends list · session count picks them,
    warm-up-only reclassifications are skipped, and under two qualifiers the row stays hidden. */
