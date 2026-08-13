@@ -478,6 +478,21 @@ body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(150px + env(safe-a
 .chartw svg{display:block;width:100%;height:auto}
 .dpill.pr{border-color:var(--ember-line);color:var(--ember-hot)}
 .chip.sg{color:var(--sage)}
+/* week-in-numbers tiles · year strip · most-trained tiles */
+.wk4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 2px}
+.mt3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:2px 0 14px}
+.wkt{border:1px solid var(--border);padding:11px 12px 9px;display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left}
+.wkt.tap{cursor:pointer;transition:background .2s}
+.wkt.tap:active{background:var(--surface2)}
+.wkl{font-size:16px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wkv{font-size:28px;line-height:1.15;font-weight:700;font-variant-numeric:tabular-nums}
+.wkv span{font-size:16px;font-weight:500;color:var(--muted);margin-left:4px}
+.wkd{font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wkd.up{color:var(--sage)}
+.wkt svg{display:block;width:100%;height:36px;margin-top:auto;padding-top:6px}
+.yrs{display:block;width:100%;height:auto;margin:4px 0 6px}
+.yrx{display:flex;justify-content:space-between;font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums}
+.yr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
 
 .fl{text-align:center;margin-top:34px;font-size:16px;font-weight:500;letter-spacing:.12em;text-indent:.12em;text-transform:uppercase;color:var(--border)}
 
@@ -2001,10 +2016,53 @@ gs.forEach(function(g){var k=GROUP_NAME[g];cnt[k]=(cnt[k]||0)+1});
 if(!gs.length&&!ms.length){cnt['(untagged)']=(cnt['(untagged)']||0)+1;return}
 ms.forEach(function(mu){if(!MUSCLE_MAP[String(mu).toLowerCase().trim()])cnt[mu]=(cnt[mu]||0)+1})})});
 return cnt}
-function sprintSeries(){const out=[];
-DB.sessions.filter(function(s){return s.finishedAt&&s.sprints}).sort(function(a,b){return a.startedAt-b.startedAt}).forEach(function(s){
-out.push({date:s.date,t:s.startedAt,mxR:s.sprints.effortPct||0,topW:0,topWr:0,e1:0,_sp:s.sprints})});
-return out}
+/* Week-by-week aggregates for the This-week tiles · last n calendar weeks ending with the current one.
+   Weeks with nothing logged stay in the series as zeros · a skipped week is real data, not a gap to hide.
+   hs = raw non-warm-up set count on lift days (rest periods and wall clock never enter it) · fm = every
+   sprint rep's meters · z2 = warm-up + bike + swim minutes · ton = display-only tonnage, the known caveats
+   (blind to bodyweight work, conflates heavy-low-rep with light-high-rep) are accepted, it never ranks or
+   PRs anything. Buckets key on s.date because backfills append out of order. */
+function weeklyAgg(n){
+const cur=weekMon(tk()),ix={},rows=[];
+for(let i=n-1;i>=0;i--){const k=shiftDk(cur,-7*i);ix[k]=rows.length;rows.push({wk:k,hs:0,fm:0,z2:0,ton:0})}
+DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){
+const i=ix[weekMon(s.date)];if(i==null)return;const r=rows[i];
+if(s.kind==='lift')(s.sets||[]).forEach(function(st){if(st.warmup)return;r.hs++;r.ton+=toLb(st.w)*(st.reps||0)});
+if(s.sprints&&s.sprints.legs)r.fm+=s.sprints.legs.reduce(function(a,b){return a+(+b||0)},0);
+if(s.warmup)r.z2+=(+s.warmup.durMin||0);
+if(s.aerobic)r.z2+=(+s.aerobic.durMin||0)});
+return rows}
+/* Counters under the year strip. Streak = most consecutive calendar weeks with 3+ distinct trained days ·
+   weeks with zero sessions never appear in the keys, so consecutiveness is checked by date math, not adjacency. */
+function yearStats(){
+const days={};DB.sessions.forEach(function(s){if(s.finishedAt)days[s.date]=1});
+const yr=tk().slice(0,4);let thisYear=0;
+const wk={};Object.keys(days).forEach(function(k){if(k.slice(0,4)===yr)thisYear++;const w=weekMon(k);wk[w]=(wk[w]||0)+1});
+let best=0,run=0,prev=null;
+Object.keys(wk).sort().forEach(function(w){
+if(wk[w]>=3){run=(prev&&shiftDk(prev,7)===w)?run+1:1;if(run>best)best=run;prev=w}
+else{run=0;prev=null}});
+return{thisYear:thisYear,best:best,total:DB.sessions.filter(function(s){return s.finishedAt}).length}}
+/* Small area sparkline · same clamped-curve construction as trendChart, stripped of axes. gid keeps the
+   gradient ids unique per tile or the first def on the page silently owns them all. */
+function sparkSvg(vals,gid){
+if(vals.length<2)return'';
+const W=100,H=34,P=4;
+let mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);if(mn===mx){mn-=1;mx+=1}
+const X=function(i){return P+i/(vals.length-1)*(W-2*P)};
+const Y=function(v){return P+(1-(v-mn)/(mx-mn))*(H-2*P-3)};
+let d;
+if(vals.length<3)d=vals.map(function(v,i){return(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)}).join(' ');
+else{d='M'+X(0).toFixed(1)+' '+Y(vals[0]).toFixed(1);
+for(let i=0;i<vals.length-1;i++){const p0=vals[Math.max(0,i-1)],p1=vals[i],p2=vals[i+1],p3=vals[Math.min(vals.length-1,i+2)];
+const lo=Math.min(Y(p1),Y(p2)),hi=Math.max(Y(p1),Y(p2));
+const c1y=Math.max(lo,Math.min(hi,Y(p1)+(Y(p2)-Y(p0))/6)),c2y=Math.max(lo,Math.min(hi,Y(p2)-(Y(p3)-Y(p1))/6));
+d+='C'+(X(i)+(X(i+1)-X(Math.max(0,i-1)))/6).toFixed(1)+' '+c1y.toFixed(1)+' '+(X(i+1)-(X(Math.min(vals.length-1,i+2))-X(i))/6).toFixed(1)+' '+c2y.toFixed(1)+' '+X(i+1).toFixed(1)+' '+Y(p2).toFixed(1)}}
+return'<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
++'<defs><linearGradient id="sg-'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6f2e" stop-opacity=".26"/><stop offset="1" stop-color="#ff6f2e" stop-opacity="0"/></linearGradient></defs>'
++'<path d="'+d+' L'+X(vals.length-1).toFixed(1)+' '+H+' L'+X(0).toFixed(1)+' '+H+' Z" fill="url(#sg-'+gid+')"/>'
++'<path d="'+d+'" fill="none" stroke="#ff6f2e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
++'<circle cx="'+X(vals.length-1).toFixed(1)+'" cy="'+Y(vals[vals.length-1]).toFixed(1)+'" r="2.6" fill="#0A0A0A" stroke="#ffa14d" stroke-width="1.6"/></svg>'}
 function trendExs(){
 const m={};
 DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
@@ -3609,33 +3667,73 @@ h+='<button class="'+cls+'" onclick="dayHabitSheet(\''+dk+'\')" aria-label="'+MN
 h+='</div>';
 h+='<div class="leg2"><span><i class="lg-tr"></i>trained</span><span><i class="cm-bed"></i>bed by '+fmtTimeShort(bedTime())+'</span><span><i class="cm-fast"></i>fasted</span></div>';
 return h+'</div>'}
+/* The year strip · every day of the last 52 weeks, sage when trained (brighter for a 2+ session day),
+   Sundays go quiet on their own because they are untracked by default, not by special-casing. */
+function yearCard(){
+if(!DB.sessions.some(function(s){return s.finishedAt}))return'';
+const st=yearStats(),cur=weekMon(tk()),tdk=tk();
+const trained={};DB.sessions.forEach(function(s){if(s.finishedAt)trained[s.date]=(trained[s.date]||0)+1});
+const C=4,G=2,WK=52,W=WK*(C+G)-G,H=7*(C+G)-G;
+let cells='';
+for(let w=0;w<WK;w++){const ws=shiftDk(cur,-7*(WK-1-w));
+for(let d=0;d<7;d++){const dk=shiftDk(ws,d);if(dk>tdk)continue;
+const n=trained[dk]||0;
+cells+='<rect x="'+(w*(C+G))+'" y="'+(d*(C+G))+'" width="'+C+'" height="'+C+'" fill="'+(n?'#79E3A0':'#2B2B2E')+'"'+(n===1?' opacity=".6"':'')+'/>'}}
+const start=shiftDk(cur,-7*(WK-1));
+let h='<div class="card">';
+h+='<svg class="yrs" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'+cells+'</svg>';
+h+='<div class="yrx num"><span>'+fmtDk(start)+' ’'+start.slice(2,4)+'</span><span>'+fmtDk(tdk)+'</span></div>';
+h+='<div class="yr3">';
+h+='<div class="wkt"><div class="wkl">This year</div><div class="wkv num">'+st.thisYear+'<span>day'+(st.thisYear!==1?'s':'')+'</span></div></div>';
+h+='<div class="wkt"><div class="wkl">Streak</div><div class="wkv num">'+st.best+'<span>wk</span></div></div>';
+h+='<div class="wkt"><div class="wkl">Sessions</div><div class="wkv num">'+st.total+'</div></div>';
+h+='</div>';
+h+='<div class="ckr" style="margin-top:8px">Streak · most weeks in a row with 3+ trained days</div>';
+return h+'</div>'}
+/* This-week tiles. The delta line compares the LAST COMPLETE week to the 4 before it · comparing a
+   half-finished week against whole ones would read as a slump every Monday through Thursday. */
+function weekCard(swk){
+if(!swk&&!DB.sessions.some(function(s){return s.finishedAt}))
+return'<div class="card"><div class="empty" style="padding:22px 12px">'+EB+'<div class="empty-t">No training logged yet</div>Finish a session · your week in numbers builds here.</div></div>';
+const A=weeklyAgg(12),u=unit();
+const sHS=A.map(function(r){return r.hs}),sFM=A.map(function(r){return r.fm}),sZ2=A.map(function(r){return Math.round(r.z2)}),sTN=A.map(function(r){return Math.round(toU(r.ton,'lb',u))});
+const fmtN=function(n){return n.toLocaleString('en-US')};
+function dl(ser){
+const base=ser[ser.length-2],P=ser.slice(-6,-2);
+if(P.length<4||!P.some(function(v){return v>0}))return'';
+const avg=P.reduce(function(a,b){return a+b},0)/P.length,d=Math.round(base-avg);
+if(!d)return'<div class="wkd">level with avg</div>';
+return'<div class="wkd'+(d>0?' up':'')+' num">'+(d>0?'+':'−')+fmtN(Math.abs(d))+' vs avg</div>'}
+function tile(lbl,ser,gid){
+return'<div class="wkt"><div class="wkl">'+lbl+'</div><div class="wkv num">'+fmtN(ser[ser.length-1])+'</div>'+dl(ser)+sparkSvg(ser,gid)+'</div>'}
+let h='<div class="card">';
+h+='<div class="wk4">'+tile('Hard sets',sHS,'whs')+tile('Fast meters',sFM,'wfm')+tile('Zone-2 min',sZ2,'wz2')+tile(u==='kg'?'Kg lifted':'Lb lifted',sTN,'wtn')+'</div>';
+h+='<div class="ckr" style="margin:8px 2px 0">Hard sets count once each, rest periods never enter it · fast meters add every sprint rep · zone-2 is warm-up + bike + swim minutes · vs avg reads the last full week against the 4 before it</div>';
+const _hs=weekSets(),_hk=Object.keys(_hs).sort(function(a,b){return _hs[b]-_hs[a]});
+if(_hk.length){var _sb=[10,20];h+='<div class="exs" style="padding:12px 2px 4px">Hard sets this week · aim ~10-20 per muscle</div>';
+h+=_hk.slice(0,8).map(function(mu){var n=_hs[mu],band=n>=_sb[0]&&n<=_sb[1]?'in':(n<_sb[0]?'lo':'hi'),pct=Math.min(100,Math.round(n/_sb[1]*100));return'<div class="hsrow"><div class="hsn">'+esc(mu)+'</div><div class="hsbar"><i class="hsfill '+band+'" style="width:'+pct+'%"></i></div><div class="hsc num">'+n+'</div></div>'}).join('');}
+return h+'</div>'}
+/* Most-trained lifts as tap-through tiles above the Strength Trends list · session count picks them,
+   warm-up-only reclassifications are skipped, and under two qualifiers the row stays hidden. */
+function mtTiles(exs){
+const top=exs.filter(function(x){return x.n>=3&&!x.wuNow}).sort(function(a,b){return b.n-a.n}).slice(0,3);
+if(top.length<2)return'';
+let h='<div class="mt3">';
+top.forEach(function(x){const ser=seriesFor(x.ex.id).slice(-8);if(ser.length<2)return;
+const useReps=ser.every(function(p){return p.topW<=0});
+const vals=ser.map(function(p){return useReps?p.mxR:rndDisp(toU(p.topW,'lb',unit()),unit())});
+h+='<div class="wkt tap" onclick="openTrend(\''+x.ex.id+'\')"><div class="wkl">'+esc(x.ex.name)+'</div><div class="wkv num">'+vals[vals.length-1]+'<span>'+(useReps?'reps':unit())+'</span></div>'+sparkSvg(vals,'mt-'+x.ex.id)+'</div>'});
+return h+'</div>'}
 function vTrends(){
 const pr=prScan();
 let h='<header class="hero"><div><div class="eyebrow">Trends</div><h1 class="title">Progress</h1></div></header>';
 h+='<div class="sl"><span class="lt">Consistency</span><span class="rule"></span></div>';
 h+=calCard();
+h+=yearCard();
 h+=bedStat();
-h+='<div class="sl"><span class="lt">Sprint progression</span><span class="rule"></span></div>';
-const _ss=sprintSeries();
-if(!_ss.length)h+='<div class="card"><div class="empty" style="padding:22px 12px">'+EB+'<div class="empty-t">No sprint days yet</div>Log a sprint Friday and the speed trend builds here.</div></div>';
-else{const _lsp=_ss[_ss.length-1]._sp,_sn=SEASONS[prog().season||'reset']||SEASONS.reset,_gp=prog().sprintPlan||{},_ft=fastWeeksTotal(_gp);
-h+='<div class="card">';
-h+='<div class="tpe"><span class="tpen" style="font-weight:700">'+esc(_sn.name)+' season</span><span class="tpes num">'+(sprintGateOpen(_gp)?'near-max open':(_ft+' / '+SPRINT_FLOOR_WEEKS+' wk to near-max'))+'</span></div>';
-h+='<div class="exs" style="padding:2px 2px 4px">Effort % across '+_ss.length+' sprint session'+(_ss.length>1?'s':'')+'</div>';
-h+=trendChart(_ss,true);
-h+='<div class="exs" style="padding:8px 2px 2px">Last: '+sprDistC(_lsp)+' @'+_lsp.effortPct+'%'+(_lsp.pain!=null?' · pain '+_lsp.pain:'')+'</div>';
-h+='</div>';}
-h+='<div class="sl"><span class="lt">Weekly load</span><span class="rule"></span></div>';
-const _wl=weeklyLoad(),_twk=weekMon(tk()),_curW=_wl.filter(function(w){return w.wk===_twk})[0],_swk=DB.sessions.filter(function(s){return s.date>=_twk}).length,_hs=weekSets(),_hk=Object.keys(_hs).sort(function(a,b){return _hs[b]-_hs[a]});
-if(!_swk&&!_wl.length)h+='<div class="card"><div class="empty" style="padding:22px 12px">'+EB+'<div class="empty-t">No load logged yet</div>Finish a session and tap how it went · weekly load and hard-set volume build here.</div></div>';
-else{h+='<div class="card">';
-var _prior=_wl.filter(function(w){return w.wk<_twk}).slice(-4),_avg=_prior.length?_prior.reduce(function(a,b){return a+b.load},0)/_prior.length:0,_spike=_curW&&_prior.length>=2&&_curW.load>_avg*1.4;
-h+='<div class="tpe"><span class="tpen">This week</span><span class="tpes num">'+_swk+' session'+(_swk!==1?'s':'')+(_curW?' · load '+Math.round(_curW.load):'')+'</span></div>';
-if(_spike)h+='<div class="rxr" style="color:var(--ember-hot)">Big jump vs your recent weeks · watch recovery</div>';
-if(_wl.length>1)h+='<div class="exs" style="padding:6px 2px 2px">Training load (effort × min) by week</div>'+trendChart(_wl,true);
-if(_hk.length){var _sb=[10,20],_hdr='aim ~10-20 per muscle';h+='<div class="exs" style="padding:'+(_wl.length>1?'12':'4')+'px 2px 4px">Hard sets this week · '+_hdr+'</div>';
-h+=_hk.slice(0,8).map(function(mu){var n=_hs[mu],band=n>=_sb[0]&&n<=_sb[1]?'in':(n<_sb[0]?'lo':'hi'),pct=Math.min(100,Math.round(n/_sb[1]*100));return'<div class="hsrow"><div class="hsn">'+esc(mu)+'</div><div class="hsbar"><i class="hsfill '+band+'" style="width:'+pct+'%"></i></div><div class="hsc num">'+n+'</div></div>'}).join('');}
-h+='</div>';}
+const _twk=weekMon(tk()),_swk=DB.sessions.filter(function(s){return s.date>=_twk}).length;
+h+='<div class="sl"><span class="lt">This week</span><span class="rule"></span><span class="cnt num">'+_swk+' session'+(_swk!==1?'s':'')+'</span></div>';
+h+=weekCard(_swk);
 const prMin=!!(DB.settings&&DB.settings.prMin);
 h+='<div class="sl prsl" onclick="togglePR()"><span class="lt">Recent PRs</span><span class="rule"></span><span class="cnt num">'+pr.feed.length+'</span><span class="prtog">'+(prMin?'▸':'▾')+'</span></div>';
 if(prMin)h+='<div class="prmin" onclick="togglePR()">'+(pr.feed.length?pr.feed.length+' PR'+(pr.feed.length>1?'s':'')+' on record · tap to show':'no PRs yet')+'</div>';
@@ -3645,8 +3743,9 @@ const exs=trendExs(),stMin=!!(DB.settings&&DB.settings.stMin);
 h+='<div class="sl prsl" onclick="toggleST()"><span class="lt">Strength Trends</span><span class="rule"></span><span class="cnt num">'+exs.length+'</span><span class="prtog">'+(stMin?'▸':'▾')+'</span></div>';
 if(stMin)h+='<div class="prmin" onclick="toggleST()">'+(exs.length?exs.length+' exercise'+(exs.length>1?'s':'')+' charted · tap to show':'no charts yet')+'</div>';
 else if(!exs.length)h+='<div class="card"><div class="ckr">Charts unlock with your first finished session.</div></div>';
-else exs.forEach(x=>{
-h+='<div class="hrow" onclick="openTrend(\''+x.ex.id+'\')"><div class="hico lift">'+esc(initials(x.ex.name))+'</div><div class="hm"><div class="ht">'+esc(x.ex.name)+(x.wuNow?' <span class="chip off">warm-up</span>':'')+'</div><div class="hs num">'+x.n+' session'+(x.n>1?'s':'')+' · last '+esc(x.lastTxt)+'</div></div><div class="hd2 num">'+fmtDk(x.lastDate)+(x.lastDate.slice(0,4)!==tk().slice(0,4)?' ’'+x.lastDate.slice(2,4):'')+'</div></div>'});
+else{h+=mtTiles(exs);
+exs.forEach(x=>{
+h+='<div class="hrow" onclick="openTrend(\''+x.ex.id+'\')"><div class="hico lift">'+esc(initials(x.ex.name))+'</div><div class="hm"><div class="ht">'+esc(x.ex.name)+(x.wuNow?' <span class="chip off">warm-up</span>':'')+'</div><div class="hs num">'+x.n+' session'+(x.n>1?'s':'')+' · last '+esc(x.lastTxt)+'</div></div><div class="hd2 num">'+fmtDk(x.lastDate)+(x.lastDate.slice(0,4)!==tk().slice(0,4)?' ’'+x.lastDate.slice(2,4):'')+'</div></div>'})}
 h+='<div class="fl">Blocks · Stage 3</div>';
 return h}
 function initials(n){const p=String(n).replace(/\(.*?\)/g,'').trim().split(/\s+/);return((p[0]||'?')[0]+(p[1]?p[1][0]:(p[0]||'  ')[1]||'')).toUpperCase()}
