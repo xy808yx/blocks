@@ -2457,7 +2457,8 @@ function swapSheet(){
 const dk=tk(),dow=dowOf(dk);
 let b='';
 [1,2,3,4,5,6,0].forEach(d=>{if(d===dow)return;const tid=prog().schedule[d],t=tid?tpl(tid):null;if(!t)return;
-b+='<button class="btn btn-o" onclick="swapTo('+d+')">'+DAB[d]+' · '+esc(t.name)+'</button>'});
+const fl=t.kind==='cardio'?(d===5?' · Sprints':' · Cardio'):''; /* both cardio days share one template · dow 5 is the one that runs sprints, so the flavor has to come from the day */
+b+='<button class="btn btn-o" onclick="swapTo('+d+')">'+DAB[d]+' · '+esc(t.name)+fl+'</button>'});
 b+='<button class="btn btn-o" onclick="swapTo(-1)">Rest day</button>';
 sheet('Swap today','Do another day\'s session today. The week stays anchored · tomorrow is unchanged.','<div class="shbtns">'+b+'<button class="btn btn-q" onclick="closeOv()">Cancel</button></div>')}
 function swapTo(d){DB.dayOverrides[tk()]=d;sv();closeOv();S.sel=null;CV=null;rn();
@@ -3102,6 +3103,9 @@ else{h+='<div class="seg" style="margin:12px 0 8px">'+['bike','swim','run'].map(
 h+='</div>';}
 dayCks.forEach(c=>{h+=ckRow(c,checks)});
 }
+/* the sprint and recovery days swap like lift days do · same gate as the preview's canSwap, plus
+   the live sprint window · day-level, not in-card: sprints + an added aerobic card can coexist */
+if(!xtra&&!_det&&!sprLive&&!activeSession()&&!sessionsFor(dk).length&&!DB.dayOverrides[dk])h+='<button class="lnk" style="display:block;margin:10px 2px" onclick="swapSheet()">Swap day…</button>';
 return h}
 
 /* ═══════════ SPRINT WINDOW · the sprint day runs like a lift session: one row per rep, tick them off as you run ═══════════ */
