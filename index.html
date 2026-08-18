@@ -82,6 +82,9 @@ body:has(.tb~.restc:not(.hide)) .co{padding-bottom:calc(220px + env(safe-area-in
 
 /* ── hero ── */
 .hero{display:flex;align-items:center;gap:18px;margin:8px 0 24px}
+.hero.split{align-items:flex-start}
+.hero .grow{flex:1;min-width:0}
+.hero .act{margin-top:4px;flex-shrink:0}
 .rw{position:relative;width:72px;height:72px;flex-shrink:0}
 .rt{fill:none;stroke:var(--surface2);stroke-width:6}
 .rf{fill:none;stroke:var(--ember);stroke-width:6;stroke-linecap:butt;stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset .6s var(--ease)}
@@ -121,6 +124,7 @@ body:has(.tb~.restc:not(.hide)) .co{padding-bottom:calc(220px + env(safe-area-in
 
 /* ── cards flattened · plain blocks, structure comes from the section rules ── */
 .card{padding:2px 0 6px;margin-bottom:12px}
+.card.meta{display:flex;align-items:baseline;gap:10px;padding:2px 0;margin-bottom:18px;flex-wrap:wrap}
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:56px;font-size:20px;font-weight:700;transition:transform .15s var(--ease),opacity .15s,filter .15s}
 .btn:active{transform:scale(.98)}
 .btn-p{background:var(--ember);color:#0A0A0A}
@@ -224,6 +228,8 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .sr.wu .srn{color:var(--blue)}
 /* steppers lose their pills · bare glyphs at the row edges, the well is bounded by the row rules */
 .stp{display:flex;align-items:stretch;height:56px}
+.stp.set{width:148px;height:42px;flex-shrink:0}
+.rowxs{display:flex;justify-content:flex-end;gap:2px;padding:2px 2px 4px}
 .stb{width:34px;position:relative;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:26px;font-weight:500;flex-shrink:0;user-select:none;-webkit-user-select:none;transition:background .15s,color .15s}
 .stb:active{color:var(--text)}
 .stb::after{content:'';position:absolute;top:0;bottom:0;left:-6px;right:-6px}
@@ -255,7 +261,6 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .lg.go{color:var(--ember-hot)}
 .lg.fut{color:var(--muted)}
 .sr.wu .lg{color:var(--blue)}
-.sr.done{background:none}
 .sr.done .srn{color:var(--muted)}
 .sr.done.new{animation:srin .55s var(--ease)}
 @keyframes srin{from{background:rgba(121,227,160,.3);transform:scale(.97)}}
@@ -306,9 +311,6 @@ button.chip::after{content:'';position:absolute;inset:-12px -6px}
 .sgb+.sgb{border-left:1px solid var(--border)}
 .sgb.on{background:var(--text);color:var(--bg);font-weight:700}
 .sgb:not(.on):active{background:var(--surface2);color:var(--text)}
-.sgb .sgc{margin-left:7px;font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums}
-.sgb.done .sgc{color:var(--sage)}
-.sgb.on .sgc{color:var(--bg)}
 .savedl{display:flex;align-items:center;gap:10px;font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums}
 .savedl b{color:var(--text);font-weight:700}
 .savedl .ed{margin:-12px -10px -12px auto;font-size:16px;font-weight:700;color:var(--ember-hot);padding:12px 10px}
@@ -366,6 +368,7 @@ button.schip:active{background:var(--surface)}
 .pdet[open] summary .car{transform:rotate(90deg)}
 .pdb{padding:2px 16px 14px}
 .tpe{display:flex;align-items:baseline;gap:8px;padding:8px 0;border-top:1px solid var(--border)}
+.tpe.or{justify-content:center;color:var(--muted);font-size:16px;letter-spacing:.12em}
 .tpe:first-child{border-top:none}
 .tpen{font-size:16px;font-weight:500;flex:1;min-width:0}
 .tpes{font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -418,6 +421,8 @@ body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(150px + env(safe-a
 .tarea{width:100%;min-height:110px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--f);font-size:16px;line-height:1.6;padding:12px 13px;resize:vertical;-webkit-appearance:none;transition:border-color .2s}
 .tarea:focus{outline:none;border-color:var(--ember)}
 .flab{font-size:16px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin:14px 0 5px}
+.flab.top{margin-top:0}
+.edrow{display:flex;gap:8px;align-items:center}
 .sr.s3,.cols.s3{grid-template-columns:40px 1fr 56px}
 .sr.s3.done .dtx{grid-column:2/3}
 .prsl{cursor:pointer;-webkit-user-select:none;user-select:none;padding:9px 16px;margin:19px -16px 1px}
@@ -426,19 +431,11 @@ body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(150px + env(safe-a
 .prmin{color:var(--muted);font-size:16px;padding:2px 2px 6px;cursor:pointer}
 .seg.tight .sgb{font-size:16px}
 .rpehint{font-size:16px;color:var(--muted);margin-top:8px}
-.hsrow{display:flex;align-items:center;gap:10px;padding:5px 0}
-.hsn{flex:0 0 32%;font-size:16px;color:var(--muted);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hsbar{flex:1;height:8px;background:var(--surface2);overflow:hidden}
-.hsfill{display:block;height:100%}
-.hsfill.in{background:var(--sage)}
-.hsfill.lo{background:var(--border)}
-.hsfill.hi{background:var(--ember)}
-.hsc{flex:0 0 auto;font-size:16px;color:var(--text);font-weight:700;min-width:18px;text-align:right}
 .erow{display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border);margin:0 -16px;padding:10px 16px;min-height:56px;transition:background .2s}
 .erow:active{background:var(--surface2)}
 .erow .em2{flex:1;min-width:0}
-.erow .en2,.en2{font-size:16px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.erow .es2,.es2{font-size:16px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.en2{font-size:16px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.es2{font-size:16px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .erow.offed .en2{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border)}
 .mvc{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
 .mvb{width:38px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid var(--border);font-size:16px;transition:background .15s,color .15s}
@@ -463,7 +460,7 @@ body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(150px + env(safe-a
 .cmk{position:absolute;bottom:3px;left:0;right:0;display:flex;gap:3px;justify-content:center;pointer-events:none}
 .cmk i{width:5px;height:5px}
 .cm-bed{background:var(--blue)}
-.cm-fast{background:transparent;border:1.5px solid var(--ember-hot);box-sizing:border-box}
+.cm-fast{background:transparent;border:1.5px solid var(--ember-hot)}
 .leg2{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:13px;justify-content:center;font-size:16px;color:var(--muted)}
 .leg2 span{display:inline-flex;align-items:center;gap:5px}
 .leg2 i{width:9px;height:9px;display:inline-block}
@@ -528,7 +525,7 @@ body:has(.restc:not(.hide)):not(:has(.tb)) .toast{bottom:calc(150px + env(safe-a
 <script>
 /* ═══════════ SEED — Return to Training program, ported verbatim ═══════════ */
 function seedDB(){
-/* iso · a lift-kind exercise whose set row is seconds + effort %, not weight × reps. Sits beside bw, which is the existing per-exercise boolean that changes what a set row MEANS. Deliberately NOT a new kind: kind is the area discriminator (pickList filters on it), so an iso kind would hide the exercise from every picker. */
+/* iso · legacy 7th arg from the elbow isometric set row cut at cr32; no seed row sets it and nothing outside migrate() reads it. */
 const ex=(id,name,bw,rest,muscles,kind,iso)=>({id,name,bw:!!bw,rest,muscles:muscles||[],kind:kind||'lift',iso:iso?true:undefined,video:null});
 const library=[
 ex('p1','Pull-ups',1,120,['back','biceps']),
@@ -539,7 +536,7 @@ ex('p5','Med Ball Slams',0,90,['full body']),
 ex('pf','Fast Calf Raises',0,90,['calves']),
 ex('p6','Deficit Single-Leg Calf Raise',0,90,['calves']),
 ex('bk','Bent-Knee Calf Raise',0,90,['calves']),
-/* Loaded end-range hip work · the one mobility item with a real effect anchor (Kay 2023 meta, pooled g=0.86, LOAD-dependent, near-null unloaded). Single 'hips' tag on purpose: weekSets counts one set per tag, and this is the mobility thread, not leg volume. */
+/* Loaded end-range hip work · the one mobility item with a real effect anchor (Kay 2023 meta, pooled g=0.86, LOAD-dependent, near-null unloaded). Single 'hips' tag on purpose: this is the mobility thread, not leg volume. */
 ex('h90','Loaded 90/90 Hold + Lift-offs',0,90,['hips']),
 ex('s0','Lu Raises (plates, light)',0,60,['shoulders']),
 ex('s1','Landmine Press (half-kneeling)',0,120,['shoulders','chest']),
@@ -684,7 +681,7 @@ ex('cx_lyinglegraise','Lying Leg Raise',1,45,['abs','hip flexors','core']),
 ex('cx_hangingkneeraise','Hanging Knee Raise',1,60,['abs','hip flexors']),
 ex('cx_russiantwist','Russian Twist',1,45,['obliques','abs','core']),
 ex('cx_bicyclecrunch','Bicycle Crunch',1,45,['abs','obliques','core']),
-/* The three core moves that now sit on a template carry ONE tag each. weekSets counts a hard set once per tag, so a 3-tag core move would triple-count itself and push the Trends 10-20 band permanently over. */
+/* The three core moves that now sit on a template carry ONE tag each · the settled content decision. */
 ex('cx_abwheelrollout','Ab Wheel Rollout',1,60,['core']),
 ex('cx_declinesitup','Weighted Decline Sit-up',0,60,['abs']),
 ex('cx_pallofpress','Pallof Press',0,60,['obliques']),
@@ -718,7 +715,7 @@ ex('cx_dumbbellthruster','Dumbbell Thruster',0,120,['quads','shoulders','glutes'
 ex('cx_barbellthruster','Barbell Thruster',0,120,['quads','shoulders','glutes']),
 ];
 /* Optional entry fields, present only where used. */
-const en=(exId,o)=>Object.assign({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false},o);
+const en=mkEntry;
 const templates=[
 {id:'t_pull',name:'A',kind:'lift',
  note:'Straight sets, full rest. Consistent reps across all 4 sets → add weight. Calf raises: this card is written for MONDAY. On Thursday log only 2 sets and drop the load yourself, so Friday sprints land fresh.',
@@ -763,10 +760,14 @@ const templates=[
  sprCue:'walk-back recovery · Fri (not the fasted Tue)',
  aerCue:'zone 1-2 · keep it easy',
  wuCue:'before the sprints · 125-155 bpm the whole way',
+ /* cl is the whole pre-sprint slot since cr36 (Aug 17 2026): the 20-second hop probe and nothing else.
+    The ~40-60 pogo primer came out because the dynamic warm-up's skips and dribbles already deliver
+    low stiff-ankle contacts, so it was the same stimulus twice. mbt is opt:true · rendered AFTER the
+    Sprints card with an optional chip and left out of every count. It was never a sprint prerequisite. */
  checks:[
- {id:'mbt',name:'Med Ball Throws · pick 1',detail:'before sprints, while fresh · 3-5 × 3-5 @ 100% intent, full recovery · ① Overhead-back scoop (up & out, full triple extension) · ② Chest pass / shotput (horizontal push) · ③ Rotational scoop (into wall) · throw for distance, not fatigue',enabled:true},
- {id:'cl',name:'Calf Primer',detail:'before sprints, while fresh · ~40-60 pogo contacts — low bilateral, stiff ankle, toes up · PLUS 15-20 single-leg hops per side as the symptom probe (a check, not training, and counted separately) · stop when the contacts get loud',enabled:true},
+ {id:'cl',name:'Single-Leg Hop Check',detail:'before sprints, while fresh · 15-20 hops per side · a 20-second symptom check, not training',enabled:true},
  {id:'mobdone',name:'Full Mobility Routine',detail:'roll · stretch · flows',link:'mobility',enabled:true},
+ {id:'mbt',name:'Med Ball Throws · pick 1',detail:'after the sprints, only if there is something left · 3-5 × 3-5 @ 100% intent, full recovery · ① Overhead-back scoop (up & out, full triple extension) · ② Chest pass / shotput (horizontal push) · ③ Rotational scoop (into wall) · throw for distance, not fatigue',enabled:true,opt:true},
 ]},
 ];
 /* ONE daily block, once a day, since contentRev 35 (Aug 17 2026). The Morning / Evening passes were
@@ -865,8 +866,8 @@ const reference=[
 - The app has no field for these numbers, so write them somewhere you will find again. This and the next-morning read are the only symptom checks covering Monday and Thursday · the automatic one only fires the morning after a sprint.
 **Live now**
 - Fast calf raises · 3 × 10 light and crisp, now carded as the warm-up ramp into the heavy raises rather than as counted volume. The old "speed-of-contraction bridge" framing and the ~132bpm metronome figure were both unsourceable and are gone.
-- Friday calf primer · ~40-60 contacts before sprints, while fresh. Low pogos, stiff ankle, toes up. Stop when the contacts get loud.
-- 15-20 single-leg hops stay in place as a permanent pre-sprint probe. Not training · a 20-second symptom check. Hop pain and heel-raise pain measure different things.
+- Friday pre-sprint slot · the 15-20 single-leg hops per side, and only that, since Aug 17 2026. The separate ~40-60 pogo primer came out: the 30-45 min dynamic warm-up's skips and dribbles already deliver low stiff-ankle contacts, so a second block of them right before the sprints was the same stimulus twice.
+- The hop check is permanent until Gate 4 clears. Not training · a 20-second symptom check. Hop pain and heel-raise pain measure different things.
 - Right-side hip/glute hinge is live: single-leg RDL 2 × 8-10/leg on B days (Wed + Sat), cut from 3 sets Aug 2026 · a control lift rather than a loading driver, and the third set was buying wobble, not load. It shares load across the posterior chain and trains right-side single-leg control, which is the point of it. (The old "the proximal chain carries ≈30% of plantarflexion force" line could not be traced to any source and was mechanically incoherent as phrased · removed, same as the untraceable soleus figure in the Sources card. The exercise stands without it.)
 - Loaded 90/90 hold + lift-offs · 3 × 5/side on A days, plate at the chest. The mobility thread's first loaded, logged, progressible entry. Loaded end-range work is the one mobility modality with a real effect anchor, and it is load-dependent, so the plate is the active ingredient, not the position.
 - Running is sprints and speed endurance ONLY · nothing continuous, ever. Ceiling of 400m in any single rep, and that is an outer bound rather than a target. Zone 2 is the bike or the pool. Speed endurance past 150m waits behind Gate 4 and the bent-knee capacity check, because running fast while fatigued is the exact exposure a healing soleus tolerates worst.
@@ -933,16 +934,17 @@ Speed is the anchor you enjoy, not a number to chase. Your **season** (the quart
 - Most of the return-to-running guidance here is **Level 5 expert opinion** (clinician consensus surveys), not trial evidence. It is the best available for a soleus strain and it is still opinion.
 - The 8-12 week build and the ~0.3 × bodyweight capacity target are clinical convention. Your physio owns the final number.`},
 {t:'Plyometric Progression',b:`Earn the right to be reactive by first proving you can absorb. Count contacts not sets · start ~40-60 quality contacts. **Stop when the contacts get loud** · that rule is self-limiting at once-weekly frequency and is what actually governs the session. (The old "increase ≤10-20%/wk" ceiling was removed Aug 2026: no trial supports it, and the analogous 10%-per-week rule for running volume was tested directly and came back null.)
-A low-contact primer immediately BEFORE sprints is potentiation, not a collision · that is where it lives now. The old "never back-to-back with sprint work" rule was written for a separate standalone plyo session, and that is still true of one.
-The four rungs that are also carded exercises (heavy deficit raises, bent-knee raises, fast calf raises, pogos) live on their own cards with fuller cues · this table is the map, not the prescription.
+A low-contact primer immediately BEFORE sprints is potentiation, not a collision. Since Aug 17 2026 that primer IS the dynamic warm-up · its skips and dribbles are the low contacts · and the only separate pre-sprint item is the 20-second single-leg hop check. The old "never back-to-back with sprint work" rule was written for a separate standalone plyo session, and that is still true of one.
+The three rungs that are also carded exercises (heavy deficit raises, bent-knee raises, fast calf raises) live on their own cards with fuller cues; pogos live in the dynamic warm-up row · this table is the map, not the prescription.
 |Stage|Exercise|Gate|Notes|
-|1|Stick landings|Now|Absorption / eccentric brake. NOT currently in the Friday primer · the primer is pogos plus the hop probe. This row is the only place the absorption rung is written down.|
-|2|Pogos (bilateral)|Now|Low, stiff ankle, toes up · the primer's main contacts|
-|3|Low horizontal bounds|After Gate 3b|Distance before speed · add only once pogos stay quiet. Not in the Friday primer, and not to be added to it · pre-sprint stays CARs and crisp patterns only.|
+|1|Stick landings|Now|Absorption / eccentric brake. NOT in the pre-sprint slot · that slot is the hop check only. This row is the only place the absorption rung is written down.|
+|2|Pogos (bilateral)|Now|Low, stiff ankle, toes up · live inside the Friday dynamic warm-up (skips, dribbles), no longer a separate pre-sprint block|
+|3|Low horizontal bounds|After Gate 3b|Distance before speed · add only once pogos stay quiet. Not in the pre-sprint slot, and not to be added to it · pre-sprint stays the warm-up and the hop check.|
 |4|Single-leg → triple hops|Gate 4|Reactive, sport-specific|`},
 {t:'Parked & Cut',b:`**Parked for the calf** — nothing. Gate 3a cleared and the reactive ladder opened with it. The old entry here waited on a rep count, which turned out to be the wrong thing to wait on.
 **The right shoulder · ✓ CLEARED Aug 2026, park lifted**
 - Med-ball slams, sprint-day throws and decline push-ups are back on. Landmine press is both arms again. The coaching frame that drove the park was right and is worth keeping: the risky axis was never push-versus-pull, it was loaded × end-range × ballistic.
+- **Sprint-day throws went optional Aug 17 2026** · an after-the-sprints extra with its own chip, off the day count. They were never a sprint prerequisite; they held a Friday slot only because Friday is the one day the shoulder is fresh and unloaded. The pre-sprint pogo primer came out the same day (the dynamic warm-up already delivers those contacts), leaving the 20-second single-leg hop check as the only item between the warm-up and the sprints.
 - Decline push-ups (s2) had been switched off inside a migration with no note anywhere · that is why nothing here explained them. Back on, and now they are the only right-side pressing in the week.
 - Landmine rainbows · still never shipped, still eligible. The band Pallof moved to the front of Day A as trunk prep (A/B review, Aug 2026): with no cable it cannot load-ratchet, so as counted volume it was counted in name only. The counted anti-rotation slot is open again the day there is a cable to load a Pallof at the tail · until then, rainbows are the plate-progressible way to fill it, off equipment already in the room.
 - **Pull-ups are back on** (contentRev 32). They had been held a second time for the right elbow after the shoulder cleared them; that protocol was cut, so they and dead hangs resumed together, which is the only way they were ever going to move.
@@ -972,11 +974,12 @@ Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then
 {t:'Timeline',b:`- **Wk 5-6 · Cleared** — Gate 1, Phase 3. Seated calf raises began.
 - **Wk 8 · Cleared** — Gate 2, Phase 4. Deficit calf raises. BSS. Sprint run-throughs begun.
 - **Wk 13-14 · Cleared** — Gate 3a, return to run. Fast running clean; heel-raise and hop floors cleared (they were floors).
-- **Gate 3b · Target** — loaded capacity. An 8-12 week build to ~55 lb on the deficit raise. Plyo primer, bent-knee work and the single-leg RDL run alongside it.
+- **Gate 3b · Target** — loaded capacity. An 8-12 week build to ~55 lb on the deficit raise. The hop check, bent-knee work and the single-leg RDL run alongside it.
 - **Aug 2 2026** — palpated midportion, so the deficit stays. Right shoulder cleared by the physio, so slams, throws, decline push-ups and both-arm pressing come back. Continuous running dropped by choice. Programs reviewed and cut.
 - **Aug 2026, before the move** — prove the deficit-raise loading vehicle at ~30 lb while there is still a fallback in the room. The build's heaviest third lands on the far side of October, and a carry method that changes mid-build breaks it at the worst point.
 - **Aug 2026** — the right elbow isometric protocol cut. Pull-ups and dead hangs both resumed in the same edit.
 - **Aug 17 2026** — the daily block collapsed to one pass a day. Right ulnar floss out to the weekly routine, spiderman steps in, dead hangs to 2 min total. Routine ticks now fill the daily block as well as the other way round.
+- **Aug 17 2026** — sprint-day extras trimmed. The pogo primer folded into the dynamic warm-up, leaving the 20-second single-leg hop check as the only pre-sprint item; med ball throws made optional and moved after the sprints. Bike / swim / run and sprints now flip with one tap on the card.
 - **Wk 20-24 · Sep-Oct** — Gate 4, full return. Max velocity. Speed endurance opens here, 400m ceiling. Block starts last. Arrive Hua Hin rebuilt.`},
 {t:'How the Tear Heals',b:`**Phase 1 — Destruction · Hours 0-48.** Torn fibers retract. Hematoma forms scaffold. Neutrophils (hrs 1-24), macrophages (hrs 24-72) secrete growth factors activating satellite cells.
 **Phase 2 — Repair · Days 3-21.** Satellite cells fuse into myotubes bridging the gap. Fibroblasts lay Type III collagen — weak, disorganized. Grade II gap too large to fully bridge; scar fills the rest.
@@ -985,7 +988,7 @@ Every trial in this literature runs 2-6 weeks in a **symptomatic** limb and then
 ];
 return{
 schemaVersion:1,
-contentRev:35,
+contentRev:36,
 settings:{unit:'lb',wake:true,sound:true,nagDismissed:0,hangPausedAt:0}, /* hangPausedAt 0 · the resume clock falls back to meta.created on a fresh install (see hangResumeDue), so it is never measured against undefined */
 meta:{created:Date.now(),lastExport:null},
 library,
@@ -1017,7 +1020,8 @@ const SPRINT_FLOOR_WEEKS=8; /* no true near-max (>90%) until this many weeks of 
    sprint day and the deliberately fasted Tuesday recovery day, so anything not listed here renders on
    Tuesday too. That is how a plyometric calf primer once came within an inch of landing on the fasted
    recovery day. This was a two-id literal duplicated across four call sites; it is one constant now, so
-   adding a sprint-day check means adding its id HERE as well as to the template. */
+   adding a sprint-day check means adding its id HERE as well as to the template. A check with opt:true
+   (mbt since cr36) is still sprint-day only, but renders after the Sprints card and counts nowhere. */
 const SPRINT_CHECK_IDS=['mbt','cl'];
 const isSprintCheck=c=>!!c&&SPRINT_CHECK_IDS.includes(c.id);
 /* ── Training engine · seasons + day-tap load map. Season is the one quarterly dial (manual pick · no thermal winter in Hua Hin). LOAD_MAP turns the day post-tap into a session-RPE for the weekly load metric. ── */
@@ -1032,7 +1036,7 @@ migrate()}
 /* Non-destructive content sync: refresh authored reference/coach-cue text without touching logged history.
    Stepped by contentRev — each step bumps the rev so existing installs catch up in order. */
 function migrate(){
-let cr=DB.contentRev||0;if(cr>=35)return;
+let cr=DB.contentRev||0;if(cr>=36)return;
 const fp=seedDB().programs[0];
 const patchRef=title=>{(DB.programs||[]).forEach(p=>{if(p.reference&&fp.reference){const fr=fp.reference.find(r=>r.t===title),or=p.reference.find(r=>r.t===title);if(fr&&or)or.b=fr.b}})};
 /* cr21/cr23 installed some seed entries by NAME match (_ensure/_ens return a pre-existing library
@@ -1334,7 +1338,7 @@ if(cr<23){
    if(d5&&d5.name==='Dead Hangs'&&!d5.paused)d5.paused=true;
    ['dailyNoteAm','dailyNotePm'].forEach(k=>{if((c[k]||'').indexOf(_HANGOLD)>=0)c[k]=c[k].split(_HANGOLD).join(_HANGNEW)});
   }
-  /* Elbow Protocol is a NEW card · patchRef only refreshes cards that already exist. */
+  /* Elbow Protocol is a NEW card · patchRef only refreshes cards that already exist. No-op since cr32 (the card left the seed, so fr is undefined); kept so the step sequence reads in order. */
   if(p.reference&&!p.reference.some(r=>r.t==='Elbow Protocol')){
    const fr=(fp.reference||[]).find(r=>r.t==='Elbow Protocol');
    if(fr){const ri=p.reference.findIndex(r=>r.t==='Parked & Cut');
@@ -1708,17 +1712,49 @@ if(cr<35){
  patchRef('Timeline');     /* the Aug 17 line */
  cr=35;
 }
+if(cr<36){
+ /* Sprint-day extras, Aug 17 2026, at J's call. (1) The calf primer shrinks to the single-leg hop check ·
+    the pogo block was the dynamic warm-up's contacts twice over. Guarded on the exact shipped NAME, so a
+    hand-renamed row stays his. (2) Med ball throws go opt:true · rendered after the Sprints card with an
+    optional chip, out of every count · and move to the end of the check list; the detail refreshes only
+    on the exact shipped name. Ids stay put (cl, mbt), so every logged tick in days[dk].c still reads.
+    Non-destructive: no day record is touched. Cards patched for the record. */
+ const _fc36=(fp.templates||[]).find(x=>x.id==='t_cardio'),_fcl=_fc36&&(_fc36.checks||[]).find(c=>c.id==='cl'),_fmb=_fc36&&(_fc36.checks||[]).find(c=>c.id==='mbt');
+ (DB.programs||[]).forEach(p=>(p.templates||[]).forEach(t=>{if(t.kind!=='cardio'||!Array.isArray(t.checks))return;
+  const cl=t.checks.find(c=>c.id==='cl');
+  if(cl&&_fcl&&cl.name==='Calf Primer'){cl.name=_fcl.name;cl.detail=_fcl.detail}
+  const mb=t.checks.find(c=>c.id==='mbt');
+  if(mb){mb.opt=true;if(_fmb&&mb.name===_fmb.name)mb.detail=_fmb.detail;t.checks=t.checks.filter(c=>c!==mb).concat([mb])}}));
+ patchRef('Phase Gates');            /* the Live now bullets */
+ patchRef('Plyometric Progression'); /* the primer now lives in the warm-up */
+ patchRef('Parked & Cut');           /* the throws going optional */
+ patchRef('Timeline');               /* the second Aug 17 line */
+ cr=36;
+}
 DB.contentRev=cr;sv()}
 function sv(){PRC=null;try{localStorage.setItem('blocks_v1',JSON.stringify(DB))}catch(e){toast('Couldn’t save · storage may be full. Export a backup from Settings.')}}
 function id(p){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function tk(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function fmtDk(dk){const[y,m,d]=dk.split('-').map(Number);return MN[m-1]+' '+d}
+function fmtDkY(dk,sep){return fmtDk(dk)+(dk.slice(0,4)!==tk().slice(0,4)?(sep==null?' ':sep)+'’'+dk.slice(2,4):'')} /* year suffix only when it is not this year */
+const clone=x=>JSON.parse(JSON.stringify(x));
+const WEEK=[1,2,3,4,5,6,0]; /* the strip runs Monday to Sunday */
+function dayRec(dk){return DB.days[dk]=DB.days[dk]||{c:[]}}
+function clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v))}
+const clampRest=v=>clamp(v,15,600),clampM=v=>clamp(v,10,1000),defLeg=()=>clampM(Math.round(+CV.dist)||50); /* rest seconds · sprint metres · a default sprint leg */
 function dowOf(dk){const[y,m,d]=dk.split('-').map(Number);return new Date(y,m-1,d).getDay()}
 function shiftDk(dk,n){const[y,m,d]=dk.split('-').map(Number);return tk(new Date(y,m-1,d+n))}
 function anchorTs(dk){const[y,m,d]=dk.split('-').map(Number);return new Date(y,m-1,d,12,0,0).getTime()}
 function mmss(ms){const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+const ACT_CANCEL={label:'Cancel',click:'closeOv()',kind:'o'},ACT_KEEP={label:'Keep going',click:'closeOv()',kind:'o'}; /* the two stock sheet actions */
+function goToday(){S.view='tabs';S.tab='today'}
+function sprBack(){if(S.sprFrom==='detail')S.view='detail';else goToday()} /* leaving the sprint window · back to the detail it came from, else Today */
 function pl(n,w){return n+' '+w+(n===1?'':'s')}
+/* the template-entry and library-exercise shapes · one place each */
+function mkEntry(exId,o){return Object.assign({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false},o)}
+function mkEx(name){return{id:id('x'),name,bw:false,rest:rD(),muscles:[],kind:'lift',video:null}}
+function exSub(e){return(e.bw?'BW · ':'')+'rest '+(e.rest||rD())+'s'+((e.muscles||[]).length?' · '+esc(e.muscles.join(', ')):'')}
 function dayTitle(n){return n&&String(n).length<=2?'Day '+n:n} /* display-only · dresses the bare A/B/C placeholders where the name stands alone as a title · pickers, the week strip, and the Program list keep the raw name */
 
 /* ═══════════ PROGRAM HELPERS ═══════════ */
@@ -1777,9 +1813,9 @@ const t=tpl(sess.templateId),hidden=sess.hidden||[];
 let ent=t?t.entries.filter(e=>(e.enabled||workingSets(sess,e.exId).length)&&!hidden.includes(e.exId)):[]; /* the logged-sets escape hatch is deliberate, so a session that already logged a move keeps showing it even if the entry is later switched off */
 const known={};ent.forEach(e=>known[e.exId]=1);
 (sess.addons||[]).forEach(exId=>{if(!known[exId]){known[exId]=1;
- ent.push({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false,synth:true,addon:true})}});
+ ent.push(mkEntry(exId,{synth:true,addon:true}))}});
 sess.sets.forEach(st=>{if(!known[st.exId]){known[st.exId]=1;
- ent=ent.concat([{exId:st.exId,warmups:0,sets:0,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false,synth:true}])}});
+ ent=ent.concat([mkEntry(st.exId,{sets:0,synth:true})])}});
 if(sess.order&&sess.order.length){const pos={};sess.order.forEach((idv,i)=>pos[idv]=i);
  ent=ent.map((e,i)=>[e,i]).sort((a,b)=>{const va=pos[a[0].exId]==null?1e6+a[1]:pos[a[0].exId],vb=pos[b[0].exId]==null?1e6+b[1]:pos[b[0].exId];return va-vb}).map(x=>x[0])}
 return ent}
@@ -1789,7 +1825,9 @@ function entryFor(sess,exId){return entriesOf(sess).find(e=>e.exId===exId)||null
 function unit(){return DB.settings.unit}
 function toU(v,from,to){return from===to?v:(from==='lb'?v*KG:v/KG)}
 function rndDisp(v,u){return u==='kg'?Math.round(v*2)/2:Math.round(v)}
-function rndInc(v,u){const i=u==='kg'?2.5:5;return Math.round(v/i)*i}
+const lbDisp=w=>rndDisp(toU(w,'lb',unit()),unit()); /* a stored-lb weight, in the display unit, rounded for display */
+function wInc(u){return u==='kg'?2.5:5}
+function rndInc(v,u){const i=wInc(u);return Math.round(v/i)*i}
 function wInUnit(w){if(!w)return 0;return w.u===unit()?w.v:rndDisp(toU(w.v,w.u,unit()),unit())}
 function wPrefill(w){if(!w)return 0;return w.u===unit()?w.v:Math.max(0,rndInc(toU(w.v,w.u,unit()),unit()))}
 function fmtW(v,bw){if(bw&&(!v||v<=0))return'BW';if(bw)return'+'+(+v.toFixed(1)*1);return''+(+(+v).toFixed(1)*1)}
@@ -1882,7 +1920,7 @@ r.onload=()=>{try{const obj=JSON.parse(r.result);
  if(!obj||obj.schemaVersion!==1||!Array.isArray(obj.sessions)||!Array.isArray(obj.programs))throw 0;
  IMPORTED=obj;
  ovConfirm('Replace all data?','This file holds <b>'+pl(obj.sessions.length,'session')+'</b>'+(obj.meta&&obj.meta.lastExport?' (exported '+fmtDk(tk(new Date(obj.meta.lastExport)))+')':'')+'. Your current <b>'+pl(DB.sessions.length,'session')+'</b> will be replaced.',
- [{label:'Replace everything',click:'confirmImport()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])
+ [{label:'Replace everything',click:'confirmImport()',kind:'d'},ACT_CANCEL])
 }catch(e){toast('Not a valid BLOCKS backup')}};
 r.readAsText(file)}
 function confirmImport(){if(!IMPORTED)return;DB=IMPORTED;IMPORTED=null;sv();try{localStorage.removeItem('blocks_spr')}catch(e){};location.reload()} /* a replaced dataset must not inherit the old install's live sprint */
@@ -1994,7 +2032,7 @@ return{d,tot}}
 function prScan(){
 if(PRC)return PRC;
 const feed=[],perEx={},setPR={};
-DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
+finishedAsc().forEach(s=>{
 const snap={},cand={};
 s.sets.slice().sort((a,b)=>a.ts-b.ts).forEach(st=>{
 if(st.warmup)return;
@@ -2009,7 +2047,7 @@ if(w>0){
  if(w>e.maxW){e.maxW=w;e.maxWReps=st.reps;e.maxWDate=s.date}
  else if(w===e.maxW&&st.reps>e.maxWReps){e.maxWReps=st.reps;e.maxWDate=s.date}
  if(!e.repAt[wk]||st.reps>e.repAt[wk])e.repAt[wk]=st.reps;
- const e1=w*(1+st.reps/30);if(e1>e.maxE1){e.maxE1=e1;e.e1Date=s.date}}
+ const e1=epley(w,st.reps);if(e1>e.maxE1){e.maxE1=e1;e.e1Date=s.date}}
 else if(st.reps>e.maxReps){e.maxReps=st.reps;e.maxRepsDate=s.date}
 e.n++});
 Object.keys(cand).forEach(x=>{['w','r','b'].forEach(tp=>{const c=cand[x][tp];if(!c)return;
@@ -2019,23 +2057,27 @@ feed.sort((a,b)=>b.ts-a.ts);
 PRC={feed,perEx,setPR};return PRC}
 function prLabel(f){
 if(f.type==='b')return'Max reps · '+f.reps;
-const w=rndDisp(toU(f.w,'lb',unit()),unit())+' '+unit();
+const w=lbDisp(f.w)+' '+unit();
 return f.type==='w'?'Top weight · '+w+' × '+f.reps:w+' × '+f.reps+' · rep PR'}
 function sessionPRs(sid){return prScan().feed.filter(f=>f.sid===sid)}
 
 /* ═══════════ TREND SERIES ═══════════ */
 function seriesFor(exId){
 const out=[];
-DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
+finishedAsc().forEach(s=>{
 const rows=s.sets.filter(x=>x.exId===exId&&!x.warmup);if(!rows.length)return;
 let topW=0,topWr=0,mxR=0,e1=0;
 rows.forEach(r=>{const w=toLb(r.w);
 if(w>topW||(w===topW&&r.reps>topWr)){topW=w;topWr=r.reps}
 if(r.reps>mxR)mxR=r.reps;
-const v=w*(1+r.reps/30);if(v>e1)e1=v});
+const v=epley(w,r.reps);if(v>e1)e1=v});
 out.push({date:s.date,t:s.startedAt,topW,topWr,mxR,e1})});
 return out}
+const finished=()=>DB.sessions.filter(s=>s.finishedAt),finishedAsc=()=>finished().sort((a,b)=>a.startedAt-b.startedAt);
+const epley=(w,r)=>w*(1+r/30);
+const ZONE_F={'1':3,'1-2':4,'2':5}; /* zone-2 minutes weight by zone */
 function sessMins(s){return Math.max(1,Math.round(((s.finishedAt||s.startedAt)-s.startedAt)/60000))}
+function elapsedMins(s){return Math.max(1,Math.round((Date.now()-s.startedAt)/60000))}
 function dayPost(dk){return(DB.days[dk]&&DB.days[dk].post)||null}
 /* Post-tap era load: lift = LOAD_MAP[day post-tap] × session minutes (legacy 0-10 rating still read for old sessions);
    cardio auto-derives · bike/swim/run use their real logged minutes, a sprint day counts SPRINT_NOMINAL_MIN. */
@@ -2043,26 +2085,16 @@ function sessLoad(s){
 const _cardio=s.kind?s.kind==='cardio':!!(s.sprints||s.aerobic); /* route on session kind · data-presence only for legacy imports */
 if(_cardio){let L=0;
 if(s.sprints)L+=Math.round((s.sprints.effortPct||70)/10)*SPRINT_NOMINAL_MIN;
-if(s.aerobic)L+=({'1':3,'1-2':4,'2':5}[s.aerobic.zone]||4)*(s.aerobic.durMin||0);
-if(s.warmup)L+=({'1':3,'1-2':4,'2':5}[s.warmup.zone]||5)*(s.warmup.durMin||0); /* the sprint-day warm-up is 30-45 real zone-2 minutes · counting it on the same scale as any other zone-2 work is the only honest reading, and without it a sprint Friday under-reports by roughly half */
+if(s.aerobic)L+=(ZONE_F[s.aerobic.zone]||4)*(s.aerobic.durMin||0);
+if(s.warmup)L+=(ZONE_F[s.warmup.zone]||5)*(s.warmup.durMin||0); /* the sprint-day warm-up is 30-45 real zone-2 minutes · counting it on the same scale as any other zone-2 work is the only honest reading, and without it a sprint Friday under-reports by roughly half */
 return L}
 const p=dayPost(s.date),r=p?LOAD_MAP[p]:s.rpe;
 return r?r*sessMins(s):0}
 function weekMon(dk){return shiftDk(dk,-((dowOf(dk)+6)%7))}
 function weeklyLoad(){const m={};
-DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){const wk=weekMon(s.date),L=sessLoad(s);if(!L)return;if(!m[wk])m[wk]={wk:wk,load:0,sessions:0};m[wk].load+=L;m[wk].sessions++});
+finished().forEach(function(s){const wk=weekMon(s.date),L=sessLoad(s);if(!L)return;if(!m[wk])m[wk]={wk:wk,load:0,sessions:0};m[wk].load+=L;m[wk].sessions++});
 const arr=Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return a.wk<b.wk?-1:1});
-arr.forEach(function(w){var p=w.wk.split('-').map(Number);w.t=new Date(p[0],p[1]-1,p[2]).getTime();w.date=w.wk;w.mxR=Math.round(w.load);w.topW=0;w.topWr=0;w.e1=0});
 return arr}
-function weekSets(){const wk=weekMon(tk()),cnt={},eng=engineOn();
-/* Engine on · governed tags roll up to their muscle group (one count per mapped group), ungoverned siblings still count as themselves. Dormant · the pre-E2 raw-tag count. */
-DB.sessions.filter(function(s){return s.date>=wk&&s.kind==='lift'}).forEach(function(s){(s.sets||[]).forEach(function(st){if(st.warmup)return;var ex=exOf(st.exId); /* rehab isometrics are not hard sets · they must not enter the 10-20 band */
-if(!eng){var m0=(ex&&ex.muscles&&ex.muscles.length)?ex.muscles:['(untagged)'];m0.forEach(function(mu){cnt[mu]=(cnt[mu]||0)+1});return}
-var gs=groupsOf(ex),ms=(ex&&ex.muscles)||[];
-gs.forEach(function(g){var k=GROUP_NAME[g];cnt[k]=(cnt[k]||0)+1});
-if(!gs.length&&!ms.length){cnt['(untagged)']=(cnt['(untagged)']||0)+1;return}
-ms.forEach(function(mu){if(!MUSCLE_MAP[String(mu).toLowerCase().trim()])cnt[mu]=(cnt[mu]||0)+1})})});
-return cnt}
 /* Week-by-week aggregates for the This-week tiles · last n calendar weeks ending with the current one.
    Weeks with nothing logged stay in the series as zeros · a skipped week is real data, not a gap to hide.
    fm = every sprint rep's meters · z2 = warm-up + bike + swim minutes · ton = display-only tonnage, the known caveats
@@ -2076,7 +2108,7 @@ if(s.aerobic)r.z2+=(+s.aerobic.durMin||0)}
 function weeklyAgg(n){
 const cur=weekMon(tk()),ix={},rows=[];
 for(let i=n-1;i>=0;i--){const k=shiftDk(cur,-7*i);ix[k]=rows.length;rows.push({wk:k,fm:0,z2:0,ton:0})}
-DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){
+finished().forEach(function(s){
 const i=ix[weekMon(s.date)];if(i==null)return;
 wkAdd(rows[i],s)});
 return rows}
@@ -2085,7 +2117,7 @@ return rows}
 function paceAgg(){
 const cur=weekMon(tk()),off=(dowOf(tk())+6)%7,ix={},rows=[];
 for(let i=4;i>=0;i--){const k=shiftDk(cur,-7*i);ix[k]=rows.length;rows.push({wk:k,end:shiftDk(k,off),fm:0,z2:0,ton:0})}
-DB.sessions.filter(function(s){return s.finishedAt}).forEach(function(s){
+finished().forEach(function(s){
 const i=ix[weekMon(s.date)];if(i==null)return;const r=rows[i];
 if(s.date>r.end)return;
 wkAdd(r,s)});
@@ -2100,7 +2132,7 @@ let best=0,run=0,prev=null;
 Object.keys(wk).sort().forEach(function(w){
 if(wk[w]>=3){run=(prev&&shiftDk(prev,7)===w)?run+1:1;if(run>best)best=run;prev=w}
 else{run=0;prev=null}});
-return{thisYear:thisYear,best:best,total:DB.sessions.filter(function(s){return s.finishedAt}).length}}
+return{thisYear:thisYear,best:best,total:finished().length}}
 /* Small area sparkline · same clamped-curve construction as trendChart, stripped of axes. gid keeps the
    gradient ids unique per tile or the first def on the page silently owns them all. */
 function sparkSvg(vals,gid,W,H){
@@ -2124,7 +2156,7 @@ return'<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" xmlns="http://w
 +'<circle cx="'+X(vals.length-1).toFixed(1)+'" cy="'+Y(vals[vals.length-1]).toFixed(1)+'" r="'+dr+'" fill="#0A0A0A" stroke="#ffa14d" stroke-width="'+dw+'"/></svg>'}
 function trendExs(){
 const m={};
-DB.sessions.filter(s=>s.finishedAt).sort((a,b)=>a.startedAt-b.startedAt).forEach(s=>{
+finishedAsc().forEach(s=>{
 const per={};
 s.sets.forEach(x=>{if(x.warmup)return;const w=toLb(x.w);
 const p=per[x.exId]=per[x.exId]||{w:0,r:0,mx:0};
@@ -2139,7 +2171,7 @@ const wuOnly={};
 const w=e.enabled!==false&&e.warmups>0&&!(e.sets>0);
 wuOnly[e.exId]=(e.exId in wuOnly)?(wuOnly[e.exId]&&w):w}));
 return Object.keys(m).map(xid=>{const e=m[xid],ex=exOf(xid);
-const lastTxt=e.top.w>0?rndDisp(toU(e.top.w,'lb',unit()),unit())+' '+unit()+' × '+e.top.r:e.top.mx+' reps';
+const lastTxt=e.top.w>0?lbDisp(e.top.w)+' '+unit()+' × '+e.top.r:e.top.mx+' reps';
 return{ex,n:e.n,lastDate:e.lastDate,lastTxt,wuNow:!!wuOnly[xid]}}).sort((a,b)=>a.lastDate<b.lastDate?1:-1)}
 </script>
 <script>
@@ -2157,7 +2189,7 @@ const I_CARD2='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" strok
 const I_MOON='<svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 const moonAt=s=>I_MOON.replace('width="19" height="19"','width="'+s+'" height="'+s+'"'); /* one moon, drawn at whatever size the slot needs · icons are SVG here, never emoji */
 const I_FAST='<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h10M7 20.5h10M7 3.5L12 12 7 20.5M17 3.5L12 12 17 20.5"/></svg>';
-const HABITS=[{key:'fast',label:'Fasting',full:'Fasting',ic:I_FAST,off:0,streak:false},{key:'bed',get label(){return bedShort()},get full(){return bedFull()},ic:I_MOON,off:-1,streak:true}];
+const HABITS=[{key:'fast',label:'Fasting',ic:I_FAST,off:0,streak:false},{key:'bed',get label(){return bedShort()},ic:I_MOON,off:-1,streak:true}];
 const EB='<svg class="eb" width="46" height="46" viewBox="0 0 32 32"><g fill="#ff6f2e"><rect x="12.2" y="5.5" width="7.6" height="5" rx="1.5"/><rect x="9.6" y="13.4" width="12.8" height="5" rx="1.5" opacity=".72"/><rect x="7" y="21.3" width="18" height="5" rx="1.5" opacity=".45"/></g></svg>';
 let PREVV='tabs';
 
@@ -2226,7 +2258,7 @@ if(t&&t.kind==='cardio'){
  const cs=sess.find(s=>s.kind==='cardio');
  wt+=1;if(cs&&(cs.sprints||cs.aerobic))wd++;
  if(cardioIsSprint(dk,cs)){wt++;if(cs&&cs.warmup)wd++} /* the warm-up is its own ring unit, and only on a sprint day · Tuesday never shows the row, so it must not count there either */
- (t.checks||[]).filter(c=>c.enabled&&(!isSprintCheck(c)||cardioIsSprint(dk,cs))).forEach(c=>{wt++;if(checks.includes(c.id))wd++})}
+ (t.checks||[]).filter(c=>c.enabled&&!c.opt&&(!isSprintCheck(c)||cardioIsSprint(dk,cs))).forEach(c=>{wt++;if(checks.includes(c.id))wd++})} /* opt rows (the throws) are extras · never in the count */
 let dd=0;const di=dailyItems(dk);di.forEach(d=>{if(checks.includes(d.id))dd++}); /* one pass a day since cr35 · the retired 'pm:' ids are never counted */
 return{wd,wt,dd,dt:di.length}}
 function workoutDone(dk,t){const sess=sessionsFor(dk);
@@ -2253,24 +2285,24 @@ const sd=document.getElementById('sl-daily');if(sd)sd.classList.toggle('done',p.
 /* ═══════════ TODAY ═══════════ */
 function selDay(d){const dow=dowOf(tk());S.sel=(d===dow||d===S.sel)?null:d;rn()}
 function weekStrip(dk){const dow=dowOf(dk),eff=effDow(dk);
-const[Y,M,D]=dk.split('-').map(Number),ord=[1,2,3,4,5,6,0],ti=ord.indexOf(dow);
+const ti=WEEK.indexOf(dow);
 let h='<div class="week">';
-ord.forEach((d,i)=>{
+WEEK.forEach((d,i)=>{
  const tid=prog().schedule[d],t=tid?tpl(tid):null;
  const kind=t?t.kind:'off',lbl=t?t.name.split(' ')[0]:'Off';
  const isToday=d===dow,sel=(S.sel==null?isToday:d===S.sel);
- const ddk=tk(new Date(Y,M-1,D+i-ti));
+ const ddk=shiftDk(dk,i-ti);
  const trained=i<=ti&&sessionsFor(ddk).some(s=>s.finishedAt);
  h+='<div class="day '+kind+(sel?' on':'')+'" onclick="selDay('+d+')" aria-label="'+DY[d]+' · '+esc(lbl)+(isToday?' · today':'')+(trained?' · trained':'')+'">'+(isToday&&!sel?'<div class="td"></div>':'')+'<div class="dl">'+DAB[d][0]+'</div><div class="dw">'+esc(lbl)+'</div>'+(trained?'<div class="cd"></div>':'')+'</div>'});
 return h+'</div>'}
-function ckRow(item,checks,extra){
+function ckRow(item,checks,extra,dk){ /* dk · the day the row belongs to; only the detail view passes one, so a tick on a past day lands on that day, not today */
 const on=checks.includes(item.id);
 const vid=item.video?'<a class="vl" href="'+item.video+'" target="_blank" onclick="event.stopPropagation()">▶ video</a>':'';
 const link=item.link?'<a class="vl" href="#" onclick="event.stopPropagation();event.preventDefault();openMobility(\'today\')">Open checklist →</a>':'';
 /* links ride the detail line, so the name keeps its own description as a pair and every row is the same height */
 const meta=[item.detail?esc(item.detail):'',vid,link].filter(Boolean).join(' · ');
-return'<div class="ck'+(on?' done':'')+'" onclick="tgDay(\''+item.id+'\',this)"><div class="cb">'+CHECK+'</div><div class="ckm"><div class="ckn">'+esc(item.name)+'</div>'+(meta?'<div class="ckr">'+meta+'</div>':'')+'</div>'+(extra||'')+'</div>'}
-function tgDay(cid,el){const dk=tk(),d=DB.days[dk]=DB.days[dk]||{c:[]};
+return'<div class="ck'+(on?' done':'')+'" onclick="tgDay(\''+item.id+'\',this'+(dk?',\''+dk+'\'':'')+')"><div class="cb">'+CHECK+'</div><div class="ckm"><div class="ckn">'+esc(item.name)+(item.opt?' <span class="chip off" style="margin-left:6px">optional</span>':'')+'</div>'+(meta?'<div class="ckr">'+meta+'</div>':'')+'</div>'+(extra||'')+'</div>'}
+function tgDay(cid,el,dk){dk=dk||tk();const d=dayRec(dk);
 const on=!d.c.includes(cid);d.c=on?d.c.concat([cid]):d.c.filter(x=>x!==cid);
 if(!on&&d.amob)d.amob=d.amob.filter(x=>x!==cid); /* a hand-untick in the routine clears the auto mark too */
 if(!on&&d.adaily)d.adaily=d.adaily.filter(x=>x!==cid); /* and the same for a hand-untick in the daily block */
@@ -2309,23 +2341,24 @@ if(!still){d.c=d.c.filter(y=>y!==x);d.adaily=d.adaily.filter(y=>y!==x)}})}
 
 /* ═══════════ DAILY HABITS (fasting · bedtime) ═══════════ */
 function bedTime(){return DB.settings.bedtime||'22:00'}
-function fmtTime12(t){const[h,m]=t.split(':').map(Number);let hh=h%12;if(!hh)hh=12;return hh+':'+String(m).padStart(2,'0')+' '+(h<12?'AM':'PM')}
-function fmtTimeShort(t){const[h,m]=t.split(':').map(Number);let hh=h%12;if(!hh)hh=12;return hh+(m?':'+String(m).padStart(2,'0'):'')}
+function h12(t){const[h,m]=t.split(':').map(Number);let hh=h%12;if(!hh)hh=12;return{h,m,hh}}
+function fmtTime12(t){const{h,m,hh}=h12(t);return hh+':'+String(m).padStart(2,'0')+' '+(h<12?'AM':'PM')}
+function fmtTimeShort(t){const{m,hh}=h12(t);return hh+(m?':'+String(m).padStart(2,'0'):'')}
 function bedShort(){return'Bed by '+fmtTimeShort(bedTime())}
 function bedFull(){return'In bed by '+fmtTime12(bedTime())}
 function habitOn(dk,key){return!!(DB.days[dk]&&DB.days[dk][key])}
 function habitDef(key){return HABITS.find(h=>h.key===key)||{off:0}}
 function habitDate(key){return shiftDk(tk(),habitDef(key).off)}
 function habitToday(key){return habitOn(habitDate(key),key)}
-function tgHabit(key,el){const dk=habitDate(key),d=DB.days[dk]=DB.days[dk]||{c:[]};
-const on=!d[key];if(on)d[key]=true;else delete d[key];sv();vibe(10);
+function flipHabit(dk,key){const d=dayRec(dk),on=!d[key];if(on)d[key]=true;else delete d[key];sv();vibe(10);return on}
+function tgHabit(key,el){const on=flipHabit(habitDate(key),key);
 if(el){el.classList.toggle('on',on);el.setAttribute('aria-checked',on?'true':'false');const s=el.querySelector('.hbs');if(s)s.innerHTML=habitInner(key)}}
 /* Sundays are sacred: untracked by default, and never break a streak. A record is Sunday-neutral
    when the day you'd naturally tap it lands on a Sunday (bed logs the previous night, so Saturday
    nights are tappable only on Sunday) — absent neutral records are skipped, not counted as misses. */
 function sunNeutral(dk,off){return dowOf(shiftDk(dk,-(off||0)))===0}
 function sunTracked(dk){return dowOf(dk)!==0||!!(DB.days[dk]&&DB.days[dk].sunOn)||sessionsFor(dk).length>0}
-function sunOverride(dk){const d=DB.days[dk]=DB.days[dk]||{c:[]};d.sunOn=true;sv();vibe(10);rn()}
+function sunOverride(dk){const d=dayRec(dk);d.sunOn=true;sv();vibe(10);rn()}
 function sunRest(dk){const d=DB.days[dk];if(d)delete d.sunOn;sv();rn()}
 function habitStreak(key){const off=habitDef(key).off||0;let n=0,d=habitDate(key);if(!habitOn(d,key))d=shiftDk(d,-1);
 while(true){if(habitOn(d,key)){n++;d=shiftDk(d,-1)}else if(sunNeutral(d,off)){d=shiftDk(d,-1)}else break}return n}
@@ -2343,14 +2376,12 @@ function habitsStrip(){return'<div class="sl"><span class="lt">Daily Habits</spa
 function dayHabitSheet(dk){const f=habitOn(dk,'fast'),b=habitOn(dk,'bed'),tr=sessionsFor(dk).some(s=>s.finishedAt);
 sheet(DY[dowOf(dk)]+' · '+fmtDk(dk),tr?'Trained this day':'',
 '<div class="shbtns"><button class="btn '+(b?'btn-p':'btn-o')+'" id="dhb-bed" onclick="dhToggle(\'bed\',\''+dk+'\')">'+(b?'✓ ':'')+bedFull()+'</button><button class="btn '+(f?'btn-p':'btn-o')+'" id="dhb-fast" onclick="dhToggle(\'fast\',\''+dk+'\')">'+(f?'✓ ':'')+'Fasted</button>'+(tr?'<button class="btn btn-o" onclick="closeOv();openPastDay(\''+dk+'\')">View workout →</button>':'')+'<button class="btn btn-q" onclick="closeOv()">Done</button></div>')}
-function dhToggle(key,dk){const d=DB.days[dk]=DB.days[dk]||{c:[]};
-if(d[key])delete d[key];else d[key]=true;sv();vibe(10);
-const on=!!d[key],btn=document.getElementById('dhb-'+key);
+function dhToggle(key,dk){const on=flipHabit(dk,key),btn=document.getElementById('dhb-'+key);
 if(btn){btn.className='btn '+(on?'btn-p':'btn-o');btn.innerHTML=(on?'✓ ':'')+(key==='fast'?'Fasted':bedFull())}
 rn()}
 function bedStat(){const n=habitStreak('bed'),best=habitBest('bed');
 const head=n>0?'<b>'+n+'</b> night'+(n>1?'s':'')+' in a row':'Sleep by '+fmtTimeShort(bedTime())+' tonight';
-const sub=best>0?bedFull()+' · best '+best+' night'+(best>1?'s':''):bedFull()+' · logged each morning';
+const sub=best>0?bedFull()+' · best '+pl(best,'night'):bedFull()+' · logged each morning';
 return'<div class="card bedstat"><span class="bsf'+(n>0?' on':'')+'">'+moonAt(23)+'</span><div class="bsm"><div class="bsn">'+head+'</div><div class="bss">'+sub+'</div></div></div>'}
 /* ── The daily "How do you feel today?" pre-tap was REMOVED at contentRev 31. It greeted J on every
    training day and fed nothing: every reader sat behind engineOn(), which is dormant, and the answer
@@ -2365,9 +2396,8 @@ const dk=tk(),dow=dowOf(dk);
 engTick(); /* fold banked day-verdicts into the lift plan · check the deload triggers */
 let h='';
 const n=nagDue();
-if(n)h+='<div class="ban em"><span><b>'+n+' session'+(n>1?'s':'')+'</b> since last backup</span><span class="bba"><button class="bbtn" onclick="doExport()">Export</button><button class="bbtn q" onclick="nagLater()">Later</button></span></div>';
+if(n)h+='<div class="ban em"><span><b>'+pl(n,'session')+'</b> since last backup</span><span class="bba"><button class="bbtn" onclick="doExport()">Export</button><button class="bbtn q" onclick="nagLater()">Later</button></span></div>';
 if(calfAmDue(dk)&&!(S.sel!=null&&S.sel!==dow)&&!(dow===0&&!sunTracked(dk)))h+='<div class="ban"><span><b>Calf</b> this morning?</span><div class="seg" style="flex-basis:100%">'+[[0,'Normal'],[1,'Stiff'],[2,'Sore']].map(o=>'<button class="sgb" onclick="setCalfAm('+o[0]+')">'+o[1]+'</button>').join('')+'</div></div>'; /* same seg as Sprint readiness · one look for "pick one of three" */
-/* Same suppression guards as the calf read · a morning question belongs on today's screen, never on a day preview or the untracked Sunday. It stays a banner and stays at the top: it is perishable, and a skipped one is a datum nothing else can recover. */
 const act=activeSession();
 /* the banner is a POINTER to a session this screen would otherwise hide: another day's, or one
    today's areas can't surface. When the day card right below offers the same Continue, the
@@ -2382,7 +2412,7 @@ h+='<header class="hero"><div class="rw" style="display:grid;place-items:center"
 +'<div><div class="eyebrow"><b>'+DY[dow]+'</b> · '+fmtDk(dk)+'</div><h1 class="title">Sacred Rest</h1><div class="hsub">Untracked by design</div></div></header>';
 h+=weekStrip(dk);
 h+='<div class="sl"><span class="lt">Rest</span><span class="rule"></span></div>'
-+'<div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="display:flex;color:var(--muted);margin-top:1px">'+moonAt(20)+'</span><div><div class="scard-t" style="font-size:16px">Fully off, maybe a walk</div><div class="ckr" style="margin-top:2px">Nothing to check, nothing counts as missed. Streaks skip Sundays.</div></div></div>'
++restCard('Fully off, maybe a walk','Nothing to check, nothing counts as missed. Streaks skip Sundays.')
 +'<button class="lnk" style="display:block;margin:10px 2px" onclick="sunOverride(\''+dk+'\')">Track today anyway</button>';
 return h}
 const t=tplForDate(dk),ov=DB.dayOverrides[dk]!=null,sunOv=dow===0&&!!(DB.days[dk]&&DB.days[dk].sunOn);
@@ -2394,11 +2424,12 @@ h+=weekStrip(dk);
 if(t&&engineOn()&&inDeloadWeek(dk))h+='<div class="note">Deload week · sets halved, sprints easy · normal service resumes Monday</div>';
 if(t&&t.kind==='lift')h+=liftArea(dk,t);
 else if(t&&t.kind==='cardio')h+=cardioArea(dk,t,null);
-else h+='<div class="sl" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div><div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="display:flex;color:var(--muted);margin-top:1px">'+moonAt(20)+'</span><div><div class="scard-t" style="font-size:16px">Full recovery</div><div class="ckr" style="margin-top:2px">Daily block + 30 min walk. That’s it.</div></div></div>';
+else h+='<div class="sl" id="sl-work"><span class="lt">Rest</span><span class="rule"></span></div>'+restCard('Full recovery','Daily block + 30 min walk. That’s it.');
 h+=extraArea(dk,t);
-h+=dailySection(dk,t);
+h+=dailySection(dk);
 h+=habitsStrip();
 return h}
+function restCard(title,body){return'<div class="card" style="display:flex;gap:14px;align-items:flex-start"><span style="display:flex;color:var(--muted);margin-top:1px">'+moonAt(20)+'</span><div><div class="scard-t" style="font-size:16px">'+title+'</div><div class="ckr" style="margin-top:2px">'+body+'</div></div></div>'}
 function liftArea(dk,t,opts){
 opts=opts||{};const xtra=!!opts.extra;
 const sess=sessionsFor(dk).filter(s=>s.kind!=='cardio'&&s.templateId===t.id),fin=sess.filter(s=>s.finishedAt),act=sess.find(s=>!s.finishedAt);
@@ -2425,7 +2456,7 @@ function extraArea(dk,t){
 let h='';const pk=t?t.kind:'rest';
 if(pk!=='cardio'){
 const cs=getCardioSess(dk,false);
-if(cs||S.addSpr||S.addAer||(SPR&&SPR.dk===dk)){const ct=prog().templates.find(x=>x.kind==='cardio');if(ct)h+=cardioArea(dk,ct,cs,{extra:true})}}
+if(cs||S.addSpr||S.addAer||(SPR&&SPR.dk===dk)){const ct=cardioTpl();if(ct)h+=cardioArea(dk,ct,cs,{extra:true})}}
 if(pk!=='lift'){
 const ls=sessionsFor(dk).find(s=>s.kind!=='cardio');
 if(ls){const lt=tpl(ls.templateId);if(lt)h+=liftArea(dk,lt,{extra:true})}}
@@ -2452,15 +2483,17 @@ sheet('Add a workout','Stacks onto today · your scheduled session stays primary
 function addLift(tid){closeOv();startSession(tid)}
 function addCardio(type){if(type==='sprint')S.addSpr=true;else S.addAer=true;CV=null;closeOv();rn()}
 function rmExtraCardio(){const dk=tk();
-if(SPR&&SPR.dk===dk&&(SPR.done||0)>0){ovConfirm('Discard the sprints in progress?','The '+SPR.done+' logged rep'+(SPR.done>1?'s':'')+' will be deleted.',
-[{label:'Discard',click:'rmExtraCardioGo()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}]);return} /* the × must never one-tap a live sprint away · same confirm the window itself uses */
+if(SPR&&SPR.dk===dk&&(SPR.done||0)>0){ovConfirm('Discard the sprints in progress?','The '+pl(SPR.done,'logged rep')+' will be deleted.',
+[{label:'Discard',click:'rmExtraCardioGo()',kind:'d'},ACT_CANCEL]);return} /* the × must never one-tap a live sprint away · same confirm the window itself uses */
 rmExtraCardioGo()}
 function rmExtraCardioGo(){closeOv();const dk=tk(),s=getCardioSess(dk,false);S.addSpr=false;S.addAer=false;CV=null;
 if(SPR&&SPR.dk===dk){SPR=null;sprPersist()}
-if(s){const idx=DB.sessions.findIndex(x=>x.id===s.id),removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==s.id);sv();rn();toastUndo('Cardio removed',()=>{DB.sessions.splice(idx,0,removed);sv()})}
+if(s){const undo=dropSess(s.id);sv();rn();toastUndo('Cardio removed',undo)}
 else rn()}
-function rmExtraLift(sid){const idx=DB.sessions.findIndex(x=>x.id===sid);if(idx<0)return;const removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==sid);if(S.sid===sid)S.sid=null;sv();rn();toastUndo('Workout removed',()=>{DB.sessions.splice(idx,0,removed);sv()})}
-function dailySection(dk,t){
+function rmExtraLift(sid){if(!DB.sessions.some(x=>x.id===sid))return;const undo=dropSess(sid);if(S.sid===sid)S.sid=null;sv();rn();toastUndo('Workout removed',undo)}
+/* remove a session and hand back the undo · the three removal paths share it */
+function dropSess(sid){const idx=DB.sessions.findIndex(x=>x.id===sid),removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==sid);return()=>{DB.sessions.splice(idx,0,removed);sv()}}
+function dailySection(dk){
 const checks=dayChecks(dk),items=dailyItems(dk),c=prog().checklists;
 /* one block, one pass a day since cr35 · the Morning / Evening tabs and their 'pm:' ids are gone */
 let h='<div class="sl" id="sl-daily"><span class="lt">Daily Block</span><span class="rule"></span><span class="cnt num" id="cnt-daily"></span></div>';
@@ -2474,22 +2507,22 @@ function hangKeepPaused(){if(DB.settings)DB.settings.hangPausedAt=Date.now();sv(
 /* One row renderer for a template entry · the day preview and the Program tab have to agree about what is parked and what is still locked, or the preview quietly shows a gated move as part of today's plan. */
 function entryRow(e){const ex=exOf(e.exId);
 return'<div class="tpe'+(e.enabled?'':' offed')+'"><span class="tpen">'+esc(ex.name)+'</span><span class="tpes num">'+esc(schemeOf(e))+(e.enabled?'':' · off')+'</span></div>'}
+/* a template's preview rows · the day preview and the Program tab share it, and only differ in what stands in for the sprint row */
+function tplBody(t,sprHtml){if(t.kind==='lift')return t.entries.map(e=>entryRow(e)).join(''); /* sprHtml is a thunk · a lift template has no sprD to read */
+return'<div class="tpe"><span class="tpen">Dynamic Warm-Up</span><span class="tpes num">'+wuDef(t)+' min · zone 2</span></div>'+sprHtml()
++'<div class="tpe or">— or —</div>'
++'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>'
++(t.checks||[]).map(c=>'<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?(c.opt?'optional':''):'off')+'</span></div>').join('')}
 function vPreview(dk,dow){
 const d=S.sel,tid=prog().schedule[d],t=tid?tpl(tid):null;
-const ord=[1,2,3,4,5,6,0],ti=ord.indexOf(dow),[Y,M,D]=dk.split('-').map(Number);
-const selDk=tk(new Date(Y,M-1,D+ord.indexOf(d)-ti)),isPast=selDk<dk;
+const selDk=shiftDk(dk,WEEK.indexOf(d)-WEEK.indexOf(dow)),isPast=selDk<dk;
 let h='<header class="hero"><div><div class="eyebrow">Preview · <b>'+DY[d]+'</b></div><h1 class="title">'+esc(t?dayTitle(t.name):'Rest Day')+'</h1>'
 +'<button class="lnk" onclick="selDay('+dow+')">← Back to today</button></div></header>';
 h+=weekStrip(dk);
 if(t){
 if(t.note)h+='<div class="note">'+esc(t.note)+'</div>';
 h+='<div class="card">';
-if(t.kind==='lift')t.entries.forEach(e=>{h+=entryRow(e)});
-else{h+='<div class="tpe"><span class="tpen">Dynamic Warm-Up</span><span class="tpes num">'+wuDef(t)+' min · zone 2</span></div>'
- +'<div class="tpe"><span class="tpen">Sprint Run-Throughs</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>'
- +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:16px;letter-spacing:.12em">— or —</div>'
- +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>';
- (t.checks||[]).forEach(c=>{h+='<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>'})}
+h+=tplBody(t,()=>'<div class="tpe"><span class="tpen">Sprint Run-Throughs</span><span class="tpes num">'+t.sprD.reps+' × '+t.sprD.distM+'m @ '+t.sprD.eff+'%</span></div>');
 h+='</div>';
 if(isPast){const done=sessionsFor(selDk).some(s=>s.finishedAt);
  if(done)h+='<button class="btn btn-o" style="margin-top:4px" onclick="openPastDay(\''+selDk+'\')">View this day’s session</button>';
@@ -2503,7 +2536,7 @@ return h}
 function swapSheet(){
 const dk=tk(),dow=dowOf(dk);
 let b='';
-[1,2,3,4,5,6,0].forEach(d=>{if(d===dow)return;const tid=prog().schedule[d],t=tid?tpl(tid):null;if(!t)return;
+WEEK.forEach(d=>{if(d===dow)return;const tid=prog().schedule[d],t=tid?tpl(tid):null;if(!t)return;
 const fl=t.kind==='cardio'?(d===5?' · Sprints':' · Cardio'):''; /* both cardio days share one template · dow 5 is the one that runs sprints, so the flavor has to come from the day */
 b+='<button class="btn btn-o" onclick="swapTo('+d+')">'+DAB[d]+' · '+esc(t.name)+fl+'</button>'});
 b+='<button class="btn btn-o" onclick="swapTo(-1)">Rest day</button>';
@@ -2511,6 +2544,7 @@ sheet('Swap today','Do another day\'s session today. The week stays anchored · 
 function swapTo(d){DB.dayOverrides[tk()]=d;sv();closeOv();S.sel=null;CV=null;rn();
 toast(d===-1?'Resting today':'Doing '+DAB[d]+'\'s session today')}
 function unswap(){delete DB.dayOverrides[tk()];sv();CV=null;rn()}
+function flipDay(d){if(d===dowOf(tk()))unswap();else swapTo(d)} /* the card's one-tap flavour flip · aiming back at the real weekday is just an undo */
 
 /* ═══════════ BACKFILL — log a workout you missed entering ═══════════ */
 function pastSheet(dk){
@@ -2522,7 +2556,7 @@ prog().templates.forEach(t=>{const isS=sched&&sched.id===t.id;
 opts+='<button class="btn btn-q" onclick="closeOv()">Cancel</button>';
 const note=DY[dowOf(dk)]+', '+fmtDk(dk)+(ex.length?' · '+ex.length+' already logged':'');
 sheet('Log a past workout','Pick the day, then the session you did · it lands on that date in your history.',
-'<div class="flab" style="margin-top:0">Date</div><input class="tin num" type="date" max="'+tk()+'" value="'+dk+'" onchange="pastSheet(this.value)" style="margin-bottom:2px"><div class="note" style="margin:9px 0 2px">'+esc(note)+'</div><div class="shbtns">'+opts+'</div>')}
+'<div class="flab top">Date</div><input class="tin num" type="date" max="'+tk()+'" value="'+dk+'" onchange="pastSheet(this.value)" style="margin-bottom:2px"><div class="note" style="margin:9px 0 2px">'+esc(note)+'</div><div class="shbtns">'+opts+'</div>')}
 function startPastSession(dk,tid){
 const t=tid?tpl(tid):tplForDate(dk);if(!t){toast('Pick a workout');return}
 closeOv();PV={};S.editKey=null;CV=null;
@@ -2543,7 +2577,7 @@ const dk=tk(),t=tid?tpl(tid):tplForDate(dk);if(!t)return;
 const s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:t.name,templateId:t.id,kind:'lift',startedAt:Date.now(),finishedAt:null,sets:[]};
 DB.sessions.push(s);sv();PV={};S.editKey=null;S.sid=s.id;S.amend=false;S.view='session';rn()}
 function resumeSession(sid){PV={};S.editKey=null;S.sid=sid;S.amend=false;S.view='session';rn()}
-function exitSession(){if(S.backfill){endBackfill();return}if(S.amend){S.amend=false;S.view='detail';S.det=S.sid}else{S.view='tabs';S.tab='today'}S.editKey=null;rn()}
+function exitSession(){if(S.backfill){endBackfill();return}if(S.amend){S.amend=false;S.view='detail';S.det=S.sid}else{goToday()}S.editKey=null;rn()}
 function endBackfill(){
 const s=sessById(S.sid);let n=0;
 if(s){n=s.sets.length;
@@ -2551,29 +2585,29 @@ if(s){n=s.sets.length;
  else s.finishedAt=s.startedAt+Math.min(5400000,(n+1)*180000);
  sv()}
 S.backfill=false;S.amend=false;S.editKey=null;killRest();S.view='tabs';S.tab='history';rn();
-toast(n?n+' set'+(n>1?'s':'')+' saved to '+(s?fmtDk(s.date):'history'):'Nothing logged · discarded')}
+toast(n?pl(n,'set')+' saved to '+(s?fmtDk(s.date):'history'):'Nothing logged · discarded')}
 function finishAsk(){
 const s=sessById(S.sid);if(!s)return;
 if(S.backfill){endBackfill();return}
 if(S.amend){exitSession();return}
-const mins=Math.max(1,Math.round((Date.now()-s.startedAt)/60000));
+const mins=elapsedMins(s);
 ovConfirm('Finish session?','<b>'+pl(s.sets.length,'set')+'</b> · '+mins+' min',
-[{label:'Finish session',click:'finishSession()',kind:'p'},{label:'Keep going',click:'closeOv()',kind:'o'},{label:'Discard session',click:'discardAsk()',kind:'d'}])}
+[{label:'Finish session',click:'finishSession()',kind:'p'},ACT_KEEP,{label:'Discard session',click:'discardAsk()',kind:'d'}])}
 function finishSession(){const s=sessById(S.sid);if(!s)return;
-s.finishedAt=Date.now();sv();vibe([0,40,30,80]);killRest();lockOff();closeOv();S.view='tabs';S.tab='today';rn();
+s.finishedAt=Date.now();sv();vibe([0,40,30,80]);killRest();lockOff();closeOv();goToday();rn();
 finishSheet(s.id)}
 function finishQuick(sid){const s=sessById(sid);if(!s)return;
 const last=s.sets.length?Math.max.apply(null,s.sets.map(x=>x.ts)):s.startedAt;
 s.finishedAt=last;sv();rn();finishSheet(sid)}
-function finishQuickAsk(sid){const s=sessById(sid);if(!s)return;const mins=Math.max(1,Math.round((Date.now()-s.startedAt)/60000));
-ovConfirm('End session?','<b>'+pl(s.sets.length,'set')+'</b> · '+mins+' min',[{label:'End session',click:'finishQuickGo(\''+sid+'\')',kind:'p'},{label:'Keep going',click:'closeOv()',kind:'o'}])}
+function finishQuickAsk(sid){const s=sessById(sid);if(!s)return;const mins=elapsedMins(s);
+ovConfirm('End session?','<b>'+pl(s.sets.length,'set')+'</b> · '+mins+' min',[{label:'End session',click:'finishQuickGo(\''+sid+'\')',kind:'p'},ACT_KEEP])}
 function finishQuickGo(sid){closeOv();finishQuick(sid)}
 function postSeg(dk,cur){ /* the one post-workout feel seg · lift and cardio sheets share it so options and hint can never drift */
 return'<div class="flab" style="margin-top:2px">How was it?</div><div class="seg tight">'
 +[['springy','Springy'],['normal','Normal'],['flat','Flat · sore'],['stop','Cut short']].map(o=>'<button class="sgb ptb'+(cur===o[0]?' on':'')+'" data-v="'+o[0]+'" onclick="postTap(\''+dk+'\',\''+o[0]+'\')">'+o[1]+'</button>').join('')
 +'</div><div class="rpehint">one tap · feeds your weekly load · optional</div>'}
 function finishSheet(sid){const s=sessById(sid);if(!s)return;
-const mins=Math.max(1,Math.round(((s.finishedAt||Date.now())-s.startedAt)/60000));
+const mins=sessMins(s);
 if(s.kind!=='lift'){toast('Session saved');return}
 const prs=sessionPRs(sid);
 const cur=dayPost(s.date);
@@ -2581,31 +2615,30 @@ let b=postSeg(s.date,cur);
 if(prs.length)b+='<div class="sl" style="margin:15px 0 2px"><span class="lt">PRs</span><span class="rule"></span></div><div style="padding:0 2px">'+prs.map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div></div>').join('')+'</div>';
 b+='<div class="shbtns"><button class="btn btn-p" onclick="closeOv()">Done</button></div>';
 sheet('Nice work',pl(s.sets.length,'set')+' · '+mins+' min',b)}
-function setPost(dk,v){const d=DB.days[dk]=DB.days[dk]||{c:[]};
+function setPost(dk,v){const d=dayRec(dk);
 if(d.post===v)delete d.post;else d.post=v;vibe(8);sv();
 const on=d.post||null;document.querySelectorAll('.ptb').forEach(b=>b.classList.toggle('on',b.dataset.v===on))}
 function discardAsk(){ovConfirm('Discard this session?','All sets logged in it will be deleted.',
-[{label:'Discard',click:'discardSession()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
-function discardSession(){DB.sessions=DB.sessions.filter(x=>x.id!==S.sid);sv();killRest();lockOff();closeOv();S.view='tabs';S.tab='today';rn()}
+[{label:'Discard',click:'discardSession()',kind:'d'},ACT_CANCEL])}
+function discardSession(){DB.sessions=DB.sessions.filter(x=>x.id!==S.sid);sv();killRest();lockOff();closeOv();goToday();rn()}
 
 /* ═══════════ SESSION VIEW ═══════════ */
 /* Bounds for a pending set value, one table for every path that writes one · the +/− stepper and the
-   tap-to-type field both clamp through here, so they can never disagree. w/r are the old
-   weight × reps fields; h/e are an iso row's seconds and effort %, which need a ceiling as well as a
-   floor (an effort of 250% is not a thing). */
-const PV_BOUNDS={w:[0,1e5],r:[1,1000],h:[5,600],e:[10,100]};
-function pvClamp(f,v){const b=PV_BOUNDS[f]||[0,1e5];return Math.min(b[1],Math.max(b[0],v))}
-function fmtVal(key,f,bw){const p=PV[key]||{};return f==='w'?fmtW(p.w,bw):f==='h'?(+p.h||0)+'s':f==='e'?(+p.e||0)+'%':String(p.r)}
+   tap-to-type field both clamp through here, so they can never disagree. */
+const PV_BOUNDS={w:[0,1e5],r:[1,1000]};
+function pvClamp(f,v){const b=PV_BOUNDS[f]||[0,1e5];return clamp(v,b[0],b[1])}
+function fmtVal(key,f,bw){const p=PV[key]||{};return f==='w'?fmtW(p.w,bw):String(p.r)}
 function stepPV(key,f,d,bw){const p=PV[key];if(!p)return;
 p[f]=pvClamp(f,Math.round(((+p[f]||0)+d)*10)/10);
 setV(document.getElementById('v-'+key+'-'+f),fmtVal(key,f,bw));updSlab(key)}
-function editPV(key,f,el,bw){if(el.querySelector('input'))return;const p=PV[key];if(!p)return;
-const cur=+p[f]||0;
-el.innerHTML='<input class="vin num" type="text" inputmode="decimal" value="'+(cur||'')+'">';
+/* tap-to-type · swap a value cell for an input, commit on blur or Enter · shared by the set slab and the sprint window */
+function tapEdit(el,cur,mode,onCommit){el.innerHTML='<input class="vin num" type="text" inputmode="'+mode+'" value="'+(cur||'')+'">';
 const inp=el.firstChild;inp.focus();try{inp.select()}catch(e){}
-const commit=()=>{const n=parseFloat(inp.value);p[f]=isNaN(n)?cur:pvClamp(f,n);el.textContent=fmtVal(key,f,bw);updSlab(key)};
+const commit=()=>onCommit(parseFloat(inp.value));
 inp.addEventListener('blur',commit);
 inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur()})}
+function editPV(key,f,el,bw){if(el.querySelector('input'))return;const p=PV[key];if(!p)return;
+const cur=+p[f]||0;tapEdit(el,cur,'decimal',n=>{p[f]=isNaN(n)?cur:pvClamp(f,n);el.textContent=fmtVal(key,f,bw);updSlab(key)})}
 function stepGroup(key,f,step,bw){
 return'<div class="stp"><button class="stb" data-hold data-fn="stepPV" data-args=\''+JSON.stringify([key,f,-step,bw])+'\'>−</button>'
 +'<div class="stv num" id="v-'+key+'-'+f+'" onclick="editPV(\''+key+'\',\''+f+'\',this,'+bw+')">'+fmtVal(key,f,bw)+'</div>'
@@ -2622,7 +2655,7 @@ function updSlab(key){const el=document.getElementById('sv-'+key);if(!el)return;
 function pendRow(ex,entry,i,sess,live){
 const key=ex.id+'_'+i;
 seedPV(key,ex,entry,i,sess);
-const wu=sessWu(sess,entry),isWu=i<wu,wIdx=i-wu+1,wstep=unit()==='kg'?2.5:5;
+const wu=sessWu(sess,entry),isWu=i<wu,wIdx=i-wu+1,wstep=wInc(unit());
 const row='<div class="sr'+(isWu?' wu':'')+(live?' live':'')+'"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
 +stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false)
 +(live?'<span></span>':'<button class="lg" id="lg-'+ex.id+'-'+i+'" onclick="logSet(\''+ex.id+'\','+i+')" aria-label="Log set">'+CHECK+'</button>')+'</div>'; /* stable id · lets rn() hand focus to the next pending set instead of dropping it */
@@ -2630,18 +2663,18 @@ if(!live)return row;
 /* the live set's data line is followed by the full-bleed slab, and the slab IS the commit target ·
    it carries the same log check the row buttons use (outside the sv- span, so updSlab can't wipe it) */
 return row+'<button class="slab num" id="lg-'+ex.id+'-'+i+'" onclick="slabLog(\''+ex.id+'\','+i+')" aria-label="Log set"><span id="sv-'+key+'" data-bw="'+(ex.bw?'1':'0')+'">'+slabTxt(key,ex.bw)+'</span>'+CHECK+'</button>'}
-function doneRow(ex,entry,st,wu){
+function doneRow(ex,st,wu){
 const wIdx=Math.max(1,st.n-wu); /* floored · a row a past bug mis-stamped must degrade to a repeated number, never 0 or a negative */
 return'<div class="sr done'+(st.warmup?' wu':'')+(S.flash===ex.id+'_'+st.n?' new':'')+'" onclick="editLogged(\''+ex.id+'\','+st.n+')"><div class="srn num">'+(st.warmup?'W':wIdx)+'</div>'
 +'<div class="dtx num">'+setTxt(st,ex.bw)+'</div><div class="dck">'+CHECK+'</div></div>'}
-function editRow(ex,entry,st,wu){
+function editRow(ex,st,wu){
 const key='e_'+ex.id+'_'+st.n;
 if(!PV[key])PV[key]={w:wInUnit(st.w),r:st.reps};
-const isWu=!!st.warmup,wIdx=Math.max(1,st.n-wu),wstep=unit()==='kg'?2.5:5;
+const isWu=!!st.warmup,wIdx=Math.max(1,st.n-wu),wstep=wInc(unit());
 return'<div class="sr edit'+(isWu?' wu':'')+'"><div class="srn num">'+(isWu?'W':wIdx)+'</div>'
 +stepGroup(key,'w',wstep,ex.bw)+stepGroup(key,'r',1,false)
 +'<button class="lg go" onclick="updateSet(\''+ex.id+'\','+st.n+')" aria-label="Save set">'+CHECK+'</button></div>'
-+'<div style="display:flex;justify-content:flex-end;gap:2px;padding:2px 2px 4px"><button class="rowx" onclick="removeSet(\''+ex.id+'\','+st.n+')">Remove set</button><button class="rowx" style="color:var(--muted)" onclick="cancelEdit()">Cancel</button></div>'}
++'<div class="rowxs"><button class="rowx" onclick="removeSet(\''+ex.id+'\','+st.n+')">Remove set</button><button class="rowx" style="color:var(--muted)" onclick="cancelEdit()">Cancel</button></div>'}
 /* the ONE ember slab on screen · the next pending set of the exercise you are actually in:
    the exercise of the most recently logged set while it still has pending rows, else the
    first exercise (in session order) with a pending row. Enforced here, in code, because the
@@ -2669,8 +2702,8 @@ const fin=logged.length>=total&&total>0;
 let rows='';
 const byN={};logged.forEach(x=>{byN[x.n]=x});
 for(let i=0;i<total;i++){const st=byN[i+1];
- if(st&&S.editKey===entry.exId+'_'+st.n)rows+=editRow(ex,entry,st,wu);
- else if(st)rows+=doneRow(ex,entry,st,wu);
+ if(st&&S.editKey===entry.exId+'_'+st.n)rows+=editRow(ex,st,wu);
+ else if(st)rows+=doneRow(ex,st,wu);
  else rows+=pendRow(ex,entry,i,sess,liveKey===entry.exId+'_'+i)}
 body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+esc(ex.name)
 +(ex.video?' <a class="vl" href="'+ex.video+'" target="_blank" aria-label="Watch video">▶</a>':'')+'</div>'
@@ -2683,9 +2716,8 @@ body+='<div class="exc'+(fin?' fin':'')+'"><div class="exh"><div class="exn">'+e
 +'<div class="exf"><div style="display:flex;align-items:center;gap:8px"><button class="setb" onclick="addRow(\''+entry.exId+'\')" aria-label="Add set">+</button>'+(total>1?'<button class="setb" onclick="rmRow(\''+entry.exId+'\')" aria-label="Remove set">−</button>':'')+'</div><div style="display:flex;align-items:center;gap:5px;margin-left:auto">'+(entries.length>1?'<button class="exmv" onclick="moveEx(\''+entry.exId+'\',-1)"'+(ei===0?' disabled':'')+' aria-label="Move up">↑</button><button class="exmv" onclick="moveEx(\''+entry.exId+'\',1)"'+(ei===entries.length-1?' disabled':'')+' aria-label="Move down">↓</button>':'')+'<button class="exrm" onclick="rmExAsk(\''+entry.exId+'\')">Remove</button></div></div></div>'});
 body+='<button class="addb" onclick="pickExFor(\'session\')">+ Add exercise</button>';
 const elapsed=S.amend?fmtDk(sess.date):'<span id="elap">'+mmss(Date.now()-sess.startedAt)+'</span>';
-const hd='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="exitSession()">'+I_BACK+'</button>'
-+'<div class="shm"><div class="sht">'+(S.backfill?'Log · ':S.amend?'Edit · ':'')+esc(dayTitle(sess.name))+'</div><div class="shs num">'+elapsed+' · '+pl(sess.sets.length,'set')+'</div></div>'
-+'<button class="fin'+(S.amend?' q':'')+'" onclick="finishAsk()">'+(S.backfill?'Save':S.amend?'Done':'Finish')+'</button></div></div>';
+const hd=edHdr((S.backfill?'Log · ':S.amend?'Edit · ':'')+esc(dayTitle(sess.name)),elapsed+' · '+pl(sess.sets.length,'set'),'exitSession()',
+'<button class="fin'+(S.amend?' q':'')+'" onclick="finishAsk()">'+(S.backfill?'Save':S.amend?'Done':'Finish')+'</button>','num');
 return hd+'<div class="co nopad">'+body+'</div>'}
 function clearPV(exId){Object.keys(PV).forEach(k=>{if(k.indexOf(exId+'_')===0)delete PV[k]})}
 function logSet(exId,i){
@@ -2717,7 +2749,7 @@ function rscStep(d){
 if(!RSC)return;
 const sess=sessById(S.sid),ex=exOf(RSC.exId);
 const t=sess?tpl(sess.templateId):null,e=t?t.entries.find(x=>x.exId===RSC.exId):null;
-const base=Math.min(600,Math.max(15,(e?restFor(e,ex):ex.rest)+d)); /* step the base; effective display follows */
+const base=clampRest((e?restFor(e,ex):ex.rest)+d); /* step the base; effective display follows */
 if(e)e.rest=base;else ex.rest=base;
 sv();setV(document.getElementById('rscV'),rscCur()+'s')}
 function editLogged(exId,n){S.editKey=exId+'_'+n;delete PV['e_'+exId+'_'+n];rn()}
@@ -2731,7 +2763,7 @@ st.w={v:+pv.w||0,u:unit()};st.reps=Math.round(pv.r);
 S.editKey=null;delete PV['e_'+exId+'_'+n];sv();rn()}
 function removeSet(exId,n){
 const sess=sessById(S.sid);if(!sess)return;
-const before=JSON.parse(JSON.stringify(sess.sets));
+const before=clone(sess.sets);
 sess.sets=sess.sets.filter(x=>!(x.exId===exId&&x.n===n));
 sess.sets.forEach(x=>{if(x.exId===exId&&x.n>n)x.n--});
 S.editKey=null;delete PV['e_'+exId+'_'+n];sv();rn();toastUndo('Set removed',()=>{sess.sets=before;sv()})}
@@ -2743,19 +2775,19 @@ function moveEx(exId,dir){const s=sessById(S.sid);if(!s)return;const order=entri
    "Remove" (the exercise), so the footer can never delete recorded work on a single tap. The floor is
    one row, NOT one working set: a warm-up-only entry (Face Pulls is 2 warm-ups and 0 working sets)
    would otherwise be able to add a row and never take it back, which is the asymmetry all over again. */
-function rowLabel(entry,n,wu){return n<=wu?'warm-up set':'set '+(n-wu)}
+function rowLabel(n,wu){return n<=wu?'warm-up set':'set '+(n-wu)}
 function rmRow(exId){const sess=sessById(S.sid);if(!sess)return;
 const entry=entryFor(sess,exId);if(!entry)return;
 const cur=rowTotal(sess,entry);
 if(cur<=1){toast('Use Remove to drop the exercise');return}
 if(workingSets(sess,exId).some(x=>x.n===cur)){
- ovConfirm('Remove '+rowLabel(entry,cur,sessWu(sess,entry))+'?','This set is logged. Removing it deletes what you recorded.',
- [{label:'Remove set',click:'rmRowGo(\''+exId+'\')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}]);return}
+ ovConfirm('Remove '+rowLabel(cur,sessWu(sess,entry))+'?','This set is logged. Removing it deletes what you recorded.',
+ [{label:'Remove set',click:'rmRowGo(\''+exId+'\')',kind:'d'},ACT_CANCEL]);return}
 rmRowGo(exId)}
 function rmRowGo(exId){const sess=sessById(S.sid);if(!sess)return;
 const entry=entryFor(sess,exId);if(!entry)return;
 const cur=rowTotal(sess,entry);if(cur<=1){closeOv();return}
-const before=JSON.parse(JSON.stringify(sess.sets)),bx=xtra(sess,exId);
+const before=clone(sess.sets),bx=xtra(sess,exId);
 const hit=sess.sets.find(x=>x.exId===exId&&x.n===cur);
 if(hit){sess.sets=sess.sets.filter(x=>!(x.exId===exId&&x.n===cur));delete PV['e_'+exId+'_'+cur]}
 delete PV[exId+'_'+(cur-1)]; /* pending-row PV key is the 0-based row index, so the row we just dropped */
@@ -2766,9 +2798,9 @@ function rmExAsk(exId){const s=sessById(S.sid);if(!s)return;
 const n=workingSets(s,exId).length;
 if(!n){rmExGo(exId);return}
 ovConfirm('Remove '+esc(exOf(exId).name)+'?',n+' logged set'+(n>1?'s':'')+' on this day will be deleted.',
-[{label:'Remove exercise',click:'rmExGo(\''+exId+'\')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+[{label:'Remove exercise',click:'rmExGo(\''+exId+'\')',kind:'d'},ACT_CANCEL])}
 function rmExGo(exId){const s=sessById(S.sid);if(!s)return;
-const bSets=JSON.parse(JSON.stringify(s.sets)),bAdd=JSON.parse(JSON.stringify(s.addons||[])),bHid=JSON.parse(JSON.stringify(s.hidden||[]));
+const bSets=clone(s.sets),bAdd=clone(s.addons||[]),bHid=clone(s.hidden||[]);
 s.sets=s.sets.filter(x=>x.exId!==exId);
 s.addons=(s.addons||[]).filter(x=>x!==exId);
 const t=tpl(s.templateId);
@@ -2776,7 +2808,11 @@ if(t&&t.entries.some(e=>e.exId===exId)){s.hidden=s.hidden||[];if(!s.hidden.inclu
 const bx=xtra(s,exId);setXtra(s,exId,0);clearPV(exId);S.editKey=null;sv();closeOv();rn();toastUndo('Exercise removed',()=>{s.sets=bSets;s.addons=bAdd;s.hidden=bHid;setXtra(s,exId,bx);sv()})}
 
 /* ═══════════ CARDIO ═══════════ */
+function sprTags(sp){return(sp.pain!=null?' · pain '+sp.pain:'')+(sp.fallback?' · easy':'')} /* the saved-sprint suffixes */
+function cardioTpl(){return prog().templates.find(x=>x.kind==='cardio')}
+function cardioEmpty(s){return!s.sprints&&!s.aerobic&&!s.warmup&&!(s.sets&&s.sets.length)}
 function aerLabel(m){return m==='bike'?'Bike':m==='run'?'Run':'Swim'}
+function aerDone(m){return m==='bike'?'Ride logged':m==='run'?'Run logged':'Swim logged'}
 function ensureCV(dk,t,sess){
 if(CV&&CV.dk===dk)return;
 const sp=(sess&&sess.sprints)||null,ae=(sess&&sess.aerobic)||null,wu=(sess&&sess.warmup)||null;
@@ -2793,7 +2829,7 @@ mode:ae?ae.mode:t.aerD.mode,dur:ae?ae.durMin:(_cr!=null?_cr:t.aerD.durMin),zone:
 wu:wu?wu.durMin:wuDef(t)}; /* the warm-up carries minutes only · never eased by a guard, because a warm-up is not the dose */
 CE={spr:!sp,aer:!ae,wu:false}} /* CE.wu is an explicit "editing" flag, not "unsaved" · an unlogged warm-up must stay a one-tap row, never a form */
 function wuDef(t){const d=t&&t.wuD&&+t.wuD.durMin;return d>0?d:40} /* a template saved before contentRev 29 has no wuD */
-function cstep(f,d,min,max){if(!CV)return;CV[f]=Math.min(max,Math.max(min,(+CV[f]||0)+d));
+function cstep(f,d,min,max){if(!CV)return;CV[f]=clamp((+CV[f]||0)+d,min,max);
 setV(document.getElementById('cv-'+f),CV[f]);setV(document.getElementById('rxt-'+f),CV[f]); /* the prescription headline (easy/taper card) tracks the steppers live */
 if(S.view==='sprint'&&!S.sprAmend)sprPersist()}
 function cseg(f,v){if(!CV)return;CV[f]=v;if(f==='ready'&&v==='flat'&&(+CV.eff||0)>85)CV.eff=85;vibe(8);
@@ -2803,14 +2839,14 @@ function cfld(label,f,step,min,max){
 return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="cstep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="cv-'+f+'">'+CV[f]+'</div><button class="stb" data-hold data-fn="cstep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
 function getCardioSess(dk,create){
 let s=sessionsFor(dk).find(x=>x.kind==='cardio');
-if(!s&&create){const sd=tplForDate(dk),ct=(sd&&sd.kind==='cardio')?sd:prog().templates.find(x=>x.kind==='cardio'); /* a stacked cardio must carry the CARDIO template id/name — never the day's lift template, or it masquerades as an extra lift session */
+if(!s&&create){const sd=tplForDate(dk),ct=(sd&&sd.kind==='cardio')?sd:cardioTpl(); /* a stacked cardio must carry the CARDIO template id/name — never the day's lift template, or it masquerades as an extra lift session */
 s={id:id('s'),date:dk,dow:dowOf(dk),viaDow:effDow(dk),name:ct?ct.name:'Cardio',templateId:ct?ct.id:'t_cardio',kind:'cardio',startedAt:Date.now(),finishedAt:Date.now(),sets:[]};
 DB.sessions.push(s)}
 return s}
 function saveSprints(dk){if(!CV||!CV.plan)return;
 const L=CV.plan.slice(0,CV.done);if(!L.length){toast('Log at least one rep');return}
 const s=getCardioSess(dk,true);
-if(SPR&&SPR.dk===dk&&SPR.startedAt&&!s.sprints&&!s.aerobic&&!s.warmup&&!(s.sets&&s.sets.length)){s.startedAt=SPR.startedAt;s.finishedAt=Date.now()} /* a pure sprint session keeps its real wall-clock · a warm-up logged first means the session already started earlier, so leave its clock alone */
+if(SPR&&SPR.dk===dk&&SPR.startedAt&&cardioEmpty(s)){s.startedAt=SPR.startedAt;s.finishedAt=Date.now()} /* a pure sprint session keeps its real wall-clock · a warm-up logged first means the session already started earlier, so leave its clock alone */
 const _q=s.sprints&&s.sprints.quality; /* the Fresh/Solid/Faded read was cut at cr31 · never written or shown again, but this rebuild is wholesale, so carry a value logged BEFORE the cut across an edit rather than deleting it · logged history is never rewritten */
 s.sprints={reps:L.length,distM:Math.max.apply(null,L),effortPct:CV.eff,legs:L.slice(),pain:CV.pain===''?null:CV.pain,ready:CV.ready||null,fallback:CV.fallback?1:0,menuId:CV.menuId||null,season:CV.season||prog().season||null};
 if(_q!=null)s.sprints.quality=_q; /* only ever preserved, never created · a sprint logged after cr31 has no quality key and must not gain one */
@@ -2818,7 +2854,7 @@ if(!s.finishedAt)s.finishedAt=Date.now();
 if(engineOn()&&engine().sprintFb){const e=engine(),f=e.sprintFb;
  if((f===true||s.date>f)&&!taperState(s.date)&&!(e.taperEndedAt&&s.date<=e.taperEndedAt))delete e.sprintFb} /* consumed by the first sprint after the Stop · a taper day doesn't spend it, even edited after the race (the taper owned that card, so the easy day is still owed), and a backfilled past day never does */
 CE.spr=false;sv();rn();toast(CV.fallback?'Easy run-throughs logged':'Sprints logged')}
-function sprFallback(){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=Math.min(6,CV.reps||6);CV.dist=Math.min(50,CV.dist||50);CV.eff=Math.min(70,CV.eff||70)}else{ /* the easy seed clamps to what the card already prescribed · never more than the day you wrote */const it=menuItem(CV.season||prog().season||'reset',CV.menuId),ct=prog().templates.find(x=>x.kind==='cardio');if(it){CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff}else if(ct&&ct.sprD){CV.reps=ct.sprD.reps;CV.dist=ct.sprD.distM;CV.eff=ct.sprD.eff}else{CV.reps=3;CV.dist=50;CV.eff=55}if(CV.ready==='flat'&&(+CV.eff||0)>85)CV.eff=85}rn()}
+function sprFallback(){if(!CV)return;CV.fallback=CV.fallback?0:1;if(CV.fallback){CV.reps=Math.min(6,CV.reps||6);CV.dist=Math.min(50,CV.dist||50);CV.eff=Math.min(70,CV.eff||70)}else{ /* the easy seed clamps to what the card already prescribed · never more than the day you wrote */const it=menuItem(CV.season||prog().season||'reset',CV.menuId),ct=cardioTpl();if(it){CV.reps=it.reps;CV.dist=it.distM;CV.eff=it.eff}else if(ct&&ct.sprD){CV.reps=ct.sprD.reps;CV.dist=ct.sprD.distM;CV.eff=ct.sprD.eff}else{CV.reps=3;CV.dist=50;CV.eff=55}if(CV.ready==='flat'&&(+CV.eff||0)>85)CV.eff=85}rn()}
 /* ── Dynamic warm-up · one row, one tap. Stored beside sprints/aerobic rather than inside s.aerobic so a
    Friday that also carries a real bike or swim keeps both, and so history can name it for what it is. ── */
 function saveWarmup(dk){if(!CV)return;const s=getCardioSess(dk,true);
@@ -2827,7 +2863,7 @@ CE.wu=false;sv();rn();vibe(10);toast(CV.wu+' min warm-up logged')}
 function wuEdit(){CE.wu=true;rn()}
 function rmWarmup(dk){const s=getCardioSess(dk,false);if(!s||!s.warmup)return;
 delete s.warmup;
-if(!s.sprints&&!s.aerobic&&!(s.sets&&s.sets.length))DB.sessions=DB.sessions.filter(x=>x.id!==s.id); /* the warm-up was the only thing on this session · leaving the husk behind would keep a finishedAt around and light the week strip for a day with nothing in it */
+if(cardioEmpty(s))DB.sessions=DB.sessions.filter(x=>x.id!==s.id); /* the warm-up was the only thing on this session · leaving the husk behind would keep a finishedAt around and light the week strip for a day with nothing in it */
 CE.wu=false;sv();rn();vibe(8);toast('Warm-up cleared')} /* back to the one-tap row, not into the editor */
 /* One row, one tap. Deliberately NOT a drill checklist: the skips, the A / B, the strides are the content,
    but the whole piece runs continuously at 125-155 bpm, so the app records the piece and not its parts.
@@ -2845,7 +2881,7 @@ function saveAerobic(dk){if(!CV)return;const s=getCardioSess(dk,true);
 s.aerobic={mode:CV.mode,durMin:CV.dur,zone:CV.zone};if(!s.finishedAt)s.finishedAt=Date.now();
 CE.aer=false;sv();rn();
 if(engineOn()&&!dayPost(dk)&&tplForDate(dk)&&tplForDate(dk).kind==='cardio')return cardioPost(dk); /* E3 · a swim-primary day captures the by-feel post-tap */
-toast(CV.mode==='bike'?'Ride logged':CV.mode==='run'?'Run logged':'Swim logged')}
+toast(aerDone(CV.mode))}
 /* Per-rep record — every save from the sprint window stores sprints.legs[] (one entry per rep run); reps/distM stay populated so the calf clock + older views keep working. A uniform run collapses back to "N × D m" in display. */
 function sprLegs(sp){return sp&&sp.legs&&sp.legs.length?sp.legs:null}
 function sprEven(L){return L.length>0&&L.every(x=>x===L[0])}
@@ -2864,7 +2900,7 @@ speed:{items:[
  {id:'s_maxfly',name:'Max-velocity fly',disp:'3-4 × 20m fly · 95%',note:'Tall, patient, let it run. One hard pick a week.',gated:true,reps:4,distM:20,eff:95},
  {id:'s_acc',name:'Acceleration',disp:'4-5 × 30m · 95%',note:'Smooth progressive push, not a max-out.',gated:true,reps:5,distM:30,eff:95},
  {id:'s_se1',name:'Special Endurance I',disp:'2-3 × 150m · 90%',note:'Controlled speed you can hold, not a time trial. 200 only.',gated:true,opt:true,reps:3,distM:150,eff:90}
-],primer:'Optional reactive primer before a fly or accel: light pogos / ankle hops, low contacts.'},
+]},
 reset:{items:[
  {id:'r_flow',name:'Movement-quality flow',disp:'3 rounds · easy',note:'Easy skips + hip / ankle CARs.',reps:3,distM:30,eff:60},
  {id:'r_rt',name:'Easy run-throughs',disp:'4 × 60m · 75%',note:'Loose and light, nothing to prove.',reps:4,distM:60,eff:75},
@@ -2885,7 +2921,6 @@ let h='<div class="smenu"><div class="smh">'+esc(sn.name)+' season<span style="c
  tag=locked?'<span class="chip off">locked</span>':(it.opt?'<span class="chip off">optional</span>':''),
  el=tap?'button':'div',att=tap?' onclick="pickSprintMenu(\''+it.id+'\')"':'';
  h+='<'+el+' class="schip'+(sel?' on':'')+(locked?' lk':'')+'"'+att+'><div class="schn"><span class="scht">'+esc(it.name)+'</span>'+tag+'<span class="schd num">'+esc(it.disp)+'</span></div>'+(it.note?'<div class="schr">'+esc(it.note)+'</div>':'')+'</'+el+'>'});
-if(M.primer&&open)h+='<div class="schp">'+esc(M.primer)+'</div>';
 if(tap&&!open&&hasGated)h+='<div class="schp">Near-max picks unlock after ~'+SPRINT_FLOOR_WEEKS+' weeks of fast running ('+tot+'/'+SPRINT_FLOOR_WEEKS+' banked).</div>';
 /* The mirror of the line above, and the reason it exists: the season silently FILTERS this menu, so a
    season carrying no near-max pick looks identical to a closed gate. That is how you can bank the floor,
@@ -2909,7 +2944,7 @@ function lastSprint(dk){const s=lastSprintSess(dk);return s?s.sprints:null}
 const CALF_AM=['normal','stiff','sore'];
 function calfAm(dk){const d=DB.days[dk];return d&&d.calfAm!=null?d.calfAm:null}
 function calfAmDue(dk){const y=shiftDk(dk,-1);return DB.sessions.some(s=>s.date===y&&s.sprints)&&calfAm(dk)==null}
-function setCalfAm(v){const dk=tk(),d=DB.days[dk]=DB.days[dk]||{c:[]},had=d.calfAm;d.calfAm=v;sv();vibe(10);rn();
+function setCalfAm(v){const dk=tk(),d=dayRec(dk),had=d.calfAm;d.calfAm=v;sv();vibe(10);rn();
 /* one tap and the prompt is gone, so it needs the same escape hatch a deleted session gets · a mis-tap here quietly corrupts the one datum Gate 3b turns on */
 toastUndo('Logged · calf '+CALF_AM[v],()=>{if(had==null)delete DB.days[dk].calfAm;else DB.days[dk].calfAm=had;sv();rn()})}
 function sprPainHint(dk){const s=lastSprintSess(dk);if(!s)return'';
@@ -2943,17 +2978,13 @@ toastUndo('Dead hangs back in the daily block',()=>{const i=hangItem();if(i){i.p
    A Stop post-tap arms the next sprint to run easy. The recovery dial now tunes exactly one thing:
    how many trained weeks pass before an easy week lands. */
 const ENG={TRAINED_MIN:2}; /* the flat-morning windows went with the pre-tap at contentRev 31 */
-/* Every library tag maps to one muscle group or to none. Used ONLY by the Trends hard-sets-per-muscle metric — unmapped tags still count as themselves. */
-const MUSCLE_MAP={'side delts':'sideDelt','rear delts':'rearDelt','upper back':'upperBack','back':'upperBack','lats':'upperBack','traps':'upperBack','hamstrings':'hams','quads':'quadsGlutes','glutes':'quadsGlutes','legs':'quadsGlutes','calves':'calves','core':'core','abs':'core','obliques':'core'};
-const GROUP_NAME={sideDelt:'side delts',rearDelt:'rear delts',upperBack:'upper back',hams:'hamstrings',quadsGlutes:'quads + glutes',calves:'calves',core:'core'};
 let ENG_DIRTY=false;
 /* Master switch · OFF by default (held until J is cleared). Reads the flag WITHOUT creating engine state,
    so a dormant install never folds a verdict, fires a deload, or shows an engine number. */
 function engineOn(){const p=(DB&&DB.programs)?prog():null;return!!(p&&p.engine&&p.engine.on)}
 function engine(){const p=prog();if(!p.engine){p.engine={dial:1,start:tk()};ENG_DIRTY=true}return p.engine}
-function dial(){return Math.min(1.4,Math.max(.6,engine().dial||1))}
+function dial(){return clamp(engine().dial||1,.6,1.4)}
 function deloadEvery(){return Math.max(3,Math.round(5.5*dial()))}
-function groupsOf(ex){const g=[];((ex&&ex.muscles)||[]).forEach(m=>{const k=MUSCLE_MAP[String(m).toLowerCase().trim()];if(k&&g.indexOf(k)<0)g.push(k)});return g}
 /* ---- the one guard that touches a lift · it reads the template, it never writes it ----
    Every guard subtracts. prescSets can only ever return a number in [1, entry.sets], and returns
    entry.sets untouched on a normal day, on a 0-set row, on an AMRAP, on an ad-hoc add, and always
@@ -3023,7 +3054,7 @@ if(ENG_DIRTY){ENG_DIRTY=false;sv()}}
    engine state, so with the switch off the app behaves exactly as it did before the engine existed.
    All state is lazy/nullable, so schemaVersion stays 1 and no logged history is ever touched. */
 const SWIM={floor:20}; /* the shortest an eased cardio day goes (never above the template's own minutes) */
-const TAPER={LEN:10,FLOOR:0.5,DECAY:3.0,RECOVER_H:48};
+const TAPER={LEN:10,FLOOR:0.5,DECAY:3.0};
 function dkDays(a,b){const x=a.split('-').map(Number),y=b.split('-').map(Number);return Math.round((new Date(y[0],y[1]-1,y[2])-new Date(x[0],x[1]-1,x[2]))/864e5)}
 /* ---- cold-start · a reset makes the engine ignore everything before its date ---- */
 function engAnchor(){const e=engine(),r=e.resetDate||'',s=e.start||tk();return r&&r>s?r:s}
@@ -3047,7 +3078,7 @@ const daysTo=dkDays(dk,h);if(daysTo<0||daysTo>TAPER.LEN)return null;
 const e=engine(),eff=(e.taperFor===h&&e.taperLen)?e.taperLen:Math.min(TAPER.LEN,Math.max(1,daysTo));
 const pgs=Math.min(1,Math.max(0,1-daysTo/Math.max(1,eff)));
 let scale=TAPER.FLOOR+(1-TAPER.FLOOR)*Math.exp(-TAPER.DECAY*pgs);scale=Math.min(1,Math.max(TAPER.FLOOR,scale));
-return{daysTo,scale,eff}}
+return{daysTo,scale}}
 function taperTick(){const p=prog(),e=engine();
 if((p.season||'reset')!=='speed'||!p.horizonDate){if(e.taperFor){delete e.taperFor;delete e.taperLen;ENG_DIRTY=true}return}
 const h=p.horizonDate,daysTo=dkDays(tk(),h);
@@ -3069,13 +3100,13 @@ function cardioPost(dk){const cur=dayPost(dk);
 const s=getCardioSess(dk,false),m=s&&s.aerobic&&s.aerobic.mode;
 let b=postSeg(dk,cur)
 +'<div class="shbtns"><button class="btn btn-p" onclick="closeOv()">Done</button></div>';
-sheet(m==='bike'?'Ride logged':m==='run'?'Run logged':'Swim logged','',b)}
+sheet(aerDone(m),'',b)}
 /* ---- fresh-block reset (E4) · manual, never automatic; a 14-day gap only offers it ---- */
 function lastFinished(){let m='';DB.sessions.forEach(s=>{if(s.finishedAt&&s.date>m)m=s.date});return m}
 function maybeOfferReset(){const e=engine(),lf=lastFinished();if(!lf||dkDays(lf,tk())<14)return;
 if(e.resetOffered===tk()||(e.resetDate||'')>=lf)return;e.resetOffered=tk();ENG_DIRTY=true;
 toast('Been a while · start a fresh block from Settings')}
-function resetAskEng(){ovConfirm('Start a fresh block?','Resets the easy-week clock and clears any pending deload, taper, and race date. Your program and logged history are untouched.',[{label:'Start fresh',click:'doReset()',kind:'p'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+function resetAskEng(){ovConfirm('Start a fresh block?','Resets the easy-week clock and clears any pending deload, taper, and race date. Your program and logged history are untouched.',[{label:'Start fresh',click:'doReset()',kind:'p'},ACT_CANCEL])}
 function freshBlock(keepRace){const e=engine(),p=prog();e.resetDate=tk();if(e.deload&&e.deload.weekOf>weekMon(tk()))unlogDeload(e.deload.weekOf);delete e.deload;delete e.taperFor;delete e.taperLen;delete e.sprintFb;if(!keepRace)p.horizonDate=null; /* drops the old race date (unless the caller preserves it), any armed sprint-fallback, and any pending deload, so no stale taper or deload re-latches · the resetDate re-anchors the easy-week clock */
 CV=null;ENG_DIRTY=true}
 function doReset(){freshBlock();ENG_DIRTY=false;sv();closeOv();rn();toast('Fresh block · the easy-week clock starts over')}
@@ -3085,7 +3116,7 @@ const p=prog(),h=p.horizonDate,ts=h?taperState(tk()):null,dt=h?dkDays(tk(),h):nu
 let inner;
 if(h&&dt>=0)inner='<b>Race · '+fmtDk(h)+'</b><span class="exs" style="padding:0;width:100%">'+(ts?ts.daysTo+' days out · volume '+Math.round(ts.scale*100)+'% · quality held':(dt-TAPER.LEN)+' days until the taper opens')+'</span><div style="width:100%;margin-top:2px"><button class="lnk" onclick="taperIcs()">Add to calendar</button> &nbsp; <button class="lnk" onclick="taperClear()">Clear race date</button></div>';
 else inner='<span class="exs" style="padding:0;width:100%">No race set · the last '+TAPER.LEN+' days before a race become a taper (quality held, volume cut)</span><div style="width:100%;margin-top:2px"><button class="lnk" onclick="taperSet()">Set a race date</button> &nbsp; <button class="lnk" onclick="taperToggle()">Start taper now</button></div>';
-return'<div class="sl"><span class="lt">Taper</span><span class="rule"></span></div><div class="card" style="display:flex;align-items:baseline;gap:10px;padding:2px 0;margin-bottom:18px;flex-wrap:wrap">'+inner+'</div>'}
+return'<div class="sl"><span class="lt">Taper</span><span class="rule"></span></div><div class="card meta">'+inner+'</div>'}
 function taperSet(){sheet('Race day','The last '+TAPER.LEN+' days become a taper · quality held, volume cut','<input type="date" class="tin" id="raceIn" min="'+tk()+'" value="'+(prog().horizonDate||'')+'"><div class="shbtns"><button class="btn btn-p" onclick="taperSave()">Set race date</button><button class="btn btn-q" onclick="closeOv()">Cancel</button></div>')}
 function taperSave(){const el=document.getElementById('raceIn'),v=el?el.value:'';if(!v){toast('Pick a date');return}const e=engine();prog().horizonDate=v;delete e.taperFor;delete e.taperLen;CV=null;sv();closeOv();rn();toast('Race day · '+fmtDk(v))}
 function taperToggle(){const e=engine();prog().horizonDate=shiftDk(tk(),TAPER.LEN);delete e.taperFor;delete e.taperLen;CV=null;sv();rn();toast('Taper started · race in '+TAPER.LEN+' days')}
@@ -3104,6 +3135,14 @@ const sprLive=!!(SPR&&SPR.dk===dk&&!sprData);
 const fri=effDow(dk)===5;
 const sprShow=_det?true:xtra?(sprData||sprLive||!!S.addSpr):(fri||sprData||sprLive||!!S.addSpr); /* detail always offers both — a past day of either shape stays backfillable, and Today's add-flags can't leak phantom sections into old sessions */
 const aerShow=_det?true:xtra?(aerData||!!S.addAer):(!fri||aerData||!!S.addAer);
+/* one-tap flavour flip · both cardio days share this template and the weekday decides the flavour, so
+   flipping is a day swap onto the other cardio weekday (dow 5 runs sprints, any other C day runs the
+   bike). Live Today only, before anything is logged; an existing swap can be re-aimed. */
+const _sch=prog().schedule,flip=(!xtra&&!_det&&!sprLive&&!activeSession()&&!sessionsFor(dk).length)?{
+ spr:_sch[5]===t.id?5:null,
+ aer:[2,1,3,4,6,0].find(d=>_sch[d]===t.id&&d!==effDow(dk))}:null;
+const sprCks=opt=>(t.checks||[]).filter(c=>c.enabled&&isSprintCheck(c)&&!!c.opt===opt).map(c=>ckRow(c,checks,'',dk)).join(''); /* the sprint-day rows · required ones before the card, optional after */
+const flipLnk=(d,label)=>'<button class="lnk" style="display:block;padding:6px 2px 4px" onclick="flipDay('+d+')">'+label+'</button>';
 let h='',first=true,xrm=xtra;
 const head=label=>{const pr=first&&!xtra&&!_det;first=false;let tail='';
 if(xrm){tail='<button class="xrm" onclick="rmExtraCardio()" aria-label="Remove">✕</button>';xrm=false}
@@ -3113,42 +3152,45 @@ return s2}; /* the template note stays off Today here too, same call as liftArea
 /* ── Sprints · their own workout, logged rep by rep in their own window ── */
 if(sprShow){
 h+=head('Sprints');
-if(!xtra)h+=wuRow(dk,t,sess); /* first in time · the throws and the calf primer both say "while fresh", and they come after the warm-up, not before it */
-if(!xtra)(t.checks||[]).filter(c=>c.enabled&&isSprintCheck(c)).forEach(c=>{h+=ckRow(c,checks)});
-const _last=lastSprint(dk),_fb=CV.fallback;
+if(!xtra)h+=wuRow(dk,t,sess); /* first in time · the hop check says "while fresh", and it comes after the warm-up, not before it */
+if(!xtra)h+=sprCks(false);
+const _last=lastSprint(dk),_fb=CV.fallback,_lastCore=_last?'Last: '+sprDistC(_last)+' @'+_last.effortPct+'%':'',_lastRx=_last?'<div class="rxl">'+_lastCore+'</div>':'';
 if(!xtra&&!_det&&!sprData)h+=sprPainHint(dk); /* only on the live card · a saved day and a backfill both already show their own numbers */
 const _tp=engineOn()&&!_fb?taperState(dk):null; /* E4 · taper prescription overrides the season menu (engine-gated · dormant for now) */
 h+='<div class="exc"><div class="exh"><div class="exn">Sprints</div></div><div class="exs">'+esc(t.sprCue||'')+'</div>';
+if(flip&&!aerShow&&flip.aer!=null)h+=flipLnk(flip.aer,'Bike / swim / run today instead →');
 if(sprData){const _s=sess.sprints,_L=sprLegs(_s);
-h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+sprDist(_s)+'</b> @ '+_s.effortPct+'%'+(_L&&!sprEven(_L)?' · '+_L.reduce((a,b)=>a+b,0)+' m':'')+(_s.pain!=null?' · pain '+_s.pain:'')+(_s.fallback?' · easy':'')+'<button class="ed" onclick="editSprints(\''+dk+'\')">Edit</button></div>';
+h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+sprDist(_s)+'</b> @ '+_s.effortPct+'%'+(_L&&!sprEven(_L)?' · '+_L.reduce((a,b)=>a+b,0)+' m':'')+sprTags(_s)+'<button class="ed" onclick="editSprints(\''+dk+'\')">Edit</button></div>';
 if(_L)h+='<div class="dline" style="margin-top:10px">'+_L.map(function(d2,i){return'<span class="dpill num">'+(i+1)+' · '+d2+'m</span>'}).join('')+'</div>';}
 else if(sprLive){const _cv=CV.plan&&CV.dk===dk,_n=_cv?CV.plan.length:((SPR.plan||[]).length),_k=_cv?CV.done:(SPR.done||0);
 h+='<div class="scard-t">Sprints in progress</div><div class="scard-m num">'+_k+' of '+pl(_n,'rep')+' logged</div><button class="btn btn-p" onclick="resumeSprints()">Continue sprints</button>';}
 else{
-if(_tp)h+='<div class="rxc"><div class="rxh"><span class="rxp">Taper · '+_tp.daysTo+' day'+(_tp.daysTo===1?'':'s')+' to race</span><span class="chip sg">peak</span></div><div class="rxt"><span id="rxt-reps">'+CV.reps+'</span> × <span id="rxt-dist">'+CV.dist+'</span>m <span class="rxe">@ <span id="rxt-eff">'+CV.eff+'</span>%</span></div><div class="rxr">quality held · volume '+Math.round(_tp.scale*100)+'% · stay sharp, bank nothing</div>'+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%</div>':'')+'</div>';
+if(_tp)h+='<div class="rxc"><div class="rxh"><span class="rxp">Taper · '+_tp.daysTo+' day'+(_tp.daysTo===1?'':'s')+' to race</span><span class="chip sg">peak</span></div><div class="rxt"><span id="rxt-reps">'+CV.reps+'</span> × <span id="rxt-dist">'+CV.dist+'</span>m <span class="rxe">@ <span id="rxt-eff">'+CV.eff+'</span>%</span></div><div class="rxr">quality held · volume '+Math.round(_tp.scale*100)+'% · stay sharp, bank nothing</div>'+_lastRx+'</div>';
 else if(_fb){const _sfb=engineOn()?engine().sprintFb:null,_why=!engineOn()?'your call · bank easy clean reps':inDeloadWeek(dk)?'deload week · easy by design':(_sfb&&(_sfb===true||dk>_sfb))?'after a Stop · bank easy clean reps':'your call · bank easy clean reps';
-h+='<div class="rxc"><div class="rxh"><span class="rxp">Easy day · Run-Throughs</span></div><div class="rxt"><span id="rxt-reps">'+CV.reps+'</span> × <span id="rxt-dist">'+CV.dist+'</span>m <span class="rxe">@ ~<span id="rxt-eff">'+CV.eff+'</span>%</span></div><div class="rxr">'+_why+' · gradual float-down · no near-max</div>'+(_last?'<div class="rxl">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%</div>':'')+'</div>';}
+h+='<div class="rxc"><div class="rxh"><span class="rxp">Easy day · Run-Throughs</span></div><div class="rxt"><span id="rxt-reps">'+CV.reps+'</span> × <span id="rxt-dist">'+CV.dist+'</span>m <span class="rxe">@ ~<span id="rxt-eff">'+CV.eff+'</span>%</span></div><div class="rxr">'+_why+' · gradual float-down · no near-max</div>'+_lastRx+'</div>';}
 else{h+=sprintMenuHtml(CV.season||prog().season||'reset',dk);
-if(_last)h+='<div class="rxr" style="margin:-4px 2px 12px">Last: '+sprDistC(_last)+' @'+_last.effortPct+'%'+(_last.pain!=null?' · pain '+_last.pain:'')+(_last.fallback?' · easy':'')+'</div>';}
+if(_last)h+='<div class="rxr" style="margin:-4px 2px 12px">'+_lastCore+sprTags(_last)+'</div>';}
 if(!_fb)h+='<div class="flab">Sprint readiness</div><div class="seg">'+[['Springy','springy'],['Normal','normal'],['Flat','flat']].map(r=>'<button class="sgb'+(CV.ready===r[1]?' on':'')+'" onclick="cseg(\'ready\',\''+r[1]+'\')">'+r[0]+'</button>').join('')+'</div>'+(CV.ready==='flat'?'<div class="ckr" style="margin-top:6px">Flat day: hardest picks eased back to 85%.</div>':'');
 h+='<button class="btn btn-p" style="margin-top:14px" onclick="startSprints(\''+dk+'\')">'+(_det?'Log sprints':'Start sprints')+'</button>';
 h+='<button class="lnk" style="display:block;margin-top:10px;text-align:center" onclick="sprFallback()">'+(_fb?'↩ back to today\'s plan':'Flat day? Easy run-throughs instead →')+'</button>';}
 h+='</div>';
+if(!xtra)h+=sprCks(true); /* the optional extras (the throws) sit after the sprints, not before them */
 }
 /* ── Aerobic + the day's remaining checks ── */
 const dayCks=xtra?[]:(t.checks||[]).filter(c=>c.enabled&&!isSprintCheck(c)); /* cl and mbt are Sprints-section checks · cl used to fall through to here when the Sprints section was hidden, which was invisible while it was parked but would have put the calf primer on the Tuesday recovery day the moment it was enabled */
 if(aerShow||dayCks.length){
-h+=head(xtra?'Cardio':'Cardio + Mobility');
+h+=head(xtra?'Cardio':aerShow?'Cardio + Mobility':'Mobility'); /* a sprint day carries no cardio card, so its header must not promise one */
 if(aerShow){
 const aerSaved=aerData&&!CE.aer;
 h+='<div class="exc"><div class="exh"><div class="exn">Bike / Swim / Run</div><span class="chip bl">Aerobic</span></div><div class="exs">'+esc(t.aerCue||'')+'</div>';
+if(flip&&!sprShow&&flip.spr!=null)h+=flipLnk(flip.spr,'Sprints today instead →');
 if(aerSaved)h+='<div class="savedl"><span style="color:var(--sage)">✓</span><b>'+aerLabel(sess.aerobic.mode)+' · '+sess.aerobic.durMin+' min</b> · zone '+sess.aerobic.zone+'<button class="ed" onclick="cedit(\'aer\')">Edit</button></div>';
 else{h+='<div class="seg" style="margin:12px 0 8px">'+['bike','swim','run'].map(m=>'<button class="sgb'+(CV.mode===m?' on':'')+'" onclick="cseg(\'mode\',\''+m+'\')">'+aerLabel(m)+'</button>').join('')+'</div>'
 +'<div class="fgrid" style="grid-template-columns:1fr 1.4fr">'+cfld('Min','dur',5,5,180)
 +'<div class="fld"><div class="fl2">Zone</div><div class="seg" style="height:54px">'+['1','1-2','2'].map(z=>'<button class="sgb'+(CV.zone===z?' on':'')+'" onclick="cseg(\'zone\',\''+z+'\')">'+z+'</button>').join('')+'</div></div></div>'
 +'<button class="btn btn-o" onclick="saveAerobic(\''+dk+'\')">Save cardio</button>'}
 h+='</div>';}
-dayCks.forEach(c=>{h+=ckRow(c,checks)});
+dayCks.forEach(c=>{h+=ckRow(c,checks,'',dk)});
 }
 /* the sprint and recovery days swap like lift days do · same gate as the preview's canSwap, plus
    the live sprint window · day-level, not in-card: sprints + an added aerobic card can coexist */
@@ -3169,45 +3211,40 @@ if(r.done>0&&r.dk<tk()){ /* the window crossed midnight (or was never finished) 
 const L=r.plan.slice(0,r.done),s=getCardioSess(r.dk,true);
 s.startedAt=r.startedAt;s.finishedAt=Math.min(r.startedAt+Math.min(5400000,(r.done+1)*240000),Date.now());
 s.sprints={reps:L.length,distM:Math.max.apply(null,L),effortPct:r.eff,legs:L.slice(),pain:(r.pain===''||r.pain==null)?null:r.pain,ready:r.ready||null,fallback:r.fallback?1:0,menuId:r.menuId||null,season:r.season||null};
-sv();setTimeout(()=>toast('Sprints from '+fmtDk(r.dk)+' saved · '+L.length+' rep'+(L.length>1?'s':'')),700)}
+sv();setTimeout(()=>toast('Sprints from '+fmtDk(r.dk)+' saved · '+pl(L.length,'rep')),700)}
 localStorage.removeItem('blocks_spr')}catch(e){}}
 function startSprints(dk){
-const ct=prog().templates.find(x=>x.kind==='cardio');if(!ct)return;
+const ct=cardioTpl();if(!ct)return;
 const s=S.view==='detail'?sessById(S.det):getCardioSess(dk,false);
 if(!CV||CV.dk!==dk){CV=null;ensureCV(dk,ct,s)}
-CV.plan=Array(Math.max(1,Math.round(+CV.reps)||1)).fill(Math.min(1000,Math.max(10,Math.round(+CV.dist)||50)));CV.done=0;
+CV.plan=Array(Math.max(1,Math.round(+CV.reps)||1)).fill(defLeg());CV.done=0;
 const live=dk===tk()&&S.view!=='detail';
 if(live){SPR={dk,startedAt:Date.now()};sprPersist()}
 S.sprAmend=!live;S.sprFrom=S.view==='detail'?'detail':'today';S.sprEdit=null;S.view='sprint';rn()}
 function resumeSprints(){const dk=tk();if(!SPR||SPR.dk!==dk){rn();return}
-if(!CV||CV.dk!==dk||!CV.plan){const ct=prog().templates.find(x=>x.kind==='cardio');
+if(!CV||CV.dk!==dk||!CV.plan){const ct=cardioTpl();
 CV=null;ensureCV(dk,ct,getCardioSess(dk,false));
 CV.plan=(SPR.plan||[]).slice();CV.done=Math.min(SPR.done||0,CV.plan.length);
 if(SPR.eff!=null)CV.eff=SPR.eff;if(SPR.pain!=null&&SPR.pain!=='')CV.pain=SPR.pain;if(SPR.ready)CV.ready=SPR.ready;if(SPR.menuId)CV.menuId=SPR.menuId;if(SPR.season)CV.season=SPR.season;CV.fallback=SPR.fallback?1:0}
 S.sprAmend=false;S.sprFrom='today';S.sprEdit=null;S.view='sprint';rn()}
 function editSprints(dk){
-const ct=prog().templates.find(x=>x.kind==='cardio');if(!ct)return;
+const ct=cardioTpl();if(!ct)return;
 const s=S.view==='detail'?sessById(S.det):getCardioSess(dk,false);
 const sp=s&&s.sprints;if(!sp)return;
 CV=null;ensureCV(dk,ct,s); /* seeds eff/pain/menu/season from the saved record */
-CV.plan=sp.legs&&sp.legs.length?sp.legs.slice():Array(Math.max(1,sp.reps||1)).fill(Math.min(1000,Math.max(10,sp.distM||50)));
+CV.plan=sp.legs&&sp.legs.length?sp.legs.slice():Array(Math.max(1,sp.reps||1)).fill(clampM(sp.distM||50));
 CV.done=CV.plan.length;
 S.sprAmend=true;S.sprFrom=S.view==='detail'?'detail':'today';S.sprEdit=null;S.view='sprint';rn()}
 function exitSprint(){S.sprEdit=null;
 if(S.sprAmend){S.sprAmend=false;CV=null;
-if(S.sprFrom==='detail')S.view='detail';else{S.view='tabs';S.tab='today'}rn();return}
-S.view='tabs';S.tab='today';rn()} /* live keeps running · the Today card offers Continue */
+sprBack();rn();return}
+goToday();rn()} /* live keeps running · the Today card offers Continue */
 function sprStep(i,d){if(!CV||!CV.plan||CV.plan[i]==null)return;
-CV.plan[i]=Math.min(1000,Math.max(10,(+CV.plan[i]||0)+d));
+CV.plan[i]=clampM((+CV.plan[i]||0)+d);
 setV(document.getElementById('v-spr-'+i),CV.plan[i]);
 if(!S.sprAmend)sprPersist()}
 function sprEditV(i,el){if(el.querySelector('input'))return;if(!CV||!CV.plan||CV.plan[i]==null)return;
-const cur=+CV.plan[i]||0;
-el.innerHTML='<input class="vin num" type="text" inputmode="numeric" value="'+(cur||'')+'">';
-const inp=el.firstChild;inp.focus();try{inp.select()}catch(e){}
-const commit=()=>{const n2=parseFloat(inp.value);CV.plan[i]=isNaN(n2)?cur:Math.min(1000,Math.max(10,Math.round(n2)));el.textContent=CV.plan[i];if(!S.sprAmend)sprPersist()};
-inp.addEventListener('blur',commit);
-inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur()})}
+const cur=+CV.plan[i]||0;tapEdit(el,cur,'numeric',n2=>{CV.plan[i]=isNaN(n2)?cur:clampM(Math.round(n2));el.textContent=CV.plan[i];if(!S.sprAmend)sprPersist()})}
 function sprLog(){if(!CV||!CV.plan)return;if(CV.done>=CV.plan.length)return;
 CV.done++;S.sprEdit=null;vibe(12);if(!S.sprAmend)sprPersist();rn()}
 function sprEditRow(i){if(!CV||i>=CV.done)return;S.sprEdit=i;rn()}
@@ -3216,7 +3253,7 @@ function sprRowRm(i){if(!CV||!CV.plan)return;
 if(i<CV.done){CV.plan.splice(i,1);CV.done--}
 S.sprEdit=null;if(!S.sprAmend)sprPersist();rn()}
 function sprAddRep(){if(!CV||!CV.plan)return;
-CV.plan.push(CV.plan[CV.plan.length-1]||Math.min(1000,Math.max(10,Math.round(+CV.dist)||50)));
+CV.plan.push(CV.plan[CV.plan.length-1]||defLeg());
 if(!S.sprAmend)sprPersist();rn()}
 function sprRmRep(){if(!CV||!CV.plan)return;
 if(CV.plan.length>Math.max(1,CV.done))CV.plan.pop();
@@ -3236,7 +3273,7 @@ let rows='';
 for(let i=0;i<n;i++){
 if(i<k&&S.sprEdit===i)rows+='<div class="sr s3 edit"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)
 +'<button class="lg go" onclick="sprRowDone()" aria-label="Save rep">'+CHECK+'</button></div>'
-+'<div style="display:flex;justify-content:flex-end;gap:2px;padding:2px 2px 4px"><button class="rowx" onclick="sprRowRm('+i+')">Remove rep</button><button class="rowx" style="color:var(--muted)" onclick="sprRowDone()">Cancel</button></div>';
++'<div class="rowxs"><button class="rowx" onclick="sprRowRm('+i+')">Remove rep</button><button class="rowx" style="color:var(--muted)" onclick="sprRowDone()">Cancel</button></div>';
 else if(i<k)rows+='<div class="sr s3 done" onclick="sprEditRow('+i+')"><div class="srn num">'+(i+1)+'</div><div class="dtx num">'+CV.plan[i]+' m</div><div class="dck">'+CHECK+'</div></div>';
 else if(i===k)rows+='<div class="sr s3"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)+'<button class="lg go" onclick="sprLog()" aria-label="Log rep">'+CHECK+'</button></div>';
 else rows+='<div class="sr s3"><div class="srn num">'+(i+1)+'</div>'+sprStepGroup(i)+'<button class="lg fut" onclick="toast(\'Reps go in order · tap the lit check\')" aria-label="Logged in order">'+CHECK+'</button></div>';}
@@ -3248,35 +3285,34 @@ let body='<div class="exc'+(k>=n&&n>0?' fin':'')+'"><div class="exh"><div class=
 body+='<div class="exc"><div class="fgrid" style="grid-template-columns:1fr;margin-top:2px">'+cfld('Effort %','eff',5,10,100)+'</div>'
 +'<div class="flab">Calf pain</div><div class="seg">'+[['None',0],['≤2',2],['>2',3]].map(p=>'<button class="sgb'+(CV.pain===p[1]?' on':'')+'" onclick="cseg(\'pain\','+p[1]+')">'+p[0]+'</button>').join('')+'</div></div>';
 const elapsed=live?'<span id="elap">'+mmss(Date.now()-((SPR&&SPR.startedAt)||Date.now()))+'</span>':fmtDk(CV.dk);
-const hd='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="exitSprint()">'+I_BACK+'</button>'
-+'<div class="shm"><div class="sht">'+(live?'':'Edit · ')+'Sprints</div><div class="shs num">'+elapsed+' · '+k+'/'+pl(n,'rep')+(tot?' · '+tot+' m':'')+'</div></div>'
-+'<button class="fin'+(live?'':' q')+'" onclick="sprintFinishAsk()">'+(live?'Finish':'Done')+'</button></div></div>';
+const hd=edHdr((live?'':'Edit · ')+'Sprints',elapsed+' · '+k+'/'+pl(n,'rep')+(tot?' · '+tot+' m':''),'exitSprint()',
+'<button class="fin'+(live?'':' q')+'" onclick="sprintFinishAsk()">'+(live?'Finish':'Done')+'</button>','num');
 return hd+'<div class="co nopad">'+body+'</div>'}
 function sprintFinishAsk(){if(!CV||!CV.plan)return;
 if(S.sprAmend){
 if(!CV.done){toast('Log at least one rep');return}
-const back=S.sprFrom==='detail';S.sprAmend=false;S.sprEdit=null;
-if(back)S.view='detail';else{S.view='tabs';S.tab='today'}
+S.sprAmend=false;S.sprEdit=null;
+sprBack();
 saveSprints(CV.dk);return}
 const k=CV.done;
 if(!k){ovConfirm('Discard sprints?','Nothing logged yet.',
-[{label:'Discard',click:'sprintDiscard()',kind:'d'},{label:'Keep going',click:'closeOv()',kind:'o'}]);return}
+[{label:'Discard',click:'sprintDiscard()',kind:'d'},ACT_KEEP]);return}
 const tot=CV.plan.slice(0,k).reduce((a,b)=>a+b,0);
-ovConfirm('Finish sprints?','<b>'+k+' rep'+(k>1?'s':'')+'</b> · '+tot+' m total',
-[{label:'Finish sprints',click:'sprintFinishGo()',kind:'p'},{label:'Keep going',click:'closeOv()',kind:'o'},{label:'Discard sprints',click:'sprintDiscardAsk()',kind:'d'}])}
+ovConfirm('Finish sprints?','<b>'+pl(k,'rep')+'</b> · '+tot+' m total',
+[{label:'Finish sprints',click:'sprintFinishGo()',kind:'p'},ACT_KEEP,{label:'Discard sprints',click:'sprintDiscardAsk()',kind:'d'}])}
 function sprintFinishGo(){if(!CV||!CV.plan)return;closeOv();
-const dk=CV.dk;S.sprEdit=null;S.view='tabs';S.tab='today';
+const dk=CV.dk;S.sprEdit=null;goToday();
 saveSprints(dk); /* writes the per-rep record · rn()s the Today card */
 SPR=null;sprPersist();lockOff();vibe([0,40,30,80])}
 function sprintDiscardAsk(){ovConfirm('Discard these sprints?','The logged reps will be deleted.',
-[{label:'Discard',click:'sprintDiscard()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+[{label:'Discard',click:'sprintDiscard()',kind:'d'},ACT_CANCEL])}
 function sprintDiscard(){closeOv();SPR=null;sprPersist();CV=null;S.sprEdit=null;S.sprAmend=false;
-S.view='tabs';S.tab='today';lockOff();rn()}
+goToday();lockOff();rn()}
 
 /* ═══════════ MOBILITY ═══════════ */
 function vMobility(){
 const ck=dayChecks(tk()),m=prog().checklists.mobility;
-let h='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="back()">'+I_BACK+'</button><div class="shm"><div class="sht">Mobility</div><div class="shs">Tuesday, in full · Friday optional</div></div></div></div>';
+let h=edHdr('Mobility','Tuesday, in full · Friday optional','back()');
 h+='<div class="co"><div class="note">Warm the tissue first · on Tuesday the bike does that, on Friday it is the sprint warm-up. Work top to bottom.</div>';
 m.forEach((g,gi)=>{
 h+='<div class="sl" id="sl-g'+gi+'"><span class="lt">'+esc(g.group)+'</span><span class="rule"></span><span class="cnt num" id="cnt-g'+gi+'"></span></div>';
@@ -3292,7 +3328,7 @@ return h}
 /* ═══════════ HISTORY ═══════════ */
 function vHistory(){
 const all=DB.sessions.slice().sort((a,b)=>b.startedAt-a.startedAt);
-let h='<header class="hero" style="align-items:flex-start"><div style="flex:1;min-width:0"><h1 class="title">History</h1></div><button class="lnk" style="margin-top:4px;flex-shrink:0" onclick="pastSheet()">+ Past workout</button></header>';
+let h='<header class="hero split"><div class="grow"><h1 class="title">History</h1></div><button class="lnk act" onclick="pastSheet()">+ Past workout</button></header>';
 if(!all.length)return h+'<div class="empty" style="padding-top:34px">'+EB+'<div class="empty-t">No sessions yet</div>Log today on the Today tab, or add a workout you did earlier.</div>';
 const list=S.histAll?all:all.slice(0,150);
 let lastM='';
@@ -3306,27 +3342,25 @@ if(s.kind==='cardio'){const p=[];
  if(s.aerobic)p.push(aerLabel(s.aerobic.mode)+' '+s.aerobic.durMin+' min'); /* 'm' next to sprint metres meant two units in one line */
  sub=p.join(' · ')||'—'}
 else{const w=s.sets.filter(x=>!x.warmup).length;
- sub=pl(w,'set')+(s.finishedAt?' · '+Math.max(1,Math.round((s.finishedAt-s.startedAt)/60000))+' min':'')}
+ sub=pl(w,'set')+(s.finishedAt?' · '+sessMins(s)+' min':'')}
 const live=!s.finishedAt;
 h+='<div class="hrow" onclick="'+(live?'resumeSession':'openDetail')+'(\''+s.id+'\')">'
 +'<div class="hico '+s.kind+'">'+(s.kind==='cardio'?I_CARD2:I_LIFT)+'</div>'
 +'<div class="hm"><div class="ht">'+esc(dayTitle(s.name))+(live?' <span class="chip em">live</span>':'')+'</div><div class="hs num">'+sub+'</div></div>'
-+'<div class="hd2 num">'+DAB[dowOf(s.date)]+'<br>'+fmtDk(s.date)+(s.date.slice(0,4)!==tk().slice(0,4)?' ’'+s.date.slice(2,4):'')+'</div></div>'});
++'<div class="hd2 num">'+DAB[dowOf(s.date)]+'<br>'+fmtDkY(s.date)+'</div></div>'});
 if(all.length>list.length)h+='<button class="btn btn-o" style="margin-top:6px" onclick="S.histAll=true;rn()">Show all '+all.length+' sessions</button>';
 return h}
 function openDetail(sid){S.det=sid;S.view='detail';rn()}
 function closeDetail(){const s=sessById(S.det);
-if(s&&s.kind==='cardio'&&!s.sprints&&!s.aerobic&&!s.warmup&&!(s.sets&&s.sets.length)){DB.sessions=DB.sessions.filter(x=>x.id!==s.id);sv()} /* a day carrying only a logged warm-up is real · it must survive backing out of the detail view */
+if(s&&s.kind==='cardio'&&cardioEmpty(s)){DB.sessions=DB.sessions.filter(x=>x.id!==s.id);sv()} /* a day carrying only a logged warm-up is real · it must survive backing out of the detail view */
 S.view='tabs';S.tab='history';rn()}
 function vDetail(){
 const s=sessById(S.det);
 if(!s){S.view='tabs';return vTabs()}
-let h='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="closeDetail()">'+I_BACK+'</button>'
-+'<div class="shm"><div class="sht">'+esc(dayTitle(s.name))+'</div><div class="shs num">'+DY[dowOf(s.date)]+' · '+fmtDk(s.date)
-+(s.finishedAt?' · '+Math.max(1,Math.round((s.finishedAt-s.startedAt)/60000))+' min':'')+'</div></div></div></div>';
+let h=edHdr(esc(dayTitle(s.name)),DY[dowOf(s.date)]+' · '+fmtDk(s.date)+(s.finishedAt?' · '+sessMins(s)+' min':''),'closeDetail()',null,'num');
 h+='<div class="co">';
 if(s.kind==='cardio'){
-const t=tpl(s.templateId)||prog().templates.find(x=>x.kind==='cardio');
+const t=tpl(s.templateId)||cardioTpl();
 CV=null;h+=cardioArea(s.date,t,s)}
 else{
 const t=tpl(s.templateId),order=t?t.entries.map(e=>e.exId):[];
@@ -3344,35 +3378,29 @@ h+='</div>';
 return h}
 function amendSession(sid){PV={};S.editKey=null;S.sid=sid;S.amend=true;S.backfill=false;S.view='session';rn()}
 function delAsk(sid){ovConfirm('Delete this session?','It disappears from history permanently.',
-[{label:'Delete',click:'delSession(\''+sid+'\')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
-function delSession(sid){const idx=DB.sessions.findIndex(x=>x.id===sid),removed=DB.sessions[idx];DB.sessions=DB.sessions.filter(x=>x.id!==sid);sv();closeOv();S.view='tabs';S.tab='history';rn();toastUndo('Session deleted',()=>{DB.sessions.splice(idx,0,removed);sv()})}
+[{label:'Delete',click:'delSession(\''+sid+'\')',kind:'d'},ACT_CANCEL])}
+function delSession(sid){const undo=dropSess(sid);sv();closeOv();S.view='tabs';S.tab='history';rn();toastUndo('Session deleted',undo)}
 
 /* ═══════════ PROGRAM TAB ═══════════ */
 function det(title,cnt,body,open){
 return'<details class="pdet"'+(open?' open':'')+'><summary>'+I_CAR+'<span>'+title+'</span><span class="cnt2 num">'+(cnt||'')+'</span></summary><div class="pdb">'+body+'</div></details>'}
 function vProgram(){
 const p=prog();
-let h='<header class="hero" style="align-items:flex-start"><div style="flex:1;min-width:0"><div class="eyebrow">Program</div><h1 class="title">'+esc(p.name)+'</h1>'
-+(p.subtitle?'<div class="hsub">'+esc(p.subtitle)+'</div>':'')+'</div><button class="lnk" style="margin-top:4px;flex-shrink:0" onclick="progSheet()">Edit</button></header>'; /* matches the section Edit links below it */
+let h='<header class="hero split"><div class="grow"><div class="eyebrow">Program</div><h1 class="title">'+esc(p.name)+'</h1>'
++(p.subtitle?'<div class="hsub">'+esc(p.subtitle)+'</div>':'')+'</div><button class="lnk act" onclick="progSheet()">Edit</button></header>'; /* matches the section Edit links below it */
 const _eng=engineOn();
 if(_eng)engTick();
 const _sk=p.season||'reset',_sn=SEASONS[_sk]||SEASONS.reset;
 h+='<div class="sl"><span class="lt">Season</span><span class="rule"></span><button class="lnk" onclick="seasonSheet()">Change</button></div>';
-h+='<div class="card" style="display:flex;align-items:baseline;gap:10px;padding:2px 0;margin-bottom:18px;flex-wrap:wrap"><b>'+esc(_sn.name)+'</b><span class="exs" style="padding:0">'+esc(_sn.cal+' · '+_sn.ds)+'</span>'+(_eng?(function(){const _dl=deloadWk(),_dlOn=_dl&&_dl>=weekMon(tk()),_dlTxt=_dlOn?(inDeloadWeek(tk())?'Deload · this week':'Deload · week of '+fmtDk(_dl)):'Deload backstop · '+trainedWeeks()+' of '+deloadEvery()+' trained weeks';return'<span class="exs" style="padding:0;width:100%">'+esc(_dlTxt)+'</span>'})():'')+'</div>';
+h+='<div class="card meta"><b>'+esc(_sn.name)+'</b><span class="exs" style="padding:0">'+esc(_sn.cal+' · '+_sn.ds)+'</span>'+(_eng?(function(){const _dl=deloadWk(),_dlOn=_dl&&_dl>=weekMon(tk()),_dlTxt=_dlOn?(inDeloadWeek(tk())?'Deload · this week':'Deload · week of '+fmtDk(_dl)):'Deload backstop · '+trainedWeeks()+' of '+deloadEvery()+' trained weeks';return'<span class="exs" style="padding:0;width:100%">'+esc(_dlTxt)+'</span>'})():'')+'</div>';
 h+=taperCard(); /* E4 · Speed-season race taper (empty string otherwise) */
 h+='<div class="sl"><span class="lt">Week</span><span class="rule"></span><button class="lnk" onclick="openEd(\'edsched\')">Edit</button></div>';
-h+='<div class="week" style="margin-bottom:18px">'+[1,2,3,4,5,6,0].map(d=>{
+h+='<div class="week" style="margin-bottom:18px">'+WEEK.map(d=>{
 const tid=p.schedule[d],t=tid?tpl(tid):null;
 return'<div class="day '+(t?t.kind:'off')+'" style="cursor:default;pointer-events:none"><div class="dl">'+DAB[d][0]+'</div><div class="dw">'+(t?esc(t.name.split(' ')[0]):'Off')+'</div></div>'}).join('')+'</div>';
 h+='<div class="sl"><span class="lt">Templates</span><span class="rule"></span><button class="lnk" onclick="newTplSheet()">+ New</button></div>';
 p.templates.forEach(t=>{
-let b='';
-if(t.kind==='lift')b=t.entries.map(e=>entryRow(e)).join('');
-else{b='<div class="tpe"><span class="tpen">Dynamic Warm-Up</span><span class="tpes num">'+wuDef(t)+' min · zone 2</span></div>'
- +sprintMenuHtml(prog().season||'reset')
- +'<div class="tpe" style="justify-content:center;color:var(--muted);font-size:16px;letter-spacing:.12em">— or —</div>'
- +'<div class="tpe"><span class="tpen">Bike / Swim / Run</span><span class="tpes num">'+t.aerD.durMin+' min · zone '+t.aerD.zone+'</span></div>'
- +(t.checks||[]).map(c=>'<div class="tpe'+(c.enabled?'':' offed')+'"><span class="tpen">'+esc(c.name)+'</span><span class="tpes">'+(c.enabled?'':'off')+'</span></div>').join('')}
+let b=tplBody(t,()=>sprintMenuHtml(prog().season||'reset'));
 if(t.note)b+='<p style="font-size:16px;color:var(--muted);line-height:1.55;margin-top:10px">'+esc(t.note)+'</p>';
 b+='<button class="lnk" onclick="openEdT(\''+t.id+'\')">Edit template →</button>';
 h+=det(esc(t.name),(t.kind==='lift'?t.entries.filter(e=>e.enabled).length+' moves':'sprint + aerobic'),b)});
@@ -3399,10 +3427,11 @@ p.season=k; /* the season is a label plus the taper's eligibility gate · it eas
 sv();vibe(10);closeOv();rn();toast('Season · '+SEASONS[k].name)}
 
 /* ═══════════ STAGE 2 — PROGRAM MANAGER ═══════════ */
-function edHdr(t,s,fn){return'<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="'+fn+'">'+I_BACK+'</button><div class="shm"><div class="sht">'+t+'</div>'+(s?'<div class="shs">'+s+'</div>':'')+'</div></div></div>'}
+/* every sub-view's header · title, subtitle, back handler, an optional right-hand control, an optional subtitle class */
+function edHdr(t,s,fn,right,subCls){return'<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="'+fn+'">'+I_BACK+'</button><div class="shm"><div class="sht">'+t+'</div>'+(s?'<div class="shs'+(subCls?' '+subCls:'')+'">'+s+'</div>':'')+'</div>'+(right||'')+'</div></div>'}
 function progSheet(){
 const p=prog();
-let b='<div class="flab" style="margin-top:0">Name</div><input class="tin" value="'+esc(p.name)+'" onchange="prog().name=this.value;sv();rn()">'
+let b='<div class="flab top">Name</div><input class="tin" value="'+esc(p.name)+'" onchange="prog().name=this.value;sv();rn()">'
 +'<div class="flab">Subtitle</div><input class="tin" value="'+esc(p.subtitle||'')+'" onchange="prog().subtitle=this.value;sv();rn()">'
 +'<div class="shbtns">';
 DB.programs.filter(x=>x.id!==p.id&&!x.archived).forEach(x=>{b+='<button class="btn btn-o" onclick="switchProg(\''+x.id+'\')">Switch to '+esc(x.name)+'</button>'});
@@ -3415,7 +3444,7 @@ sheet('Program','Edits save instantly.',b)}
 function switchProg(pid){DB.activeProgramId=pid;CV=null;sv();closeOv();rn();toast('Program switched')}
 function unarchProg(pid){const p=DB.programs.find(x=>x.id===pid);if(p)p.archived=false;sv();closeOv();rn();toast('Restored')}
 function dupProg(){
-const src=prog(),c=JSON.parse(JSON.stringify(src));
+const src=prog(),c=clone(src);
 c.id=id('p');c.name=src.name+' copy';c.archived=false;
 const map={};
 (c.templates||[]).forEach(t=>{const nid=id('t')+Math.random().toString(36).slice(2,5);map[t.id]=nid;t.id=nid});
@@ -3437,7 +3466,7 @@ function vEdSched(){
 const p=prog();
 let h=edHdr('Weekly Schedule',esc(p.name),'goProg()');
 h+='<div class="co">';
-[1,2,3,4,5,6,0].forEach(d=>{
+WEEK.forEach(d=>{
 const tid=p.schedule[d],t=tid?tpl(tid):null;
 h+='<div class="erow" onclick="schedSheet('+d+')"><div class="em2"><div class="en2">'+DY[d]+'</div><div class="es2">'+(t?esc(t.name):'Rest')+'</div></div><span class="chip '+(t?(t.kind==='lift'?'em':'bl'):'off')+'">'+(t?t.kind:'rest')+'</span></div>'});
 h+='<div class="note" style="margin-top:14px">Tap a day to assign a template. One-day swaps from the Today tab never touch this.</div></div>';
@@ -3455,7 +3484,7 @@ function openEdT(tid){S.edT=tid;S.view='edtpl';rn()}
 function tGet(f){return f.split('.').reduce((o,k)=>o[k],tEd())}
 function tStep(f,d,min,max){
 const p=f.split('.'),k=p.pop(),o=p.reduce((x,y)=>x[y],tEd());
-o[k]=Math.min(max,Math.max(min,(+o[k]||0)+d));if(/^(sprD|aerD|wuD)\./.test(f))CV=null;sv(); /* cardio defaults feed the guard-built card · rebuild it on next render */
+o[k]=clamp((+o[k]||0)+d,min,max);if(/^(sprD|aerD|wuD)\./.test(f))CV=null;sv(); /* cardio defaults feed the guard-built card · rebuild it on next render */
 setV(document.getElementById('tv-'+f.replace('.','-')),o[k])}
 function tFld(label,f,step,min,max){
 return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="tStep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="tv-'+f.replace('.','-')+'">'+tGet(f)+'</div><button class="stb" data-hold data-fn="tStep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
@@ -3468,13 +3497,13 @@ function vEdTpl(){
 const t=tEd();if(!t){S.view='tabs';S.tab='program';return vTabs()}
 let h=edHdr('Edit Template',t.kind==='lift'?'Lift':'Cardio','goProg()');
 h+='<div class="co">';
-h+='<div class="flab" style="margin-top:0">Name</div><input class="tin" value="'+esc(t.name)+'" onchange="tEd().name=this.value;sv()">';
+h+='<div class="flab top">Name</div><input class="tin" value="'+esc(t.name)+'" onchange="tEd().name=this.value;sv()">';
 h+='<div class="flab">Coach note</div><textarea class="tarea" style="min-height:84px" onchange="tEd().note=this.value;sv()">'+esc(t.note||'')+'</textarea>';
 if(t.kind==='lift'){
 h+='<div class="sl"><span class="lt">Exercises</span><span class="rule"></span><span class="cnt num">'+t.entries.length+'</span></div>';
 t.entries.forEach((e,i)=>{const ex=exOf(e.exId);
 h+='<div class="erow'+(e.enabled?'':' offed')+'">'
-+'<div class="mvc"><button class="mvb" onclick="mvEntry('+i+',-1)"'+(i===0?' disabled':'')+' aria-label="Move up">↑</button><button class="mvb" onclick="mvEntry('+i+',1)"'+(i===t.entries.length-1?' disabled':'')+' aria-label="Move down">↓</button></div>'
++mvBtns('mvEntry',[i],i,t.entries.length)
 +'<div class="em2" onclick="openEntry('+i+')"><div class="en2">'+esc(ex.name)+'</div><div class="es2 num">'+esc(schemeOf(e))+(e.warmups?' · '+e.warmups+' wu':'')+' · rest '+restFor(e,ex)+'s'+(e.enabled?'':' · off')+'</div></div>'
 +'<span class="car2" onclick="openEntry('+i+')">›</span></div>'});
 h+='<button class="addb" onclick="pickExFor(\'add\')">+ Add exercise</button>';
@@ -3494,18 +3523,22 @@ h+='<div class="flab">Aerobic cue</div><input class="tin" value="'+esc(t.aerCue|
 h+='<div class="sl"><span class="lt">Day checks</span><span class="rule"></span></div>';
 (t.checks||[]).forEach((c,i)=>{
 h+='<div class="card" style="padding:12px">'
-+'<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center"><input class="tin fx" value="'+esc(c.name)+'" onchange="tEd().checks['+i+'].name=this.value;sv()"><button class="rowx" aria-label="Remove" onclick="rmChk('+i+')">✕</button></div>'
++'<div class="edrow" style="margin-bottom:8px"><input class="tin fx" value="'+esc(c.name)+'" onchange="tEd().checks['+i+'].name=this.value;sv()"><button class="rowx" aria-label="Remove" onclick="rmChk('+i+')">✕</button></div>'
 +'<input class="tin" placeholder="Detail" value="'+esc(c.detail||'')+'" onchange="tEd().checks['+i+'].detail=this.value;sv()">'
 +'<button class="bbtn'+(c.enabled?'':' q')+'" style="margin-top:9px" onclick="tEd().checks['+i+'].enabled=!tEd().checks['+i+'].enabled;sv();rn()">'+(c.enabled?'enabled':'off · parked')+'</button></div>'});
 h+='<button class="addb" onclick="addChk()">+ Add check</button>'}
 h+='<div class="shbtns" style="margin-top:18px"><button class="btn btn-d" onclick="delTplAsk()">Delete template</button></div>';
 h+='</div>';return h}
-function mvEntry(i,d){const a=tEd().entries,j=i+d;if(j<0||j>=a.length)return;const x=a[i];a[i]=a[j];a[j]=x;sv();rn()}
+/* the editors' shared move / remove / arrow-button trio */
+function mvIn(a,i,d){const j=i+d;if(j<0||j>=a.length)return;const x=a[i];a[i]=a[j];a[j]=x;sv();rn()}
+function rmAt(a,i,msg){const it=a.splice(i,1)[0];sv();rn();toastUndo(msg,()=>{a.splice(i,0,it);sv()})}
+function mvBtns(fn,args,i,len){const a=args.join(',');return'<div class="mvc"><button class="mvb" onclick="'+fn+'('+a+',-1)"'+(i===0?' disabled':'')+' aria-label="Move up">↑</button><button class="mvb" onclick="'+fn+'('+a+',1)"'+(i===len-1?' disabled':'')+' aria-label="Move down">↓</button></div>'}
+function mvEntry(i,d){mvIn(tEd().entries,i,d)}
 function openEntry(i){S.edE=i;S.view='edentry';rn()}
 function addChk(){const t=tEd();(t.checks=t.checks||[]).push({id:id('c'),name:'New check',detail:'',enabled:true});sv();rn()}
-function rmChk(i){const a=tEd().checks,it=a.splice(i,1)[0];sv();rn();toastUndo('Check removed',()=>{a.splice(i,0,it);sv()})}
+function rmChk(i){rmAt(tEd().checks,i,'Check removed')}
 function delTplAsk(){ovConfirm('Delete “'+esc(tEd().name)+'”?','Scheduled days using it become rest days. Logged history keeps its sets.',
-[{label:'Delete template',click:'delTpl()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+[{label:'Delete template',click:'delTpl()',kind:'d'},ACT_CANCEL])}
 function delTpl(){
 const p=prog();p.templates=p.templates.filter(t=>t.id!==S.edT);
 Object.keys(p.schedule).forEach(d=>{if(p.schedule[d]===S.edT)p.schedule[d]=null});
@@ -3514,7 +3547,7 @@ sv();closeOv();goProg()}
 /* ═══════════ STAGE 2 — ENTRY EDITOR ═══════════ */
 function curEntry(){const t=tEd();return t&&t.entries[S.edE]}
 function eStep(f,d,min,max){const e=curEntry();if(!e)return;
-e[f]=Math.min(max,Math.max(min,(+e[f]||0)+d));sv();
+e[f]=clamp((+e[f]||0)+d,min,max);sv();
 setV(document.getElementById('ev-'+f),e[f])}
 function eFld(label,f,step,min,max){const e=curEntry();
 return'<div class="fld"><div class="fl2">'+label+'</div><div class="stp"><button class="stb" data-hold data-fn="eStep" data-args=\''+JSON.stringify([f,-step,min,max])+'\'>−</button><div class="stv num" id="ev-'+f+'">'+(+e[f]||0)+'</div><button class="stb" data-hold data-fn="eStep" data-args=\''+JSON.stringify([f,step,min,max])+'\'>+</button></div></div>'}
@@ -3536,13 +3569,13 @@ h+='<div class="flab">Cue</div><input class="tin" value="'+esc(e.cue||'')+'" onc
 h+='<div class="shbtns" style="margin-top:18px"><button class="btn btn-d" onclick="rmEntryAsk()">Remove from template</button></div>';
 h+='</div>';return h}
 function eRest(d){const e=curEntry();if(!e)return;const ex=exOf(e.exId);
-e.rest=Math.min(600,Math.max(15,(e.rest||ex.rest||rD())+d));sv();
+e.rest=clampRest((e.rest||ex.rest||rD())+d);sv();
 setV(document.getElementById('ev-rest'),e.rest+'s')}
 function eRestDef(){const e=curEntry();if(!e)return;e.rest=null;sv();rn()}
 function setEAmrap(v){curEntry().amrap=v==='1';sv();rn()}
 function setEEnabled(v){curEntry().enabled=v==='1';sv();rn()}
 function rmEntryAsk(){ovConfirm('Remove '+esc(exOf(curEntry().exId).name)+'?','From this template only · history and library are untouched.',
-[{label:'Remove',click:'rmEntry()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+[{label:'Remove',click:'rmEntry()',kind:'d'},ACT_CANCEL])}
 function rmEntry(){tEd().entries.splice(S.edE,1);sv();closeOv();S.view='edtpl';rn()}
 
 /* ═══════════ STAGE 2 — EXERCISE PICKER ═══════════ */
@@ -3558,7 +3591,7 @@ const q=(S.pick.q||'').toLowerCase();
 const list=DB.library.filter(e=>!e.archived&&(e.kind||'lift')==='lift'&&(!q||e.name.toLowerCase().includes(q)));
 const pe=prScan().perEx;
 list.sort((a,b)=>(pe[b.id]?pe[b.id].n:0)-(pe[a.id]?pe[a.id].n:0)||a.name.localeCompare(b.name));
-let h=list.map(e=>'<div class="erow" onclick="pickEx(\''+e.id+'\')"><div class="em2"><div class="en2">'+esc(e.name)+'</div><div class="es2">'+(e.bw?'BW · ':'')+'rest '+(e.rest||rD())+'s'+((e.muscles||[]).length?' · '+esc(e.muscles.join(', ')):'')+'</div></div></div>').join('');
+let h=list.map(e=>'<div class="erow" onclick="pickEx(\''+e.id+'\')"><div class="em2"><div class="en2">'+esc(e.name)+'</div><div class="es2">'+exSub(e)+'</div></div></div>').join('');
 h+='<button class="addb" onclick="pickNew()">+ New exercise'+(S.pick.q?' “'+esc(S.pick.q)+'”':'')+'</button>';
 return h}
 function filterPick(){const el=document.getElementById('picklist');if(el)el.innerHTML=pickList()}
@@ -3569,12 +3602,12 @@ if(S.pick.mode==='session'){const s=sessById(S.sid);
   sv()}
  S.view='session';rn();toast('Exercise added');return}
 if(S.pick.mode==='swap'){curEntry().exId=exId;sv();S.view='edentry'}
-else{tEd().entries.push({exId,warmups:0,sets:3,scheme:'',defReps:10,defW:0,cue:'',enabled:true,amrap:false});
+else{tEd().entries.push(mkEntry(exId));
 S.edE=tEd().entries.length-1;sv();S.view='edentry'}
 rn()}
 function pickNew(){
 const name=(S.pick.q||'').trim()||'New exercise';
-const e={id:id('x'),name,bw:false,rest:rD(),muscles:[],kind:'lift',video:null};
+const e=mkEx(name);
 DB.library.push(e);sv();pickEx(e.id)}
 
 /* ═══════════ STAGE 2 — LIBRARY MANAGER ═══════════ */
@@ -3589,15 +3622,15 @@ h+='</div>';return h}
 function libList(){
 const q=(S.libQ||'').trim().toLowerCase();
 const list=DB.library.slice().filter(e=>!q||e.name.toLowerCase().includes(q)).sort((a,b)=>(a.archived?1:0)-(b.archived?1:0)||a.name.localeCompare(b.name));
-let h=list.map(e=>'<div class="erow'+(e.archived?' offed':'')+'" onclick="openEdEx(\''+e.id+'\')"><div class="em2"><div class="en2">'+esc(e.name)+'</div><div class="es2">'+(e.bw?'BW · ':'')+'rest '+(e.rest||rD())+'s'+((e.muscles||[]).length?' · '+esc(e.muscles.join(', ')):'')+(e.archived?' · archived':'')+'</div></div><span class="car2">›</span></div>').join('');
+let h=list.map(e=>'<div class="erow'+(e.archived?' offed':'')+'" onclick="openEdEx(\''+e.id+'\')"><div class="em2"><div class="en2">'+esc(e.name)+'</div><div class="es2">'+exSub(e)+(e.archived?' · archived':'')+'</div></div><span class="car2">›</span></div>').join('');
 if(!list.length)h+='<div class="empty" style="padding:26px 12px">No exercises match “'+esc((S.libQ||'').trim())+'”</div>'; /* .es2 is nowrap+ellipsis — a centred message has to wrap */
 return h}
 function filterLib(){const el=document.getElementById('liblist');if(el)el.innerHTML=libList()}
-function newLibEx(){const e={id:id('x'),name:'New exercise',bw:false,rest:rD(),muscles:[],kind:'lift',video:null};DB.library.push(e);sv();openEdEx(e.id)}
+function newLibEx(){const e=mkEx('New exercise');DB.library.push(e);sv();openEdEx(e.id)}
 function openEdEx(xid){S.edX=xid;S.view='edex';rn()}
 function curEx(){return DB.library.find(e=>e.id===S.edX)}
 function xRest(d){const e=curEx();if(!e)return;
-e.rest=Math.min(600,Math.max(15,(e.rest||rD())+d));sv();
+e.rest=clampRest((e.rest||rD())+d);sv();
 setV(document.getElementById('xv-rest'),e.rest+'s')}
 function setXBw(v){curEx().bw=v==='1';sv()}
 function exUsed(xid){return DB.programs.some(p=>p.templates.some(t=>(t.entries||[]).some(e=>e.exId===xid)))||DB.sessions.some(s=>s.sets.some(x=>x.exId===xid))}
@@ -3605,7 +3638,7 @@ function vEdEx(){
 const e=curEx();if(!e){S.view='edlib';return vEdLib()}
 let h=edHdr('Edit Exercise','',"S.view='edlib';rn()");
 h+='<div class="co">';
-h+='<div class="flab" style="margin-top:0">Name</div><input class="tin" value="'+esc(e.name)+'" onchange="curEx().name=this.value;sv()">';
+h+='<div class="flab top">Name</div><input class="tin" value="'+esc(e.name)+'" onchange="curEx().name=this.value;sv()">';
 h+='<div class="flab">Muscles · comma separated</div><input class="tin" value="'+esc((e.muscles||[]).join(', '))+'" onchange="curEx().muscles=this.value.split(\',\').map(s=>s.trim()).filter(Boolean);sv()">';
 h+='<div class="flab">Video URL</div><input class="tin" inputmode="url" value="'+esc(e.video||'')+'" onchange="curEx().video=this.value.trim()||null;sv()">';
 h+='<div class="strow"><div class="stn">Bodyweight<small>shows “BW”, logs added load as +lbs</small></div>'+seg2([{v:'0',l:'No'},{v:'1',l:'Yes'}],e.bw?'1':'0','setXBw')+'</div>';
@@ -3617,7 +3650,7 @@ if(!exUsed(e.id))h+='<button class="btn btn-d" onclick="delExAsk()">Delete exerc
 else h+='<div style="text-align:center;font-size:16px;color:var(--muted);line-height:1.5">In use by a template or logged history · archive hides it without breaking records.</div>';
 h+='</div></div>';return h}
 function delExAsk(){ovConfirm('Delete '+esc(curEx().name)+'?','It has no logged history · this just removes it from the library.',
-[{label:'Delete',click:'delEx()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+[{label:'Delete',click:'delEx()',kind:'d'},ACT_CANCEL])}
 function delEx(){DB.library=DB.library.filter(e=>e.id!==S.edX);sv();closeOv();S.view='edlib';rn()}
 
 /* ═══════════ STAGE 2 — CHECKLIST EDITORS ═══════════ */
@@ -3626,27 +3659,27 @@ function vEdDaily(){
 const c=dl();
 let h=edHdr('Daily Block',c.daily.length+' items · once a day','goProg()');
 h+='<div class="co">';
-h+='<div class="flab" style="margin-top:0">Note</div><input class="tin" value="'+esc(c.dailyNote||'')+'" onchange="dl().dailyNote=this.value;sv()">';
+h+='<div class="flab top">Note</div><input class="tin" value="'+esc(c.dailyNote||'')+'" onchange="dl().dailyNote=this.value;sv()">';
 h+='<div class="sl"><span class="lt">Items</span><span class="rule"></span></div>';
 c.daily.forEach((it,i)=>{
 h+='<div class="card" style="padding:12px">'
-+'<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">'
-+'<div class="mvc"><button class="mvb" onclick="mvDaily('+i+',-1)"'+(i===0?' disabled':'')+' aria-label="Move up">↑</button><button class="mvb" onclick="mvDaily('+i+',1)"'+(i===c.daily.length-1?' disabled':'')+' aria-label="Move down">↓</button></div>'
++'<div class="edrow" style="margin-bottom:8px">'
++mvBtns('mvDaily',[i],i,c.daily.length)
 +'<input class="tin fx" value="'+esc(it.name)+'" onchange="dl().daily['+i+'].name=this.value;sv()">'
 +'<button class="rowx" aria-label="Remove" onclick="rmDaily('+i+')">✕</button></div>'
 +'<input class="tin" style="margin-bottom:8px" placeholder="Detail" value="'+esc(it.detail||'')+'" onchange="dl().daily['+i+'].detail=this.value;sv()">'
-+'<div style="display:flex;gap:8px;align-items:center">'
++'<div class="edrow">'
 +'<input class="tin fx" placeholder="Video URL" inputmode="url" value="'+esc(it.video||'')+'" onchange="dl().daily['+i+'].video=this.value.trim()||undefined;sv()">'
 +'</div>'
-+'<div style="display:flex;gap:8px;align-items:center;margin-top:8px">'
++'<div class="edrow" style="margin-top:8px">'
 +'<button class="bbtn'+(it.skipOnTraining?'':' q')+'" style="flex-shrink:0" onclick="tglDaily('+i+',\'skipOnTraining\')">rest days only</button>'
 +'<button class="bbtn'+(it.skipIfHang?'':' q')+'" style="flex-shrink:0" onclick="tglDaily('+i+',\'skipIfHang\')">skip if hanging</button>'
 +'<button class="bbtn'+(it.paused?'':' q')+'" style="flex-shrink:0" onclick="tglPaused('+i+')">paused</button>'
 +'</div></div>'});
 h+='<button class="addb" onclick="addDaily()">+ Add item</button>';
 h+='</div>';return h}
-function mvDaily(i,d){const a=dl().daily,j=i+d;if(j<0||j>=a.length)return;const x=a[i];a[i]=a[j];a[j]=x;sv();rn()}
-function rmDaily(i){const a=dl().daily,it=a.splice(i,1)[0];sv();rn();toastUndo('Item removed',()=>{a.splice(i,0,it);sv()})}
+function mvDaily(i,d){mvIn(dl().daily,i,d)}
+function rmDaily(i){rmAt(dl().daily,i,'Item removed')}
 function addDaily(){dl().daily.push({id:id('d'),name:'New item',detail:''});sv();rn()}
 function tglDaily(i,k){const it=dl().daily[i],on=!it[k];delete it.skipOnTraining;delete it.skipIfHang;if(on)it[k]=true;sv();rn()} /* the two visibility rules are mutually exclusive · turning one on clears the other */
 function tglPaused(i){const it=dl().daily[i];if(it.paused)delete it.paused;else it.paused=true; /* paused is a temporary hold, NOT one of the two mutually-exclusive visibility rules · it keeps its own handler so tglDaily's clear-both never wipes it */
@@ -3659,21 +3692,21 @@ let h=edHdr('Mobility','','goProg()');
 h+='<div class="co">';
 m.forEach((g,gi)=>{
 h+='<div class="card" style="padding:13px">';
-h+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input class="tin fx" value="'+esc(g.group)+'" onchange="mobG('+gi+').group=this.value;sv()"><button class="bbtn'+(g.optional?'':' q')+'" style="flex-shrink:0" onclick="mobG('+gi+').optional=!mobG('+gi+').optional;sv();rn()">optional</button><button class="rowx" aria-label="Remove" onclick="rmMobGAsk('+gi+')">✕</button></div>';
+h+='<div class="edrow" style="margin-bottom:8px"><input class="tin fx" value="'+esc(g.group)+'" onchange="mobG('+gi+').group=this.value;sv()"><button class="bbtn'+(g.optional?'':' q')+'" style="flex-shrink:0" onclick="mobG('+gi+').optional=!mobG('+gi+').optional;sv();rn()">optional</button><button class="rowx" aria-label="Remove" onclick="rmMobGAsk('+gi+')">✕</button></div>';
 g.items.forEach((it,ii)=>{
 h+='<div style="display:flex;gap:7px;align-items:center;margin-bottom:6px">'
-+'<div class="mvc"><button class="mvb" onclick="mvMob('+gi+','+ii+',-1)"'+(ii===0?' disabled':'')+' aria-label="Move up">↑</button><button class="mvb" onclick="mvMob('+gi+','+ii+',1)"'+(ii===g.items.length-1?' disabled':'')+' aria-label="Move down">↓</button></div>'
++mvBtns('mvMob',[gi,ii],ii,g.items.length)
 +'<input class="tin fx" value="'+esc(it.name)+'" onchange="mobG('+gi+').items['+ii+'].name=this.value;sv()">'
 +'<button class="rowx" aria-label="Remove" onclick="rmMob('+gi+','+ii+')">✕</button></div>'});
 h+='<button class="addb" style="margin:4px 0 0;min-height:44px" onclick="addMob('+gi+')">+ Add item</button>';
 h+='</div>'});
 h+='<button class="addb" onclick="addMobG()">+ Add group</button></div>';return h}
-function mvMob(gi,ii,d){const a=mobG(gi).items,j=ii+d;if(j<0||j>=a.length)return;const x=a[ii];a[ii]=a[j];a[j]=x;sv();rn()}
-function rmMob(gi,ii){const a=mobG(gi).items,it=a.splice(ii,1)[0];sv();rn();toastUndo('Item removed',()=>{a.splice(ii,0,it);sv()})}
+function mvMob(gi,ii,d){mvIn(mobG(gi).items,ii,d)}
+function rmMob(gi,ii){rmAt(mobG(gi).items,ii,'Item removed')}
 function addMob(gi){mobG(gi).items.push({id:id('m'),name:'New item'});sv();rn()}
 function addMobG(){dl().mobility.push({group:'New group',items:[]});sv();rn()}
 function rmMobGAsk(gi){ovConfirm('Remove group “'+esc(mobG(gi).group)+'”?','Its '+mobG(gi).items.length+' items go with it.',
-[{label:'Remove group',click:'rmMobG('+gi+')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+[{label:'Remove group',click:'rmMobG('+gi+')',kind:'d'},ACT_CANCEL])}
 function rmMobG(gi){dl().mobility.splice(gi,1);sv();closeOv();rn()}
 function vEdTher(){
 const t=dl().therapist;
@@ -3681,13 +3714,13 @@ let h=edHdr('Therapist Items',t.length+' items','goProg()');
 h+='<div class="co">';
 t.forEach((it,i)=>{
 h+='<div class="card" style="padding:12px">'
-+'<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input class="tin fx" value="'+esc(it.name)+'" onchange="dl().therapist['+i+'].name=this.value;sv()"><button class="rowx" aria-label="Remove" onclick="rmTher('+i+')">✕</button></div>'
++'<div class="edrow" style="margin-bottom:8px"><input class="tin fx" value="'+esc(it.name)+'" onchange="dl().therapist['+i+'].name=this.value;sv()"><button class="rowx" aria-label="Remove" onclick="rmTher('+i+')">✕</button></div>'
 +'<input class="tin" style="margin-bottom:8px" placeholder="Note" value="'+esc(it.note||'')+'" onchange="dl().therapist['+i+'].note=this.value;sv()">'
 +'<input class="tin" placeholder="Video URL" inputmode="url" value="'+esc(it.video||'')+'" onchange="dl().therapist['+i+'].video=this.value.trim()||undefined;sv()">'
 +'</div>'});
 h+='<button class="addb" onclick="addTher()">+ Add item</button>';
 h+='</div>';return h}
-function rmTher(i){const a=dl().therapist,it=a.splice(i,1)[0];sv();rn();toastUndo('Item removed',()=>{a.splice(i,0,it);sv()})}
+function rmTher(i){rmAt(dl().therapist,i,'Item removed')}
 function addTher(){dl().therapist.push({name:'New item',note:''});sv();rn()}
 
 /* ═══════════ STAGE 2 — REFERENCE EDITOR ═══════════ */
@@ -3696,12 +3729,12 @@ const r=prog().reference=prog().reference||[];
 let h=edHdr('Reference',r.length+' sections','goProg()');
 h+='<div class="co">';
 r.forEach((s,i)=>{
-h+='<div class="erow"><div class="mvc"><button class="mvb" onclick="mvRef('+i+',-1)"'+(i===0?' disabled':'')+' aria-label="Move up">↑</button><button class="mvb" onclick="mvRef('+i+',1)"'+(i===r.length-1?' disabled':'')+' aria-label="Move down">↓</button></div><div class="em2" onclick="openRef('+i+')"><div class="en2">'+esc(s.t)+'</div><div class="es2">'+esc(String(s.b||'').replace(/[*|#-]/g,'').slice(0,64))+'…</div></div><button class="rowx" aria-label="Remove" onclick="rmRefAsk('+i+')">✕</button></div>'});
+h+='<div class="erow">'+mvBtns('mvRef',[i],i,r.length)+'<div class="em2" onclick="openRef('+i+')"><div class="en2">'+esc(s.t)+'</div><div class="es2">'+esc(String(s.b||'').replace(/[*|#-]/g,'').slice(0,64))+'…</div></div><button class="rowx" aria-label="Remove" onclick="rmRefAsk('+i+')">✕</button></div>'});
 h+='<button class="addb" onclick="addRef()">+ Add section</button>';
 h+='<div class="note">Body supports **bold**, “- ” lists, and |table|rows|.</div></div>';return h}
-function mvRef(i,d){const a=prog().reference,j=i+d;if(j<0||j>=a.length)return;const x=a[i];a[i]=a[j];a[j]=x;sv();rn()}
+function mvRef(i,d){mvIn(prog().reference,i,d)}
 function rmRefAsk(i){ovConfirm('Delete “'+esc(prog().reference[i].t)+'”?','This reference text can’t be recovered.',
-[{label:'Delete section',click:'rmRef('+i+')',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+[{label:'Delete section',click:'rmRef('+i+')',kind:'d'},ACT_CANCEL])}
 function rmRef(i){prog().reference.splice(i,1);sv();closeOv();rn()}
 function addRef(){prog().reference.push({t:'New section',b:''});sv();openRef(prog().reference.length-1)}
 function openRef(i){S.edRef=i;S.view='edrefsec';rn()}
@@ -3709,7 +3742,7 @@ function vEdRefSec(){
 const s=prog().reference[S.edRef];if(!s){S.view='edref';return vEdRef()}
 let h=edHdr('Edit Section','',"S.view='edref';rn()");
 h+='<div class="co">';
-h+='<div class="flab" style="margin-top:0">Title</div><input class="tin" value="'+esc(s.t)+'" onchange="prog().reference[S.edRef].t=this.value;sv()">';
+h+='<div class="flab top">Title</div><input class="tin" value="'+esc(s.t)+'" onchange="prog().reference[S.edRef].t=this.value;sv()">';
 h+='<div class="flab">Body</div><textarea class="tarea" style="min-height:320px" onchange="prog().reference[S.edRef].b=this.value;sv()">'+esc(s.b)+'</textarea>';
 h+='</div>';return h}
 
@@ -3770,13 +3803,13 @@ const sFM=A.map(function(r){return r.fm}),sZ2=A.map(function(r){return Math.roun
 const PC=paceAgg();
 const pFM=PC.map(function(r){return r.fm}),pZ2=PC.map(function(r){return Math.round(r.z2)}),pTN=PC.map(function(r){return Math.round(toU(r.ton,'lb',u))});
 const fmtN=function(n){return n.toLocaleString('en-US')};
-function dl(pc,hist){
+function deltaTxt(pc,hist){
 if(!hist.slice(-5,-1).some(function(v){return v>0}))return'';
 const avg=pc.slice(0,4).reduce(function(a,b){return a+b},0)/4,d=Math.round(pc[4]-avg);
 if(!d)return'<div class="wkd">level with usual</div>';
 return'<div class="wkd'+(d>0?' up':' dn')+' num">'+(d>0?'+':'−')+fmtN(Math.abs(d))+' vs usual</div>'}
 function tile(lbl,ser,pc,gid){
-return'<div class="wkt"><div class="wkm"><div class="wkl">'+lbl+'</div><div class="wkv num">'+fmtN(ser[ser.length-1])+'</div>'+dl(pc,ser)+'</div>'+sparkSvg(ser.slice(0,-1),gid,220,76)+'</div>'}
+return'<div class="wkt"><div class="wkm"><div class="wkl">'+lbl+'</div><div class="wkv num">'+fmtN(ser[ser.length-1])+'</div>'+deltaTxt(pc,ser)+'</div>'+sparkSvg(ser.slice(0,-1),gid,220,76)+'</div>'}
 let h='<div class="card">';
 h+='<div class="wk4">'+tile('Fast meters',sFM,pFM,'wfm')+tile('Zone-2 min',sZ2,pZ2,'wz2')+tile(u==='kg'?'Kg lifted':'Lb lifted',sTN,pTN,'wtn')+'</div>';
 h+='<div class="ckr" style="margin:8px 2px 0">Fast meters add every sprint rep · zone-2 is warm-up + bike + swim minutes · vs usual reads this week so far against your average by this weekday over the last 4 weeks · charts show complete weeks</div>';
@@ -3789,7 +3822,7 @@ if(top.length<2)return'';
 let h='<div class="mt3">';
 top.forEach(function(x){const ser=seriesFor(x.ex.id).slice(-8);if(ser.length<2)return;
 const useReps=ser.every(function(p){return p.topW<=0});
-const vals=ser.map(function(p){return useReps?p.mxR:rndDisp(toU(p.topW,'lb',unit()),unit())});
+const vals=ser.map(function(p){return useReps?p.mxR:lbDisp(p.topW)});
 h+='<div class="wkt tap" onclick="openTrend(\''+x.ex.id+'\')"><div class="wkl">'+esc(x.ex.name)+'</div><div class="wkv num">'+vals[vals.length-1]+'<span>'+(useReps?'reps':unit())+'</span></div>'+sparkSvg(vals,'mt-'+x.ex.id)+'</div>'});
 return h+'</div>'}
 function vTrends(){
@@ -3804,16 +3837,16 @@ h+='<div class="sl"><span class="lt">This week</span><span class="rule"></span><
 h+=weekCard(_swk);
 const prMin=!!(DB.settings&&DB.settings.prMin);
 h+='<div class="sl prsl" onclick="togglePR()"><span class="lt">Recent PRs</span><span class="rule"></span><span class="cnt num">'+pr.feed.length+'</span><span class="prtog">'+(prMin?'▸':'▾')+'</span></div>';
-if(prMin)h+='<div class="prmin" onclick="togglePR()">'+(pr.feed.length?pr.feed.length+' PR'+(pr.feed.length>1?'s':'')+' on record · tap to show':'no PRs yet')+'</div>';
+if(prMin)h+='<div class="prmin" onclick="togglePR()">'+(pr.feed.length?pl(pr.feed.length,'PR')+' on record · tap to show':'no PRs yet')+'</div>';
 else if(!pr.feed.length)h+='<div class="card"><div class="ckr">PRs appear when you beat your own history. Log sessions · the baseline builds itself.</div></div>';
-else h+='<div class="card" style="padding:4px 14px">'+pr.feed.slice(0,12).map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div><div class="prd num">'+fmtDk(f.date)+(f.date.slice(0,4)!==tk().slice(0,4)?' ’'+f.date.slice(2,4):'')+'</div></div>').join('')+'</div>';
+else h+='<div class="card" style="padding:4px 14px">'+pr.feed.slice(0,12).map(f=>'<div class="prw"><div class="pri">✦</div><div class="prm"><div class="prn">'+esc(exOf(f.exId).name)+'</div><div class="prs num">'+prLabel(f)+'</div></div><div class="prd num">'+fmtDkY(f.date)+'</div></div>').join('')+'</div>';
 const exs=trendExs(),stMin=!!(DB.settings&&DB.settings.stMin);
 h+='<div class="sl prsl" onclick="toggleST()"><span class="lt">Strength Trends</span><span class="rule"></span><span class="cnt num">'+exs.length+'</span><span class="prtog">'+(stMin?'▸':'▾')+'</span></div>';
-if(stMin)h+='<div class="prmin" onclick="toggleST()">'+(exs.length?exs.length+' exercise'+(exs.length>1?'s':'')+' charted · tap to show':'no charts yet')+'</div>';
+if(stMin)h+='<div class="prmin" onclick="toggleST()">'+(exs.length?pl(exs.length,'exercise')+' charted · tap to show':'no charts yet')+'</div>';
 else if(!exs.length)h+='<div class="card"><div class="ckr">Charts unlock with your first finished session.</div></div>';
 else{h+=mtTiles(exs);
 exs.forEach(x=>{
-h+='<div class="hrow" onclick="openTrend(\''+x.ex.id+'\')"><div class="hico lift">'+esc(initials(x.ex.name))+'</div><div class="hm"><div class="ht">'+esc(x.ex.name)+(x.wuNow?' <span class="chip off">warm-up</span>':'')+'</div><div class="hs num">'+x.n+' session'+(x.n>1?'s':'')+' · last '+esc(x.lastTxt)+'</div></div><div class="hd2 num">'+fmtDk(x.lastDate)+(x.lastDate.slice(0,4)!==tk().slice(0,4)?' ’'+x.lastDate.slice(2,4):'')+'</div></div>'})}
+h+='<div class="hrow" onclick="openTrend(\''+x.ex.id+'\')"><div class="hico lift">'+esc(initials(x.ex.name))+'</div><div class="hm"><div class="ht">'+esc(x.ex.name)+(x.wuNow?' <span class="chip off">warm-up</span>':'')+'</div><div class="hs num">'+pl(x.n,'session')+' · last '+esc(x.lastTxt)+'</div></div><div class="hd2 num">'+fmtDkY(x.lastDate)+'</div></div>'})}
 h+='<div class="fl">Blocks · Stage 3</div>';
 return h}
 function initials(n){const p=String(n).replace(/\(.*?\)/g,'').trim().split(/\s+/);return((p[0]||'?')[0]+(p[1]?p[1][0]:(p[0]||'  ')[1]||'')).toUpperCase()}
@@ -3822,7 +3855,7 @@ function togglePR(){if(!DB.settings)DB.settings={};DB.settings.prMin=!DB.setting
 function toggleST(){if(!DB.settings)DB.settings={};DB.settings.stMin=!DB.settings.stMin;vibe(8);sv();rn()}
 function trendChart(ser,useReps){
 const W=520,H=232,L=52,R=16,Tp=32,B=34; /* frame sized so the in-SVG type lands ~11px once the 520-unit box scales to a ~310px card */
-const pts=ser.map(p=>({t:p.t,v:useReps?p.mxR:rndDisp(toU(p.topW,'lb',unit()),unit()),e1:p.e1?rndDisp(toU(p.e1,'lb',unit()),unit()):0}));
+const pts=ser.map(p=>({t:p.t,v:useReps?p.mxR:lbDisp(p.topW),e1:p.e1?lbDisp(p.e1):0}));
 const showE1=!useReps&&S.e1;
 let vmin=Infinity,vmax=-Infinity;
 pts.forEach(p=>{vmin=Math.min(vmin,p.v);vmax=Math.max(vmax,p.v);if(showE1&&p.e1){vmin=Math.min(vmin,p.e1);vmax=Math.max(vmax,p.e1)}});
@@ -3863,25 +3896,24 @@ const ex=exOf(S.trEx),ser=seriesFor(ex.id);
 if(!ser.length){S.view='tabs';S.tab='trends';return vTabs()}
 const useReps=ser.every(p=>p.topW<=0);
 const pe=prScan().perEx[ex.id]||{};
-let h='<div class="shd"><div class="shdi"><button class="bk" aria-label="Back" onclick="S.view=\'tabs\';S.tab=\'trends\';rn()">'+I_BACK+'</button>'
-+'<div class="shm"><div class="sht">'+esc(ex.name)+'</div><div class="shs num">'+ser.length+' session'+(ser.length>1?'s':'')+' · '+(useReps?'best reps':'top set · '+unit())+'</div></div>'
-+(useReps?'':'<button class="fin q num" style="'+(S.e1?'border-color:var(--ember-line);color:var(--ember-hot)':'')+'" onclick="S.e1=!S.e1;rn()">est 1RM</button>')+'</div></div>';
+let h=edHdr(esc(ex.name),pl(ser.length,'session')+' · '+(useReps?'best reps':'top set · '+unit()),"S.view='tabs';S.tab='trends';rn()",
+(useReps?'':'<button class="fin q num" style="'+(S.e1?'border-color:var(--ember-line);color:var(--ember-hot)':'')+'" onclick="S.e1=!S.e1;rn()">est 1RM</button>'),'num');
 h+='<div class="co">';
 h+='<div class="card" style="padding:12px 10px 8px">'+trendChart(ser,useReps)+'</div>';
 h+='<div class="sl"><span class="lt">Personal Records</span><span class="rule"></span></div><div class="card">';
 const rows=[];
 if(!useReps&&pe.maxW>0){
-rows.push(['Top weight',rndDisp(toU(pe.maxW,'lb',unit()),unit())+' '+unit()+' × '+pe.maxWReps,pe.maxWDate]);
+rows.push(['Top weight',lbDisp(pe.maxW)+' '+unit()+' × '+pe.maxWReps,pe.maxWDate]);
 rows.push(['Est. 1RM · Epley','≈ '+Math.round(toU(pe.maxE1,'lb',unit()))+' '+unit(),pe.e1Date]);
 Object.keys(pe.repAt||{}).map(Number).sort((a,b)=>b-a).slice(0,4).forEach(w=>{
- if(w!==pe.maxW)rows.push(['Best at '+rndDisp(toU(w,'lb',unit()),unit())+' '+unit(),'× '+pe.repAt[String(w)],null])})}
+ if(w!==pe.maxW)rows.push(['Best at '+lbDisp(w)+' '+unit(),'× '+pe.repAt[String(w)],null])})}
 if(pe.maxReps>0)rows.push(['Max reps',''+pe.maxReps,pe.maxRepsDate]);
-h+=rows.length?rows.map(r=>'<div class="tpe"><span class="tpen">'+r[0]+'</span><span class="tpes num">'+r[1]+(r[2]?' · '+fmtDk(r[2])+(r[2].slice(0,4)!==tk().slice(0,4)?' ’'+r[2].slice(2,4):''):'')+'</span></div>').join(''):'<div class="ckr">No working sets yet.</div>';
+h+=rows.length?rows.map(r=>'<div class="tpe"><span class="tpen">'+r[0]+'</span><span class="tpes num">'+r[1]+(r[2]?' · '+fmtDkY(r[2]):'')+'</span></div>').join(''):'<div class="ckr">No working sets yet.</div>';
 h+='</div>';
 h+='<div class="sl"><span class="lt">Sessions</span><span class="rule"></span></div>';
 DB.sessions.filter(s=>s.finishedAt&&s.sets.some(x=>x.exId===ex.id&&!x.warmup)).sort((a,b)=>b.startedAt-a.startedAt).slice(0,8).forEach(s=>{
 const rs=workingSets(s,ex.id).filter(x=>!x.warmup).sort((a,b)=>a.n-b.n);
-h+='<div class="card" style="padding:12px 14px;display:flex;gap:12px;align-items:baseline"><div class="hd2 num" style="text-align:left;min-width:50px;flex-shrink:0">'+fmtDk(s.date)+(s.date.slice(0,4)!==tk().slice(0,4)?'<br>’'+s.date.slice(2,4):'')+'</div><div class="dline">'+rs.map(r=>'<span class="dpill num">'+setTxt(r,ex.bw)+'</span>').join('')+'</div></div>'});
+h+='<div class="card" style="padding:12px 14px;display:flex;gap:12px;align-items:baseline"><div class="hd2 num" style="text-align:left;min-width:50px;flex-shrink:0">'+fmtDkY(s.date,'<br>')+'</div><div class="dline">'+rs.map(r=>'<span class="dpill num">'+setTxt(r,ex.bw)+'</span>').join('')+'</div></div>'});
 h+='</div>';return h}
 
 /* ═══════════ MARKDOWN-LITE ═══════════ */
@@ -3944,11 +3976,11 @@ const body=
 +'<div class="strow"><div class="stn">Keep screen awake<small>during a session</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.wake?'1':'0','setWake')+'</div>'
 +'<div class="strow"><div class="stn">Timer chime<small>visual flash always on</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.sound?'1':'0','setSound')+'</div>'
 +(('vibrate'in navigator)?'<div class="strow"><div class="stn">Haptics<small>buzz on logged sets &amp; rest end</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],DB.settings.haptics===false?'0':'1','setHaptics')+'</div>':'') /* iOS has no vibration API · never promise a buzz that can't happen */
-+'<div class="strow"><div class="stn">Default rest<small>when nothing more specific is set</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sRest" data-args="[-15]">−</button><div class="stv num" id="sRestV">'+rD()+'s</div><button class="stb" data-hold data-fn="sRest" data-args="[15]">+</button></div></div>'
++'<div class="strow"><div class="stn">Default rest<small>when nothing more specific is set</small></div><div class="stp set"><button class="stb" data-hold data-fn="sRest" data-args="[-15]">−</button><div class="stv num" id="sRestV">'+rD()+'s</div><button class="stb" data-hold data-fn="sRest" data-args="[15]">+</button></div></div>'
 +'<div class="strow"><div class="stn">Training guards<small>'+(engineOn()?'auto-deload and the race taper · both only ever cut volume':'off until you are cleared · your program stays exactly as you set it')+'</small></div>'+seg2([{v:'1',l:'On'},{v:'0',l:'Off'}],engineOn()?'1':'0','setEngineOn')+'</div>'
-+(engineOn()?'<div class="strow"><div class="stn">Recovery dial<small>how many trained weeks before an easy week lands · now <span id="sDialWks">'+deloadEvery()+'</span></small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sDial" data-args="[-0.1]">−</button><div class="stv num" id="sDialV">'+dial().toFixed(1)+'</div><button class="stb" data-hold data-fn="sDial" data-args="[0.1]">+</button></div></div>':'')
++(engineOn()?'<div class="strow"><div class="stn">Recovery dial<small>how many trained weeks before an easy week lands · now <span id="sDialWks">'+deloadEvery()+'</span></small></div><div class="stp set"><button class="stb" data-hold data-fn="sDial" data-args="[-0.1]">−</button><div class="stv num" id="sDialV">'+dial().toFixed(1)+'</div><button class="stb" data-hold data-fn="sDial" data-args="[0.1]">+</button></div></div>':'')
 +(engineOn()?'<div class="strow"><div class="stn">Start a fresh block<small>resets the easy-week clock, clears a pending deload and race date · program and history untouched</small></div><button class="btn btn-o" style="width:auto;min-height:44px;padding:0 18px;flex-shrink:0" onclick="resetAskEng()">Start fresh</button></div>':'')
-+'<div class="strow"><div class="stn">Bedtime target<small>what “bed by” aims for</small></div><div class="stp" style="width:148px;height:42px;flex-shrink:0"><button class="stb" data-hold data-fn="sBed" data-args="[-15]">−</button><div class="stv num" id="sBedV" style="font-size:16px">'+fmtTime12(bedTime())+'</div><button class="stb" data-hold data-fn="sBed" data-args="[15]">+</button></div></div>'
++'<div class="strow"><div class="stn">Bedtime target<small>what “bed by” aims for</small></div><div class="stp set"><button class="stb" data-hold data-fn="sBed" data-args="[-15]">−</button><div class="stv num" id="sBedV" style="font-size:16px">'+fmtTime12(bedTime())+'</div><button class="stb" data-hold data-fn="sBed" data-args="[15]">+</button></div></div>'
 +'<div class="shbtns" style="margin-top:20px"><button class="btn btn-p" onclick="closeOv()">Done</button></div>'
 +'<div class="sl"><span class="lt">Your data</span><span class="rule"></span></div>'
 +'<div class="shbtns">'
@@ -3961,8 +3993,8 @@ const body=
 +'</div>';
 sheet('Settings','Changes save as you go.',body)}
 function setUnit(u){DB.settings.unit=u;PV={};CV=null;sv();rn();gear()}
-function sRest(d){DB.settings.restDefault=Math.min(600,Math.max(15,rD()+d));sv();setV(document.getElementById('sRestV'),rD()+'s')}
-function sDial(d){const e=engine();e.dial=Math.round(Math.min(1.4,Math.max(.6,dial()+d))*10)/10;ENG_DIRTY=false;sv();setV(document.getElementById('sDialV'),dial().toFixed(1));setV(document.getElementById('sDialWks'),String(deloadEvery()))} /* the derived weeks label updates live with the dial */
+function sRest(d){DB.settings.restDefault=clampRest(rD()+d);sv();setV(document.getElementById('sRestV'),rD()+'s')}
+function sDial(d){const e=engine();e.dial=Math.round(clamp(dial()+d,.6,1.4)*10)/10;ENG_DIRTY=false;sv();setV(document.getElementById('sDialV'),dial().toFixed(1));setV(document.getElementById('sDialWks'),String(deloadEvery()))} /* the derived weeks label updates live with the dial */
 function setEngineOn(v){const on=v==='1';const p=prog();
 if(on){const hadRun=!!p.engine;engine().on=true; /* p.engine usually means the guards ran before, but it can pre-exist without them (the v33 build created it ungated) — a fresh block on enable is the safe anchor either way */
  if(hadRun)freshBlock(true);} /* re-enable after an OFF gap · clear the stale deload, taper, and armed sprint-fallback, and re-anchor the easy-week clock · the race date is program state and survives (its taper re-latches once a trained week is back on the books — taperTick needs lastNormalWeekLoad, which the re-anchor resets) */
@@ -3973,9 +4005,9 @@ function setWake(v){DB.settings.wake=v==='1';sv();gear()}
 function setSound(v){DB.settings.sound=v==='1';sv();gear()}
 function setHaptics(v){DB.settings.haptics=v==='1';sv();gear()}
 function resetAsk(){ovConfirm('Erase all data?','Every session, check, and edit on this device will be deleted. Export first if in doubt.',
-[{label:'Erase',click:'resetAsk2()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+[{label:'Erase',click:'resetAsk2()',kind:'d'},ACT_CANCEL])}
 function resetAsk2(){ovConfirm('Really erase everything?','Last chance · this cannot be undone.',
-[{label:'Erase everything',click:'resetAll()',kind:'d'},{label:'Cancel',click:'closeOv()',kind:'o'}])}
+[{label:'Erase everything',click:'resetAll()',kind:'d'},ACT_CANCEL])}
 function resetAll(){localStorage.removeItem('blocks_v1');localStorage.removeItem('blocks_spr');localStorage.removeItem('blocks_rest');location.reload()} /* a wipe must not resurrect a live sprint (or rest timer) from the erased install */
 
 /* ═══════════ BOOT ═══════════ */
