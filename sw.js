@@ -1,5 +1,5 @@
 // BLOCKS service worker — versioned cache-first so the app boots offline at the gym.
-const V = 'blocks-v71';
+const V = 'blocks-v72';
 const ASSETS = ['./', './index.html', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
